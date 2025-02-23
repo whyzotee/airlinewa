@@ -1,6 +1,11 @@
 import uuid
 import random
 
+from typing import Union
+from fastapi import FastAPI
+
+app = FastAPI()
+
 class Account:
     def __init__(self):
         self.__email = ""
@@ -86,14 +91,6 @@ class Aircraft:
     def get_seats(self):
         return self.__seats
 
-class FlightRouteStatus:
-    BOARDING = "boarding"
-    TAKE_OFF = "take-off"
-    IN_FLIGHT = "in-flight"
-    LANDING = "landing"
-    DELAYED = "delayed"
-    CANCELLED = "cancelled"
-
 class FlightRoute:
     def __init__(self, id, origin, destination, status):
         self.__id = id
@@ -135,29 +132,43 @@ class FlightSchedule:
 
         return aircarft
 
-class Flight:
-    #  def __init__(self, id, schedule: FlightSchedule, aircarft: Aircraft):
-    def __init__(self, id):
-        self.__id = id
-        self.__schedule = self.gen_schedule()
+# class Flight:
+#     #  def __init__(self, id, schedule: FlightSchedule, aircarft: Aircraft):
+#     def __init__(self, id):
+#         self.__id = id
+#         self.__schedule = self.gen_schedule()
 
-    def gen_schedule(self) -> FlightSchedule:
-        flightRoute = FlightRoute(f"route_${self.__id}", "BKK", "CNX", FlightRouteStatus.BOARDING)
-        schedule = FlightSchedule(f"schedule_${self.__id}", flightRoute, ["mon","tues","fri"], "15:00", "17:00")
+#     def gen_schedule(self) -> FlightSchedule:
+#         flightRoute = FlightRoute(f"route_${self.__id}", "BKK", "CNX", FlightRouteStatus.BOARDING)
+#         schedule = FlightSchedule(f"schedule_${self.__id}", flightRoute, ["mon","tues","fri"], "15:00", "17:00")
 
-        return schedule
+#         return schedule
             
 
-    @property
-    def get_id(self):
-        return self.__id
+#     @property
+#     def get_id(self):
+#         return self.__id
     
-    @property
-    def get_schedule(self):
-        return self.__schedule
-
+#     @property
+#     def get_schedule(self):
+#         return self.__schedule
 
 class Service:
+
+    @classmethod
+    def get_all_services():
+        return [Food, Package, Insurance, Assistance]
+
+class Food(Service):
+    pass
+
+class Package(Service):
+    pass
+
+class Insurance(Service):
+    pass
+
+class Assistance(Service):
     pass
 
 class Passenger:
@@ -192,19 +203,19 @@ class Booking:
 class Airlinewa:
     def __init__(self):
         self.__user_list: list[User] = []
-        self.__fight_list: list[Flight] = []
+        self.__fight_route_list: list[FlightRoute] = []
         self.__booking_list: list[Booking] = []
 
     def set_user(self, list_user: list[User]):
         self.__user_list = list_user
 
-    def set_flight(self, list_flight: list[Flight]):
-        self.__fight_list = list_flight
+    def set_flight(self, list_flight_route: list[FlightRoute]):
+        self.__fight_list = list_flight_route
 
     # ============================ API ============================ #
-    def api_booking(self, user_id, flight_instance_id, list_passenger:list, list_service: list[Service] = None):
+    def api_booking(self, user_id, flight_route_id, list_passenger:list, list_service: list[Service] = None):
         user = self.get_user(user_id)
-        flight = self.get_flight_instance(flight_instance_id)
+        flight = self.get_flight_instance(flight_route_id)
         list_passenger_data = self.create_passenger(list_passenger)
 
         booking_instance = self.create_booking(user, flight, list_passenger_data, list_service)
@@ -225,13 +236,13 @@ class Airlinewa:
             if user.get_id == user_id:
                 return user
 
-    def get_flight_instance(self, flight_instance_id) -> Flight:
+    def get_flight_instance(self, flight_instance_id) -> FlightRoute:
         for flight in self.__fight_list:
             if flight.get_id == flight_instance_id:
                 return flight
 
-    def create_booking(self, user_instance: User, flight_instance: Flight, list_pssenger: list[Passenger], list_service: list[Service] | None) -> Booking:
-        booking_instance = Booking("booking_test_001", user_instance, flight_instance, list_pssenger, list_service)
+    def create_booking(self, user_instance: User, flight_route: FlightRoute, list_pssenger: list[Passenger], list_service: list[Service] | None) -> Booking:
+        booking_instance = Booking("booking_test_001", user_instance, flight_route, list_pssenger, list_service)
         self.__booking_list.append(booking_instance)
         return booking_instance
 
@@ -258,20 +269,31 @@ def initialize() -> Airlinewa:
     airline = Airlinewa()
     
     airline.set_user(gen_users())
-    airline.set_flight([Flight(f"flight_00{i}") for i in range(9)])
+    airline.set_flight([FlightRoute(f"flight_00{i}", "BKK", "CNX", "OK") for i in range(9)])
 
     return airline
 
-def main():
-    airline = initialize()
+airline = initialize()
 
-    # Test
+@app.get("/")
+def read_root():
+    return {"Hello World!": "This is root path FastAPI"}
+
+@app.get("/get_payment")
+def get_payment(q: Union[str, None] = None):
     res = airline.api_booking(airline.get_test_user.get_id, "flight_001", [])
-    print("Api Booking response: ", res, "dollar")
-    print("Get Test Booking Detail....")
+    return {"price": res, "type": "dollar", "q":q}
 
-    for i in airline.get_booking_list:
-        i.get_booking_details
+# def main():
+#     airline = initialize()
 
-if __name__ == "__main__":
-    main()
+#     # Test
+#     res = airline.api_booking(airline.get_test_user.get_id, "flight_001", [])
+#     print("Api Booking response: ", res, "dollar")
+#     print("Get Test Booking Detail....")
+
+#     for i in airline.get_booking_list:
+#         i.get_booking_details
+
+# if __name__ == "__main__":
+#     main()
