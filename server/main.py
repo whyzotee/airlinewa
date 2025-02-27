@@ -3,8 +3,18 @@ import random
 
 from typing import Union
 from fastapi import FastAPI
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins="*",  # Allow specific origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
 class Account:
     def __init__(self):
@@ -114,6 +124,10 @@ class FlightRoute:
     def get_status(self):
         return self.__status
 
+    @property
+    def get_price(self):
+        return 1900
+
 class FlightSchedule:
     def __init__(self, id, dayOfWeek, departureTime, arriveTime):
         self.__id = id
@@ -210,9 +224,17 @@ class Airlinewa:
         self.__user_list = list_user
 
     def set_flight(self, list_flight_route: list[FlightRoute]):
-        self.__fight_list = list_flight_route
+        self.__fight_route_list = list_flight_route
 
     # ============================ API ============================ #
+    def api_checkout(self, flight_route_id):
+        flight = self.get_flight_instance(flight_route_id)
+
+        if flight == None:
+            return None
+
+        return [flight.get_id, flight.get_price, flight.get_origin, flight.get_destination, Service.get_all_services]
+    
     def api_booking(self, user_id, flight_route_id, list_passenger:list, list_service: list[Service] = None):
         user = self.get_user(user_id)
         flight = self.get_flight_instance(flight_route_id)
@@ -237,7 +259,7 @@ class Airlinewa:
                 return user
 
     def get_flight_instance(self, flight_instance_id) -> FlightRoute:
-        for flight in self.__fight_list:
+        for flight in self.__fight_route_list:
             if flight.get_id == flight_instance_id:
                 return flight
 
@@ -258,6 +280,7 @@ def gen_users():
     gen_user = []
 
     for index in range(10):
+        # gen_id = f"a752e161-d6a2-4e5b-8c55-1dc59b7f123{index}"
         gen_id = uuid.uuid4()
         gen_account = Account().register(gen_emails[index], gen_passwords[index])
         user = User(gen_id, gen_name[index], gen_phone_numbers[index], gen_account)
@@ -279,10 +302,43 @@ airline = initialize()
 def read_root():
     return {"Hello World!": "This is root path FastAPI"}
 
-@app.get("/get_payment")
-def get_payment(q: Union[str, None] = None):
-    res = airline.api_booking(airline.get_test_user.get_id, "flight_001", [])
-    return {"price": res, "type": "dollar", "q":q}
+class APICheckout(BaseModel):
+    id: str
+
+@app.post("/api_checkout")
+async def api_checkout(model: APICheckout):
+    res = airline.api_checkout(model.id)
+
+    return {"res": res}
+
+class GetPaymentIdentity(BaseModel):
+    type: str
+    number: str
+    out_date: str
+
+class GetPaymentContact(BaseModel):
+    prefix: str
+    name: str
+    lastname: str
+    email: str
+    countryCode: str
+    phoneNumber: str
+
+class GetPayment(BaseModel):
+    name: str
+    lastname: str
+    gender: str
+    country: str
+    birthday: str
+    identityType: GetPaymentIdentity
+    contact: GetPaymentContact
+
+@app.post("/api_payment")
+def get_payment(model: GetPayment):
+    print(model)
+    # res = airline.api_booking(airline.get_test_user.get_id, "flight_001", [])
+    # return {"price": res, "type": "dollar", "q":q}
+    return {"res": "OK", "data": model}
 
 # def main():
 #     airline = initialize()

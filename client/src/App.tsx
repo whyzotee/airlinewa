@@ -4,6 +4,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/home";
 import CheckOut from "./pages/checkout";
+import Payment from "./pages/payment";
 
 function App() {
   // const [isOpen, setIsOpen] = useState(false);
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/checkout" element={<CheckOut />} />
+        <Route path="/payment" element={<Payment />} />
         {/* 
         <Route path="/search-results" element={<SearchResults />} />
        
