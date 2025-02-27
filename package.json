@@ -1,0 +1,11 @@
+{
+  "name": "airlinewa",
+  "type": "module",
+  "scripts": {
+    "web": "cd client && bun i && bun run dev",
+    "api": "cd server && fastapi dev main.py"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
