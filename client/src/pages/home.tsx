@@ -5,7 +5,7 @@ import preview from "/preview.webm";
 import { Avatar, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { delay } from "../app/function";
 
 const Home = () => {
@@ -14,14 +14,16 @@ const Home = () => {
   const callAPI = async () => {
     await delay(1000);
     const response = await axios.post("http://127.0.0.1:8000/api_checkout", {
-      id: "flight_001",
+      id: "AW 0101",
     });
 
     const data = response.data;
 
-    if (data.res == null) throw new Error("Can't find Flight ID.");
+    if (data.error != null) throw new Error(data.error);
 
-    return data.res;
+    console.log(data);
+
+    return data;
   };
 
   const handleClick = async () => {
@@ -39,7 +41,7 @@ const Home = () => {
   };
 
   return (
-    <main>
+    <main className="font-noto-thai">
       <div className="fixed h-screen w-screen bg-black opacity-75"></div>
       <video
         className="fixed min-h-full min-w-full -z-10 bg-black object-cover"
@@ -72,7 +74,6 @@ const Home = () => {
           Fly Now, Book Here
         </Button>
 
-        <Toaster />
         {/* <Button
           variant="outlined"
           className="text-white border border-white rounded-lg cursor-pointer"

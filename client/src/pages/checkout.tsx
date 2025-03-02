@@ -1,27 +1,23 @@
-import {
-  AppBar,
-  Avatar,
-  Breadcrumbs,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { Avatar, Breadcrumbs, Typography } from "@mui/material";
 
 import logo from "/logo.jpg";
 
 import { Link, useLocation } from "react-router-dom";
-import UserDetail from "../components/CheckoutUser";
-import CheckoutCard from "../components/CheckoutCard";
-import CheckoutContact from "../components/CheckoutContact";
-import FlightDetail from "../components/CheckoutFlightDetails";
-import CheckoutServiceBag from "../components/CheckoutServiceBag";
+import UserDetail from "../features/checkout/components/CheckoutUser";
+import CheckoutCard from "../features/checkout/components/CheckoutCard";
+import CheckoutContact from "../features/checkout/components/CheckoutContact";
+import FlightDetail from "../features/checkout/components/CheckoutFlightDetails";
+import CheckoutServiceBag from "../features/checkout/components/CheckoutServiceBag";
 
 const PathAndTimeout = () => {
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between text-sm">
       <Breadcrumbs aria-label="breadcrumb">
-        <Link to="/">Home</Link>
-        <Link to="/flight">Flight</Link>
-        <Typography sx={{ color: "text.primary" }}>Checkout</Typography>
+        <Link to="/">หน้าแรก</Link>
+        <Link to="/flight">เลือกเที่ยวบิน</Link>
+        <Typography sx={{ color: "text.primary" }}>
+          รายละเอียดผู้โดยสาร
+        </Typography>
       </Breadcrumbs>
       <span className="flex gap-1 text-sm">
         <p className="text-green-800">{"08"}</p>
@@ -34,25 +30,29 @@ const PathAndTimeout = () => {
 };
 
 const CheckOut = () => {
-  const data = useLocation();
+  const data = useLocation().state;
 
   return (
-    <main>
-      <AppBar position="static" color="warning">
-        <Toolbar className="container mx-auto">
-          <Avatar alt="log" src={logo} sx={{ width: 56, height: 56 }} />
-        </Toolbar>
-      </AppBar>
-      <div className="container mx-auto p-16 flex xl:flex-row flex-col gap-16">
+    <main className="font-noto-thai">
+      <div className="h-16 p-2 shadow-lg">
+        <Link to="/">
+          <div className="container m-auto flex items-center gap-4">
+            <Avatar alt="log" src={logo} sx={{ width: 48, height: 48 }} />
+            <h1 className="text-3xl font-bold">Airlinewa</h1>
+          </div>
+        </Link>
+      </div>
+      <div className="container mx-auto py-8 px-16 flex xl:flex-row flex-col gap-16">
         <div className="flex flex-col gap-4 w-full xl:w-[70%]">
           <PathAndTimeout />
-          <FlightDetail data={data.state} />
+          <FlightDetail id={data.id} info={data.info} />
           <UserDetail />
           <CheckoutContact />
           <h1 className="text-xl">Service</h1>
-          <CheckoutServiceBag />
+          <CheckoutServiceBag user={["Adult 1"]} />
         </div>
-        <CheckoutCard />
+
+        <CheckoutCard price={data.price} />
       </div>
     </main>
   );

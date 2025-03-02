@@ -7,37 +7,59 @@ import {
   AccordionSummary,
   Autocomplete,
   Divider,
+  MenuItem,
+  Select,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
+import { RootState } from "../../../app/store";
+import { updateFormData } from "../slices/checkoutUser";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../app/store";
-import { updateFormData } from "../app/reducers/checkoutUser";
 
 const options = [{ label: "Thailand" }, { label: "Singapore" }];
 
-const type = ["Identity Card", "Passport"];
-
 const UserDetail = () => {
   const dispatch = useDispatch();
-  const formData = useSelector(
-    (state: RootState) => state.checkoutUser.formData
+  const { formData, isValid } = useSelector(
+    (state: RootState) => state.checkoutUser
   );
 
   return (
-    <Accordion slotProps={{ transition: { unmountOnExit: true } }}>
+    <Accordion
+      slotProps={{ transition: { unmountOnExit: true } }}
+      elevation={0}
+      sx={{
+        border: 2,
+        borderRadius: 2,
+        borderColor: "#00000015",
+        "&.MuiAccordion-root:before": {
+          backgroundColor: "white",
+        },
+      }}
+    >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <div className="flex gap-4">
-          <AccessibilityIcon />
-          <h1>ผู้ใหญ่ 1</h1>
+        <div className="w-full flex justify-between items-center">
+          <div className="flex gap-4">
+            <AccessibilityIcon />
+            <h1>ผู้ใหญ่ 1</h1>
+          </div>
+          <div
+            className={`text-sm text-white rounded-lg px-2 mr-4 ${
+              isValid ? "bg-green-200" : "bg-red-200"
+            }`}
+          >
+            <p className={isValid ? "text-green-500" : "text-red-500"}>
+              {isValid ? "เสร็จสิ้น" : "ยังไม่เสร็จ"}
+            </p>
+          </div>
         </div>
       </AccordionSummary>
 
       <AccordionDetails>
         <Divider />
         <div className="flex flex-col gap-4 mt-4">
-          <p className="text-xs text-gray-400">อายุ 12 ปีขึ้นไป</p>
+          <p className="text-xs text-gray-500">อายุ 12 ปีขึ้นไป</p>
 
           <ToggleButtonGroup
             exclusive
@@ -74,7 +96,7 @@ const UserDetail = () => {
               options={options}
               value={{ label: formData.country }}
               onChange={(_, v) =>
-                dispatch(updateFormData({ country: v?.label }))
+                dispatch(updateFormData({ country: v?.label ?? "" }))
               }
               renderInput={(params) => (
                 <TextField {...params} label="Country" />
@@ -94,24 +116,23 @@ const UserDetail = () => {
           <p className="text-sm font-bold">ประเภทเอกสารการเดินทาง</p>
 
           <div className="grid grid-cols-3 gap-4">
-            <Autocomplete
-              disablePortal
-              options={type}
+            <Select
+              displayEmpty
               value={formData.identityType.type}
-              onChange={(_, v) =>
+              onChange={(e) =>
                 dispatch(
                   updateFormData({
                     identityType: {
                       ...formData.identityType,
-                      type: v ?? "",
+                      type: e.target.value,
                     },
                   })
                 )
               }
-              renderInput={(params) => (
-                <TextField {...params} label="Identity Card/Passport" />
-              )}
-            />
+            >
+              <MenuItem value="id_card">Identity Card</MenuItem>
+              <MenuItem value="passport">Passport</MenuItem>
+            </Select>
 
             <TextField
               id="number"
@@ -119,7 +140,7 @@ const UserDetail = () => {
               variant="outlined"
               value={formData.identityType.number}
               className={
-                formData.identityType.type == "Passport" ? "" : "col-span-2"
+                formData.identityType.type == "passport" ? "" : "col-span-2"
               }
               onChange={(e) =>
                 dispatch(
@@ -133,7 +154,7 @@ const UserDetail = () => {
               }
             />
 
-            {formData.identityType.type === "Passport" ? (
+            {formData.identityType.type === "passport" ? (
               <TextField
                 id="outdate"
                 label="Out Date"

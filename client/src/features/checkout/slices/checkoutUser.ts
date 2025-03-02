@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { checkoutUserForm } from '../validation';
 
 interface CheckoutUserState {
     step: number;
@@ -14,6 +15,7 @@ interface CheckoutUserState {
             out_date: string,
         };
     };
+    isValid: boolean;
 }
 
 const initialState = {
@@ -25,11 +27,12 @@ const initialState = {
         country: "",
         birthday: "",
         identityType: {
-            type: "",
+            type: "id_card",
             number: "",
             out_date: "",
         },
     },
+    isValid: false,
 } as CheckoutUserState;
 
 const checkoutUserSlice = createSlice({
@@ -41,9 +44,17 @@ const checkoutUserSlice = createSlice({
         },
         updateFormData: (state, action: PayloadAction<Partial<CheckoutUserState["formData"]>>) => {
             state.formData = { ...state.formData, ...action.payload };
+            state.isValid = checkoutUserForm.safeParse(state.formData).success;
+
+            if (state.formData.identityType.type == "passport") {
+                if (!state.formData.identityType.out_date.trim()) {
+                    state.isValid = false;
+                }
+            }
         },
         resetForm: (state) => {
             state.formData = initialState.formData;
+            state.isValid = false;
         },
     },
 });

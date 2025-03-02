@@ -3,6 +3,7 @@ import random
 
 from typing import Union
 from fastapi import FastAPI
+from datetime import datetime
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -78,7 +79,26 @@ class Seat:
         return self.__price
 
 class Airport:
-    pass
+    def __init__(self, name, address, code):
+        self.__name = name
+        self.__address = address
+        self.__code = code
+
+    @property
+    def get_info(self):
+        return [self.__name, self.__address, self.__code]
+
+    @property
+    def get_name(self):
+        return self.__name
+
+    @property
+    def get_address(self):
+        return self.__address
+    
+    @property
+    def get_code(self):
+        return self.__code
 
 class Aircraft:
     def __init__(self, id, model):
@@ -101,24 +121,58 @@ class Aircraft:
     def get_seats(self):
         return self.__seats
 
-class FlightRoute:
-    def __init__(self, id, origin, destination, status):
+class FlightSchedule:
+    def __init__(self, id, dayOfWeek, departureTime, arriveTime, duration):
         self.__id = id
+        self.__dayOfWeek = dayOfWeek
+        self.__departureTime = departureTime
+        self.__arriveTime = arriveTime
+        self.__duration = duration
+
+    @property
+    def get_info(self):
+        return {
+            "id":self.__id,
+            "dayOfWeek": self.__dayOfWeek,
+            "departure": self.__departureTime,
+            "arrive": self.__arriveTime,
+            "duration":  self.__duration
+        }
+    
+    # def gen_aircraft(self)-> Aircraft:
+    #     model_aircrafts = ["FMS P-51D Mustang", "E-flite F-16 Thunderbirds", "HobbyZone Carbon Cub S2", "Freewing A-10 Thunderbolt II", "Dynam Spitfire Mk IX", "E-flite Extra 300 3D", "VolantexRC Trainstar Ascent", "Freewing F-22 Raptor", "Dancing Wings Piper J-3 Cub", "Skywalker X8"]
+        
+    #     num = random.randint(0,9)
+    #     model = model_aircrafts[num]
+    #     aircarft = Aircraft(f"aircarft_00${num}", model)
+
+    #     return aircarft
+    
+class FlightRoute:
+    def __init__(self, id, origin: Airport, destination:Airport, status, flight_schedule:FlightSchedule, base_price, date):
+        self.__id = id
+        self.__schedule = flight_schedule
         self.__origin = origin
         self.__destination = destination
         self.__status = status
+        self.__base_price = base_price
+        self.__date = date
     
     @property
     def get_id(self):
         return self.__id
+    
+    @property
+    def get_schedule(self):
+        return self.__schedule
 
     @property
     def get_origin(self):
-        return self.__origin
+        return self.__origin.get_info
     
     @property
     def get_destination(self):
-        return self.__destination
+        return self.__destination.get_info
     
     @property
     def get_status(self):
@@ -126,64 +180,41 @@ class FlightRoute:
 
     @property
     def get_price(self):
-        return 1900
+        return self.__base_price
 
-class FlightSchedule:
-    def __init__(self, id, dayOfWeek, departureTime, arriveTime):
-        self.__id = id
-        self.__origin = Airport()
-        self.__destination = Airport()
-        self.__dayOfWeek = dayOfWeek
-        self.__departureTime = departureTime
-        self.__arriveTime = arriveTime
+    @property
+    def get_tax(self):
+        return round(self.__base_price * 0.15, 2)
     
-    def gen_aircraft(self)-> Aircraft:
-        model_aircrafts = ["FMS P-51D Mustang", "E-flite F-16 Thunderbirds", "HobbyZone Carbon Cub S2", "Freewing A-10 Thunderbolt II", "Dynam Spitfire Mk IX", "E-flite Extra 300 3D", "VolantexRC Trainstar Ascent", "Freewing F-22 Raptor", "Dancing Wings Piper J-3 Cub", "Skywalker X8"]
-        
-        num = random.randint(0,9)
-        model = model_aircrafts[num]
-        aircarft = Aircraft(f"aircarft_00${num}", model)
-
-        return aircarft
-
-# class Flight:
-#     #  def __init__(self, id, schedule: FlightSchedule, aircarft: Aircraft):
-#     def __init__(self, id):
-#         self.__id = id
-#         self.__schedule = self.gen_schedule()
-
-#     def gen_schedule(self) -> FlightSchedule:
-#         flightRoute = FlightRoute(f"route_${self.__id}", "BKK", "CNX", FlightRouteStatus.BOARDING)
-#         schedule = FlightSchedule(f"schedule_${self.__id}", flightRoute, ["mon","tues","fri"], "15:00", "17:00")
-
-#         return schedule
-            
-
-#     @property
-#     def get_id(self):
-#         return self.__id
-    
-#     @property
-#     def get_schedule(self):
-#         return self.__schedule
+    @property
+    def get_date(self):
+        return self.__date
 
 class Service:
-
-    @classmethod
     def get_all_services():
-        return [Food, Package, Insurance, Assistance]
+        return {
+            "food": Food.get_service(),
+            "package": Package.get_service(),
+            "insurance": Insurance.get_service(),
+            "assistance": Assistance.get_service()
+        }
+        # return [Food.get_service(), Package.get_service(), Insurance.get_service(), Assistance.get_service()]
 
 class Food(Service):
-    pass
+    def get_service():
+        return ["Mama", "Coke"]
 
 class Package(Service):
-    pass
+    def get_service():
+        return []
 
 class Insurance(Service):
-    pass
+    def get_service():
+        return []
 
 class Assistance(Service):
-    pass
+    def get_service():
+        return []
 
 class Passenger:
     def __init__(self, id):
@@ -231,9 +262,19 @@ class Airlinewa:
         flight = self.get_flight_instance(flight_route_id)
 
         if flight == None:
-            return None
-
-        return [flight.get_id, flight.get_price, flight.get_origin, flight.get_destination, Service.get_all_services]
+            return {"error": "Can't find id"}
+        
+        return {
+            "id": flight.get_id,
+            "info":  {
+                "origin": flight.get_origin,
+                "destination": flight.get_destination,
+                "schedule": flight.get_schedule.get_info,
+                "date": flight.get_date
+            },
+            "price":[flight.get_price, flight.get_tax],
+            "service": Service.get_all_services()
+        }
     
     def api_booking(self, user_id, flight_route_id, list_passenger:list, list_service: list[Service] = None):
         user = self.get_user(user_id)
@@ -260,6 +301,7 @@ class Airlinewa:
 
     def get_flight_instance(self, flight_instance_id) -> FlightRoute:
         for flight in self.__fight_route_list:
+            print(flight.get_id, flight_instance_id)
             if flight.get_id == flight_instance_id:
                 return flight
 
@@ -292,7 +334,13 @@ def initialize() -> Airlinewa:
     airline = Airlinewa()
     
     airline.set_user(gen_users())
-    airline.set_flight([FlightRoute(f"flight_00{i}", "BKK", "CNX", "OK") for i in range(9)])
+
+    bkk = Airport("Bangkok", "Suvarnabhumi Airport", "BKK")
+    cnx = Airport("ChaingMai", "ChaingMai Airport", "CNX")
+
+    sche_001 = FlightSchedule("sche_001", {1, 2, 3}, "18:00", "19:40", 100)
+
+    airline.set_flight([FlightRoute(f"AW 010{i}", bkk, cnx, "OK", sche_001, 1500, datetime.today().isoformat()) for i in range(9)])
 
     return airline
 
@@ -309,7 +357,7 @@ class APICheckout(BaseModel):
 async def api_checkout(model: APICheckout):
     res = airline.api_checkout(model.id)
 
-    return {"res": res}
+    return res
 
 class GetPaymentIdentity(BaseModel):
     type: str

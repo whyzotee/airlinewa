@@ -4,43 +4,75 @@ import {
   AccordionSummary,
   Autocomplete,
   Divider,
+  MenuItem,
+  Select,
   TextField,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../app/store";
-import { updateFormData } from "../app/reducers/checkoutContact";
+import { RootState } from "../../../app/store";
+import { updateFormData } from "../slices/checkoutContact";
 
-const type = ["Mr", "Mrs", "Miss", "Ms"];
 const contryCode = ["TH +66", "CN +88"];
 
 const CheckoutContact = () => {
   const dispatch = useDispatch();
-  const dataContact = useSelector((state: RootState) => state.checkoutContact);
+  const checkout = useSelector((state: RootState) => state.checkoutContact);
 
   return (
-    <Accordion slotProps={{ transition: { unmountOnExit: true } }}>
+    <Accordion
+      slotProps={{ transition: { unmountOnExit: true } }}
+      elevation={0}
+      sx={{
+        border: 2,
+        borderRadius: 2,
+        borderColor: "#00000015",
+        "&.MuiAccordion-root:before": {
+          backgroundColor: "white",
+        },
+      }}
+    >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <h1>รายละเอียดการติดต่อ</h1>
+        <div className="w-full flex justify-between items-center">
+          <h1>รายละเอียดการติดต่อ</h1>
+          <div
+            className={`text-sm text-white rounded-lg px-2 mr-4 ${
+              checkout.isValid ? "bg-green-200" : "bg-red-200"
+            }`}
+          >
+            <p className={checkout.isValid ? "text-green-500" : "text-red-500"}>
+              {checkout.isValid ? "เสร็จสิ้น" : "ยังไม่เสร็จ"}
+            </p>
+          </div>
+        </div>
       </AccordionSummary>
 
       <AccordionDetails>
         <Divider />
         <div className="mt-4 grid grid-cols-6 gap-4">
-          <Autocomplete
-            disablePortal
-            options={type}
-            value={dataContact.prefix}
-            onChange={(_, v) => dispatch(updateFormData({ prefix: v! }))}
-            renderInput={(params) => <TextField {...params} label="Prefix" />}
-            className="col-span-1"
-          />
+          <Select
+            value={checkout.contactData.prefix}
+            onChange={(e) =>
+              dispatch(updateFormData({ prefix: e.target.value }))
+            }
+            displayEmpty
+            inputProps={{ "aria-label": "Without label" }}
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            <MenuItem value="mr">Mr</MenuItem>
+            <MenuItem value="mrs">Mrs</MenuItem>
+            <MenuItem value="miss">Miss</MenuItem>
+            <MenuItem value="ms">Ms</MenuItem>
+          </Select>
+
           <TextField
             id="contact_name"
             label="Name"
             variant="outlined"
             className="col-span-2"
-            value={dataContact.name}
+            value={checkout.contactData.name}
             onChange={(e) => dispatch(updateFormData({ name: e.target.value }))}
           />
           <TextField
@@ -48,7 +80,7 @@ const CheckoutContact = () => {
             label="Lastname"
             variant="outlined"
             className="col-span-3"
-            value={dataContact.lastname}
+            value={checkout.contactData.lastname}
             onChange={(e) =>
               dispatch(updateFormData({ lastname: e.target.value }))
             }
@@ -58,7 +90,7 @@ const CheckoutContact = () => {
             label="E-Mail"
             variant="outlined"
             className="col-span-2"
-            value={dataContact.email}
+            value={checkout.contactData.email}
             onChange={(e) =>
               dispatch(updateFormData({ email: e.target.value }))
             }
@@ -66,7 +98,7 @@ const CheckoutContact = () => {
           <Autocomplete
             disablePortal
             options={contryCode}
-            value={dataContact.countryCode}
+            value={checkout.contactData.countryCode}
             onChange={(_, v) => dispatch(updateFormData({ countryCode: v! }))}
             renderInput={(params) => (
               <TextField {...params} label="Contry Code" />
@@ -74,13 +106,16 @@ const CheckoutContact = () => {
             className="col-span-2"
           />
           <TextField
-            // error={dataContact.phoneNumber != ""}
             id="contact_phonenumber"
             label="Phone Number"
             variant="outlined"
             className="col-span-2"
+            value={checkout.contactData.phoneNumber}
+            onChange={(e) =>
+              dispatch(updateFormData({ phoneNumber: e.target.value }))
+            }
           />
-          <h1 className="text-xs text-gray-400 col-span-5">
+          <h1 className="text-xs text-gray-500 col-span-5">
             เนื่องจากเราเป็นเพียงผู้ให้บริการแพลตฟอร์มการสำรองที่นั่ง
             จึงไม่สามารถออกใบกำกับภาษีเพื่อจุดประสงค์ต่างๆ ได้
             กรุณาตรวจสอบข้อมูลเพิ่มเติมได้จาก T&C ของเราและ FAQ
