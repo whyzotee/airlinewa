@@ -2,7 +2,6 @@ import uuid
 import random
 from datetime import datetime
 
-
 class Account:
     def __init__(self):
         self.__email = None
@@ -233,6 +232,7 @@ class Airlinewa:
         self.__user_list: list[User] = []
         self.__fight_route_list: list[FlightRoute] = []
         self.__booking_list: list[Booking] = []
+        self.__airport_list: list[Airport] = []
 
     def set_user(self, list_user: list[User]):
         self.__user_list = list_user
@@ -240,12 +240,29 @@ class Airlinewa:
     def set_flight(self, list_flight_route: list[FlightRoute]):
         self.__fight_route_list = list_flight_route
 
+    def set_airport(self, list_airport: list[Airport]):
+        self.__airport_list = list_airport
+
     # ============================ API ============================ #
+    def api_get_all_airport(self):
+        return_list = []
+        for airport in self.__airport_list:
+            return_list.append({"name":airport.get_name, "address":airport.get_address, "code":airport.get_code})
+
+        return {"res": "ok", "airport_list": return_list}
+
+    def api_search_flight(self, src, dest):
+        for flight in self.__fight_route_list:
+            if flight.get_origin == src and flight.get_origin == dest:
+                return {"res": "ok", "id": flight.get_id}
+            
+        return {"error": "Can't search flight"}
+
     def api_login(self, username, password):
         for user in self.__user_list:
             response = user.get_accout.login(username, password)
             if response:
-                return  {"res": "OK", "id": user.get_id} 
+                return  {"res": "ok", "id": user.get_id} 
             
         return {"error": "Username or password wrong, please try again."}
 
@@ -294,6 +311,16 @@ class Airlinewa:
         for flight in self.__fight_route_list:
             if flight.get_id == flight_instance_id:
                 return flight
+    
+    def get_airport(self, code) -> Airport | None:
+        for airport in self.__airport_list:
+            if airport.get_code == code:
+                return airport
+            
+        return None
+
+    def get_all_airport(self) -> list[Airport]:
+        return self.__airport_list
 
     def create_booking(self, user_instance: User, flight_route: FlightRoute, list_pssenger: list[Passenger], list_service: list[Service] | None) -> Booking:
         booking_instance = Booking("booking_test_001", user_instance, flight_route, list_pssenger, list_service)
@@ -320,10 +347,39 @@ def gen_users():
 
     return gen_user
 
+def gen_airport():
+    list_airport_name = [
+        "Bangkok", "Bangkok", "Chiang Mai", "Phuket", "Krabi",
+        "Surat Thani", "Hat Yai", "Ubon Ratchathani", "Udon Thani", "Khon Kaen",
+        "Chiang Rai", "Buri Ram", "Loei", "Pattaya", "Trang",
+        "Nakhon Si Thammarat", "Roi Et", "Sakon Nakhon", "Nakhon Phanom", "Mae Hong Son"
+    ]
+
+    list_airport_addr = [
+        "Suvarnabhumi Airport", "Don Mueang International Airport", "Chiang Mai International Airport",
+        "Phuket International Airport", "Krabi International Airport",
+        "Surat Thani International Airport", "Hat Yai International Airport", "Ubon Ratchathani Airport",
+        "Udon Thani International Airport", "Khon Kaen Airport",
+        "Mae Fah Luang - Chiang Rai International Airport", "Buri Ram Airport", "Loei Airport",
+        "U-Tapao Rayong-Pattaya International Airport", "Trang Airport",
+        "Nakhon Si Thammarat Airport", "Roi Et Airport", "Sakon Nakhon Airport",
+        "Nakhon Phanom Airport", "Mae Hong Son Airport"
+    ]
+
+    list_airport_code = [
+        "BKK", "DMK", "CNX", "HKT", "KBV",
+        "URT", "HDY", "UBP", "UTH", "KKC",
+        "CEI", "BFV", "LOE", "UTP", "TST",
+        "NST", "ROI", "SNO", "KOP", "HGN"
+    ]
+
+    return [Airport(list_airport_name[i], list_airport_addr[i], list_airport_code[i]) for i in range(20)]
+
 def initialize() -> Airlinewa:
     airline = Airlinewa()
     
     airline.set_user(gen_users())
+    airline.set_airport(gen_airport())
 
     bkk = Airport("Bangkok", "Suvarnabhumi Airport", "BKK")
     cnx = Airport("ChaingMai", "ChaingMai Airport", "CNX")
@@ -398,3 +454,7 @@ def get_payment(model: GetPayment):
 @app.post("/api_login")
 def login(model: LoginModel):
     return airline.api_login(model.username, model.password)
+
+@app.get("/api_get_airport")
+def get_airport():
+    return airline.api_get_all_airport()
