@@ -1,15 +1,15 @@
 # airlinewa
 
-To install dependencies:
+This project make for oop in practice 2/2567
+
+To run webite:
 
 ```bash
-bun install
+bun run web
 ```
 
-To run:
+To run backend service:
 
 ```bash
-bun run main.ts
+bun run api
 ```
-
-This project was created using `bun init` in bun v1.2.2. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.

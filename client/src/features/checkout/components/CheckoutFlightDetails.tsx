@@ -66,7 +66,7 @@ const FlightDetail = ({ id, info }: { id: string; info: Info }) => {
             {info.origin[2]} - {info.destination[2]}
           </h1>
           <p className="text-sm text-gray-500">
-            {t_day} {day} {month} |{schedule.departure}-{schedule.arrive} |
+            {t_day} {day} {month} |{schedule.departure} - {schedule.arrive} |
             เที่ยวบินตรง
           </p>
         </div>

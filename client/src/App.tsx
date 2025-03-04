@@ -3,8 +3,11 @@
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/home";
-import CheckOut from "./pages/checkout";
+import Login from "./pages/login";
+import Flight from "./pages/flight";
 import Payment from "./pages/payment";
+import Register from "./pages/register";
+import CheckOut from "./pages/checkout";
 
 function App() {
   // const [isOpen, setIsOpen] = useState(false);
@@ -16,6 +19,10 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/checkout" element={<CheckOut />} />
         <Route path="/payment" element={<Payment />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/flight" element={<Flight />} />
+
         {/* 
         <Route path="/search-results" element={<SearchResults />} />
        

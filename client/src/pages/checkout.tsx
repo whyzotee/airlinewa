@@ -19,12 +19,12 @@ const PathAndTimeout = () => {
           รายละเอียดผู้โดยสาร
         </Typography>
       </Breadcrumbs>
-      <span className="flex gap-1 text-sm">
+      {/* <span className="flex gap-1 text-sm">
         <p className="text-green-800">{"08"}</p>
         min
         <p className="text-green-800">{"34"}</p>
         sec left
-      </span>
+      </span> */}
     </div>
   );
 };

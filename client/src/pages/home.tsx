@@ -1,43 +1,28 @@
 // import { useState } from "react";
-import axios from "axios";
+import toast from "react-hot-toast";
+import { delay } from "../app/function";
 import logo from "/logo.jpg";
 import preview from "/preview.webm";
 import { Avatar, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-import toast from "react-hot-toast";
-import { delay } from "../app/function";
-
 const Home = () => {
   const navigate = useNavigate();
 
-  const callAPI = async () => {
-    await delay(1000);
-    const response = await axios.post("http://127.0.0.1:8000/api_checkout", {
-      id: "AW 0101",
+  const dummyGetFlight = async () => {
+    toast.promise(delay(1000), {
+      loading: "Getting flight....",
+      success: () => {
+        navigate("/flight");
+        return "Founded";
+      },
+      error: () => "Error!",
     });
-
-    const data = response.data;
-
-    if (data.error != null) throw new Error(data.error);
-
-    console.log(data);
-
-    return data;
   };
 
-  const handleClick = async () => {
-    toast.promise(callAPI(), {
-      loading: "Loading...",
-      success: (data) => {
-        navigate(`/checkout`, { state: data });
-        return `Founded`;
-      },
-      error: (err) => {
-        console.log(err);
-        return err.message;
-      },
-    });
+  const logoutBTN = () => {
+    localStorage.removeItem("token");
+    location.reload();
   };
 
   return (
@@ -69,11 +54,24 @@ const Home = () => {
           variant="outlined"
           color="warning"
           className="text-white border border-white rounded-lg cursor-pointer"
-          onClick={handleClick}
+          onClick={dummyGetFlight}
         >
           Fly Now, Book Here
         </Button>
 
+        {localStorage.getItem("token") != null ? (
+          <>
+            <p className="text-white">{localStorage.getItem("token")}</p>
+            <Button
+              variant="outlined"
+              color="warning"
+              className="text-white border border-white rounded-lg cursor-pointer"
+              onClick={logoutBTN}
+            >
+              Logout
+            </Button>
+          </>
+        ) : null}
         {/* <Button
           variant="outlined"
           className="text-white border border-white rounded-lg cursor-pointer"
