@@ -1,10 +1,10 @@
+import { LOGO_PATH } from "@/utils";
 import { Avatar, Button } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { delay } from "../app/function";
 import { APIGetAirport } from "../services/home";
-import { LOGO_PATH } from "@/utils";
 
 const HomeDrawer = lazy(() => import("@/components/HomeDrawer"));
 

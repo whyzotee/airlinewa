@@ -3,11 +3,12 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev --filter=web",
+    "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "tapi": "cd apps/server && fastapi dev main.py"
+    "web": "cd apps/web && pnpm dev",
+    "api": "cd apps/server && fastapi dev main.py"
   },
   "devDependencies": {
     "prettier": "^3.5.3",

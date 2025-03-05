@@ -75,3 +75,7 @@ def get_airport():
 @app.get("/api_test")
 def get_test():
     return {"res": "test" }
+
+@app.get("/api_search_flight")
+def get_flight(src: str, dest: str, date: str):
+    return airline.api_search_flight(src, dest, date)
