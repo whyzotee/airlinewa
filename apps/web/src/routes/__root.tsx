@@ -4,20 +4,13 @@ import { Fragment } from "react";
 
 type Context = {
   queryClient: QueryClient;
-  user: {
-    id: string;
+  auth: {
+    userId: string;
+    name: string;
   } | null;
-  token: string | null;
 };
 
 export const Route = createRootRouteWithContext<Context>()({
-  loader: () => {
-    const token = localStorage.getItem("token");
-    console.debug(token);
-    // if(token) {
-    //   context.
-    // }
-  },
   component: RootComponent,
 });
 

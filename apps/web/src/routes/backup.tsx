@@ -6,7 +6,7 @@ import { APIGetAirport } from "../services/home";
 
 const HomeDrawer = lazy(() => import("@/components/HomeDrawer"));
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/backup")({
   component: RouteComponent,
 });
 

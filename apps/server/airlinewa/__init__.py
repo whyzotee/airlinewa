@@ -255,8 +255,8 @@ class Airlinewa:
 
     def gen_airport():
         list_airport_name = [
-            "Bangkok",
-            "Bangkok",
+            "Bangkok (BKK)",
+            "Bangkok (DMK)",
             "Chiang Mai",
             "Phuket",
             "Krabi",

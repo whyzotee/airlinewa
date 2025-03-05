@@ -13,6 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as BackupImport } from './routes/backup'
 import { Route as AuthRouteImport } from './routes/auth/route'
 import { Route as AppRouteImport } from './routes/app/route'
 import { Route as IndexImport } from './routes/index'
@@ -32,6 +33,12 @@ const FlightLazyRoute = FlightLazyImport.update({
   path: '/flight',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/flight.lazy').then((d) => d.Route))
+
+const BackupRoute = BackupImport.update({
+  id: '/backup',
+  path: '/backup',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const AuthRouteRoute = AuthRouteImport.update({
   id: '/auth',
@@ -98,6 +105,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/backup': {
+      id: '/backup'
+      path: '/backup'
+      fullPath: '/backup'
+      preLoaderRoute: typeof BackupImport
       parentRoute: typeof rootRoute
     }
     '/flight': {
@@ -172,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
+  '/backup': typeof BackupRoute
   '/flight': typeof FlightLazyRoute
   '/app/checkout': typeof AppCheckoutRoute
   '/app/payment': typeof AppPaymentRoute
@@ -183,6 +198,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
+  '/backup': typeof BackupRoute
   '/flight': typeof FlightLazyRoute
   '/app/checkout': typeof AppCheckoutRoute
   '/app/payment': typeof AppPaymentRoute
@@ -195,6 +211,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
+  '/backup': typeof BackupRoute
   '/flight': typeof FlightLazyRoute
   '/app/checkout': typeof AppCheckoutRoute
   '/app/payment': typeof AppPaymentRoute
@@ -208,6 +225,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
+    | '/backup'
     | '/flight'
     | '/app/checkout'
     | '/app/payment'
@@ -218,6 +236,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
+    | '/backup'
     | '/flight'
     | '/app/checkout'
     | '/app/payment'
@@ -228,6 +247,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
+    | '/backup'
     | '/flight'
     | '/app/checkout'
     | '/app/payment'
@@ -240,6 +260,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
+  BackupRoute: typeof BackupRoute
   FlightLazyRoute: typeof FlightLazyRoute
 }
 
@@ -247,6 +268,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
+  BackupRoute: BackupRoute,
   FlightLazyRoute: FlightLazyRoute,
 }
 
@@ -263,6 +285,7 @@ export const routeTree = rootRoute
         "/",
         "/app",
         "/auth",
+        "/backup",
         "/flight"
       ]
     },
@@ -282,6 +305,9 @@ export const routeTree = rootRoute
         "/auth/login",
         "/auth/register"
       ]
+    },
+    "/backup": {
+      "filePath": "backup.tsx"
     },
     "/flight": {
       "filePath": "flight.lazy.tsx"

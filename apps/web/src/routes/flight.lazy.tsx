@@ -1,7 +1,9 @@
+import { useAuthStore } from "@/lib/zustand";
 import { delay, openWindow } from "@/app/function";
 import { APICheckout } from "@/services/checkout";
 import { APISearchFlight } from "@/services/flight";
 import { Button, Card, CardContent, Typography } from "@mui/material";
+
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
 
@@ -12,8 +14,10 @@ export const Route = createLazyFileRoute("/flight")({
 });
 
 function RouteComponent() {
-  const { token } = Route.useRouteContext();
   const navigate = Route.useNavigate();
+
+  const authStore = useAuthStore();
+
   const [flights, setFlights] = useState([]);
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,10 +33,10 @@ function RouteComponent() {
     fetchFlights("DMK", "KOP", "2025-03-11");
   }, ["DMK", "KOP", "2025-03-11"]);
 
-
   const handleClick = useCallback(async () => {
-    if (!token) {
+    if (!authStore.auth) {
       toast.error("Please login!");
+
       navigate({
         to: "/auth/login",
       });
@@ -54,7 +58,7 @@ function RouteComponent() {
     //     }
     //   }
     // }, 500);
-  }, [navigate, token]);
+  }, [authStore.login, navigate]);
 
   const callAPI = () => {
     toast.promise(APICheckout(), {
