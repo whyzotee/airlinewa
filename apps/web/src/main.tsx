@@ -1,42 +1,17 @@
 import "./styles.css";
-import App from "./App.tsx";
+
 import { createRoot } from "react-dom/client";
+import App from "./App.tsx";
 
-import { store } from "./app/store.ts";
-import { Provider } from "react-redux";
-import { Toaster } from "react-hot-toast";
-import { createTheme, ThemeProvider } from "@mui/material";
+import { StrictMode } from "react";
 
-const theme = createTheme({
-  typography: {
-    fontFamily: "Noto Sans Thai, sans-serif",
-  },
-  palette: {
-    primary: {
-      main: "#ed6c02",
-    },
-  },
-  components: {
-    MuiCssBaseline: {
-      styleOverrides: `
-        @font-face {
-            font-family: "Noto Sans Thai", sans-serif;
-            font-optical-sizing: auto;
-            font-weight: <weight>;
-            font-style: normal;
-            font-variation-settings:
-              "wdth" 100;
-        }
-      `,
-    },
-  },
-});
+const container = document.getElementById("root");
+if (container) {
+  const root = createRoot(container);
 
-createRoot(document.getElementById("root")!).render(
-  <Provider store={store}>
-    <ThemeProvider theme={theme}>
+  root.render(
+    <StrictMode>
       <App />
-      <Toaster position="bottom-right" />
-    </ThemeProvider>
-  </Provider>
-);
+    </StrictMode>
+  );
+}
