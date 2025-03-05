@@ -1,6 +1,6 @@
-from user import User
-from flight import FlightRoute
-from passenger import Passenger
+from .user import User
+from .flight import FlightRoute
+from .passenger import Passenger
 
 class Booking:
     # def __init__(self, id, user:User, flight_instance: Flight, ticket, payment, passenger:list[Passenger],service):

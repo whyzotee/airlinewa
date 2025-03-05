@@ -1,4 +1,4 @@
-from air import Airport
+from .air import Airport
 
 class FlightSchedule:
     def __init__(self, id, dayOfWeek, departureTime, arriveTime, duration):
