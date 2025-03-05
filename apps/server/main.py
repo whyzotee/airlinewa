@@ -71,3 +71,7 @@ def login(model: LoginModel):
 @app.get("/api_get_airport")
 def get_airport():
     return airline.api_get_all_airport()
+
+@app.get("/api_test")
+def get_test():
+    return {"res": "test" }

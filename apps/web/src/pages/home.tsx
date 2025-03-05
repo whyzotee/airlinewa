@@ -196,7 +196,7 @@ const Home = () => {
           color="warning"
           className="text-white border border-white rounded-lg cursor-pointer"
           // onClick={dummyGetFlight}
-          onClick={() => setIsOpen(true)}
+          onClick={() => navigate("/flight")}
         >
           Fly Now, Book Here
         </Button>
