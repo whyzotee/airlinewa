@@ -1,3 +1,4 @@
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Accordion,
   AccordionDetails,
@@ -8,14 +9,13 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
 import { updateFormData } from "../slices/checkoutContact";
 
 const contryCode = ["TH +66", "CN +88"];
 
-const CheckoutContact = () => {
+export default function CheckoutContact() {
   const dispatch = useDispatch();
   const checkout = useSelector((state: RootState) => state.checkoutContact);
 
@@ -124,6 +124,4 @@ const CheckoutContact = () => {
       </AccordionDetails>
     </Accordion>
   );
-};
-
-export default CheckoutContact;
+}
