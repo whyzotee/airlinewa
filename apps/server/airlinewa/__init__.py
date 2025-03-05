@@ -31,13 +31,46 @@ class Airlinewa:
 
         return {"res": "ok", "airport_list": return_list}
 
-    def api_search_flight(self, src, dest):
-        for flight in self.__fight_route_list:
-            if flight.get_origin == src and flight.get_origin == dest:
-                return {"res": "ok", "id": flight.get_id}
-            
-        return {"error": "Can't search flight"}
+    def api_search_flight(self, src:str, dest:str, date:str):
+        if not src or not dest or not date:
+            return {"error": "Missing required parameters"}
 
+        src = src.upper()
+        dest = dest.upper()
+
+        flights = []
+
+        print(src, dest, date)
+
+        for flight in self.__fight_route_list:
+            flight_origin = flight.get_origin
+            flight_destination = flight.get_destination
+            flight_date = flight.get_date
+            flight_status = flight.get_status
+
+            origin_upper = flight_origin[-1].upper()
+            destination_upper = flight_destination[-1].upper()
+        
+
+            if origin_upper == src and destination_upper == dest and flight_status == "OK":
+                flights.append({
+                    "id": str(flight.get_id),
+                    "origin": flight.get_origin,
+                    "destination": flight.get_destination,
+                    "schedule": {
+                        "departure": flight.get_schedule.get_departure(),
+                        "arrival": flight.get_schedule.get_arrival()
+                    },
+                    "date": flight_date,
+                    "price": flight.get_price,
+                    "status": flight_status
+                })
+        print("flihtttttttttttttttttttttttt",flights)
+        if flights:
+            return {"res": "ok", "flights": flights}
+
+        return {"error": "No flights found"}
+    
     def api_login(self, username, password):
         for user in self.__user_list:
             response = user.get_accout.login(username, password)
@@ -170,7 +203,12 @@ class Airlinewa:
         cnx = Airport("ChaingMai", "ChaingMai Airport", "CNX")
 
         sche_001 = FlightSchedule("sche_001", {1, 2, 3}, "18:00", "19:40", 100)
+        all_airport = airline.get_all_airport()
 
-        airline.set_flight([FlightRoute(f"AW 010{i}", bkk, cnx, "OK", sche_001, 1500, datetime.today().isoformat()) for i in range(9)])
-
+        gen_routeA = [FlightRoute(f"AW 01{i:02d}", all_airport[i], all_airport[19-i], "OK", sche_001, 1500, datetime.today().isoformat()) for i in range(20)]
+        gen_routeB = [FlightRoute(f"AW 02{i:02d}", all_airport[19-i], all_airport[i], "OK", sche_001, 1500, datetime.today().isoformat()) for i in range(20)]
+        airline.set_flight(gen_routeA+ gen_routeB)
+        
+        for i in gen_routeA+ gen_routeB:
+            print(i.get_id, i.get_origin[-1], i.get_destination[-1])
         return airline

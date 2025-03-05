@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { APICheckout } from "../services/checkout";
 import { delay, openWindow } from "../app/function";
+import { APICheckout } from "../services/checkout";
 
 import toast from "react-hot-toast";
 
@@ -47,7 +47,7 @@ const Flight = () => {
 
   return (
     <main className="p-8">
-      <h1>Hello World This is Flight Page</h1>
+      <h1>Test Test</h1>
       <br />
       <Button
         variant="outlined"

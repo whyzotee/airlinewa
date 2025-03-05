@@ -26,7 +26,7 @@ class Airport:
         self.__code = code
 
     @property
-    def get_info(self):
+    def get_info(self) -> list[str]:
         return [self.__name, self.__address, self.__code]
 
     @property
