@@ -1,4 +1,5 @@
 import CheckoutCard from "@/features/checkout/components/CheckoutCard";
+import CheckoutContact from "@/features/checkout/components/CheckoutContact";
 import FlightDetail from "@/features/checkout/components/CheckoutFlightDetails";
 import CheckoutServiceBag from "@/features/checkout/components/CheckoutServiceBag";
 import UserDetail from "@/features/checkout/components/CheckoutUser";
@@ -8,7 +9,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/app/checkout")({
   loader: ({ location }) => {
-    return { data: location.state.data };
+    return { data: location.state };
   },
   component: RouteComponent,
 });
@@ -37,6 +38,8 @@ function RouteComponent() {
   // const data = useLocation().state;
   const { data } = Route.useLoaderData();
 
+  console.log("asdsaaaaaaaaaaaaaaaaaaaaaaaaaaaa", data);
+
   return (
     <main className="font-noto-thai">
       <div className="h-16 p-2 shadow-lg">
@@ -52,7 +55,7 @@ function RouteComponent() {
           <PathAndTimeout />
           <FlightDetail id={data.id} info={data.info} />
           <UserDetail />
-          {/* <CheckoutContact  /> */}
+          <CheckoutContact />
           <h1 className="text-xl">Service</h1>
           <CheckoutServiceBag user={["Adult 1"]} />
         </div>

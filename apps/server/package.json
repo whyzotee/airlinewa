@@ -2,6 +2,6 @@
   "name": "server",
   "private": true,
   "scripts": {
-    "dev": "uvicorn main:app --reload"
+    "dev": "uv run python run.py"
   }
 }

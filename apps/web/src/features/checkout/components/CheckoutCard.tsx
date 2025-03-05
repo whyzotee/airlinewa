@@ -3,8 +3,9 @@ import toast from "react-hot-toast";
 
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
-import { useNavigate } from "react-router-dom";
 import { Button, Card, Divider } from "@mui/material";
+import { useNavigate } from "@tanstack/react-router";
+import { delay } from "@/app/function";
 
 const CheckoutCard = ({ price }: { price: number[] }) => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const CheckoutCard = ({ price }: { price: number[] }) => {
   const dataContact = useSelector((state: RootState) => state.checkoutContact);
 
   const callAPI = async () => {
+    await delay(1000);
     if (!dataUser.isValid) throw new Error("Please fill all the user form");
 
     if (!dataContact.isValid)
@@ -35,7 +37,7 @@ const CheckoutCard = ({ price }: { price: number[] }) => {
     toast.promise(callAPI(), {
       loading: "Loading...",
       success: (data) => {
-        navigate("/payment", { state: data });
+        navigate({ to: "/app/payment", state: data });
         return null;
       },
       error: (err) => {
