@@ -1,14 +1,20 @@
 {
   "name": "airlinewa",
-  "type": "module",
+  "private": true,
   "scripts": {
-    "web": "cd client && bun i && bun run dev",
-    "api": "cd server && fastapi dev main.py"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check-types": "turbo run check-types"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "prettier": "^3.5.3",
+    "turbo": "^2.4.4",
+    "typescript": "5.8.2"
   },
-  "dependencies": {
-    "@base-ui-components/react": "^1.0.0-alpha.6"
+  "packageManager": "pnpm@10.5.2",
+  "engines": {
+    "node": ">=22"
   }
 }
