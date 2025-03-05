@@ -2,3 +2,4 @@
 .sesskey
 __pycache__/
 node_modules
+.turbo
