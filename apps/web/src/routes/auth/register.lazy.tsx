@@ -1,7 +1,8 @@
-import { LOGO_PATH } from "@/utils";
-import { Avatar, Button, TextField } from "@mui/material";
+import { Button, Stack, TextField } from "@mui/material";
+import { useForm } from "@tanstack/react-form";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import toast from "react-hot-toast";
+import { z } from "zod";
 
 export const Route = createLazyFileRoute("/auth/register")({
   component: RouteComponent,
@@ -10,61 +11,137 @@ export const Route = createLazyFileRoute("/auth/register")({
 function RouteComponent() {
   const navigate = Route.useNavigate();
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [conPassword, setConPassword] = useState("");
-
-  const registerBTN = () => {};
+  const form = useForm({
+    defaultValues: {
+      username: "",
+      password: "",
+      confirmPassword: "",
+    },
+    validators: {
+      onChange: z
+        .object({
+          username: z.string().min(4),
+          password: z.string().min(4),
+          confirmPassword: z.string(),
+        })
+        .required()
+        .refine(
+          (values) => {
+            return values.password === values.confirmPassword;
+          },
+          {
+            message: "Passwords must match!",
+            path: ["confirmPassword"],
+          }
+        ),
+    },
+    onSubmit: ({ value }) => {
+      console.debug(value);
+      toast("Function under development!");
+    },
+  });
 
   return (
-    <main className="w-screen h-screen">
-      <div className="min-h-screen flex flex-col justify-center items-center gap-4 p-6">
-        <Avatar
-          className="rounded-xl"
-          alt="log"
-          src={LOGO_PATH}
-          sx={{ width: 96, height: 96 }}
-        />
-        <h1 className="text-3xl font-bold">Sign up</h1>
-        <p className="text-gray-500">free and get any flight after register!</p>
-        <TextField
-          id="username"
-          label="Username"
-          variant="outlined"
-          fullWidth
-          size="small"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <TextField
-          id="password"
-          label="Password"
-          variant="outlined"
-          fullWidth
-          type="password"
-          size="small"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <TextField
-          id="con_password"
-          label="Confirm Password"
-          variant="outlined"
-          fullWidth
-          type="password"
-          size="small"
-          value={conPassword}
-          onChange={(e) => setConPassword(e.target.value)}
-        />
-        <Button
-          variant="contained"
-          disableElevation
-          fullWidth
-          onClick={registerBTN}
-        >
-          Sign up
-        </Button>
+    <>
+      <h1 className="text-3xl font-bold">Register</h1>
+      <p className="text-gray-500">you can continue your flight after log in</p>
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit();
+        }}
+      >
+        <Stack>
+          <form.Field
+            name="username"
+            children={(field) => {
+              const { errors } = field.getMeta();
+              const fieldError = errors.length > 0 ? errors[0] : undefined;
+
+              return (
+                <TextField
+                  id={field.name}
+                  name={field.name}
+                  label="Username"
+                  variant="outlined"
+                  fullWidth
+                  size="small"
+                  autoComplete="username"
+                  value={field.state.value}
+                  onChange={(evt) => field.handleChange(evt.target.value)}
+                  onBlur={field.handleBlur}
+                  error={!!fieldError}
+                  helperText={fieldError && fieldError.message}
+                />
+              );
+            }}
+          />
+
+          <form.Field
+            name="password"
+            children={(field) => {
+              const { errors } = field.getMeta();
+              const fieldError = errors.length > 0 ? errors[0] : undefined;
+
+              return (
+                <TextField
+                  id={field.name}
+                  name={field.name}
+                  label="Password"
+                  variant="outlined"
+                  fullWidth
+                  type="password"
+                  size="small"
+                  autoComplete="new-password"
+                  value={field.state.value}
+                  onChange={(evt) => field.handleChange(evt.target.value)}
+                  onBlur={field.handleBlur}
+                  error={!!fieldError}
+                  helperText={fieldError && fieldError.message}
+                />
+              );
+            }}
+          />
+
+          <form.Field
+            name="confirmPassword"
+            children={(field) => {
+              const { errors } = field.getMeta();
+              const fieldError = errors.length > 0 ? errors[0] : undefined;
+
+              return (
+                <TextField
+                  id={field.name}
+                  name={field.name}
+                  label="Confirm password"
+                  variant="outlined"
+                  fullWidth
+                  type="password"
+                  size="small"
+                  autoComplete="new-password"
+                  value={field.state.value}
+                  onChange={(evt) => field.handleChange(evt.target.value)}
+                  onBlur={field.handleBlur}
+                  error={!!fieldError}
+                  helperText={fieldError && fieldError.message}
+                />
+              );
+            }}
+          />
+
+          <Button
+            variant="contained"
+            disableElevation
+            fullWidth
+            type="submit"
+          >
+            Sign up
+          </Button>
+        </Stack>
+
         <p className="text-gray-500">Already have account?</p>
+
         <Button
           variant="outlined"
           fullWidth
@@ -76,7 +153,7 @@ function RouteComponent() {
         >
           Log in
         </Button>
-      </div>
-    </main>
+      </form>
+    </>
   );
 }
