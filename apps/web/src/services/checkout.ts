@@ -3,10 +3,10 @@ import { delay } from "../app/function";
 
 const API_URL = "http://127.0.0.1:8000";
 
-export const APICheckout = async () => {
+export const APICheckout = async (flight_id: string) => {
     await delay(1000);
     const response = await axios.post(`${API_URL}/api_checkout`, {
-        id: "AW 0101",
+        id: flight_id,
     });
 
     const data = response.data;

@@ -79,6 +79,7 @@ function RouteComponent() {
       </Typography>
 
       <form
+        className="flex flex-col gap-4 max-w-lg w-full"
         onSubmit={(e) => {
           e.preventDefault();
           form.handleSubmit();
@@ -113,6 +114,7 @@ function RouteComponent() {
               fullWidth
               size="small"
               type="password"
+              autoComplete="off"
               disabled={loginMutation.isPending}
               value={field.state.value}
               onChange={(evt) => field.handleChange(evt.target.value)}

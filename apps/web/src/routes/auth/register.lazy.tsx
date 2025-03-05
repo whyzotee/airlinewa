@@ -47,6 +47,7 @@ function RouteComponent() {
       <p className="text-gray-500">you can continue your flight after log in</p>
 
       <form
+        className="flex flex-col gap-4 max-w-lg w-full"
         onSubmit={(e) => {
           e.preventDefault();
           form.handleSubmit();
@@ -130,12 +131,7 @@ function RouteComponent() {
             }}
           />
 
-          <Button
-            variant="contained"
-            disableElevation
-            fullWidth
-            type="submit"
-          >
+          <Button variant="contained" disableElevation fullWidth type="submit">
             Sign up
           </Button>
         </Stack>
