@@ -13,6 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth/route'
 import { Route as AppRouteImport } from './routes/app/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as AppPaymentImport } from './routes/app/payment'
@@ -32,6 +33,12 @@ const FlightLazyRoute = FlightLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/flight.lazy').then((d) => d.Route))
 
+const AuthRouteRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const AppRouteRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
@@ -45,15 +52,15 @@ const IndexRoute = IndexImport.update({
 } as any)
 
 const AuthRegisterLazyRoute = AuthRegisterLazyImport.update({
-  id: '/auth/register',
-  path: '/auth/register',
-  getParentRoute: () => rootRoute,
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => AuthRouteRoute,
 } as any).lazy(() => import('./routes/auth/register.lazy').then((d) => d.Route))
 
 const AuthLoginLazyRoute = AuthLoginLazyImport.update({
-  id: '/auth/login',
-  path: '/auth/login',
-  getParentRoute: () => rootRoute,
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AuthRouteRoute,
 } as any).lazy(() => import('./routes/auth/login.lazy').then((d) => d.Route))
 
 const AppPaymentRoute = AppPaymentImport.update({
@@ -86,6 +93,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRoute
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRoute
+    }
     '/flight': {
       id: '/flight'
       path: '/flight'
@@ -109,17 +123,17 @@ declare module '@tanstack/react-router' {
     }
     '/auth/login': {
       id: '/auth/login'
-      path: '/auth/login'
+      path: '/login'
       fullPath: '/auth/login'
       preLoaderRoute: typeof AuthLoginLazyImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof AuthRouteImport
     }
     '/auth/register': {
       id: '/auth/register'
-      path: '/auth/register'
+      path: '/register'
       fullPath: '/auth/register'
       preLoaderRoute: typeof AuthRegisterLazyImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof AuthRouteImport
     }
   }
 }
@@ -140,9 +154,24 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
   AppRouteRouteChildren,
 )
 
+interface AuthRouteRouteChildren {
+  AuthLoginLazyRoute: typeof AuthLoginLazyRoute
+  AuthRegisterLazyRoute: typeof AuthRegisterLazyRoute
+}
+
+const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthLoginLazyRoute: AuthLoginLazyRoute,
+  AuthRegisterLazyRoute: AuthRegisterLazyRoute,
+}
+
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+  AuthRouteRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
+  '/auth': typeof AuthRouteRouteWithChildren
   '/flight': typeof FlightLazyRoute
   '/app/checkout': typeof AppCheckoutRoute
   '/app/payment': typeof AppPaymentRoute
@@ -153,6 +182,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
+  '/auth': typeof AuthRouteRouteWithChildren
   '/flight': typeof FlightLazyRoute
   '/app/checkout': typeof AppCheckoutRoute
   '/app/payment': typeof AppPaymentRoute
@@ -164,6 +194,7 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
+  '/auth': typeof AuthRouteRouteWithChildren
   '/flight': typeof FlightLazyRoute
   '/app/checkout': typeof AppCheckoutRoute
   '/app/payment': typeof AppPaymentRoute
@@ -176,6 +207,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
+    | '/auth'
     | '/flight'
     | '/app/checkout'
     | '/app/payment'
@@ -185,6 +217,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/app'
+    | '/auth'
     | '/flight'
     | '/app/checkout'
     | '/app/payment'
@@ -194,6 +227,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/app'
+    | '/auth'
     | '/flight'
     | '/app/checkout'
     | '/app/payment'
@@ -205,17 +239,15 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRouteRoute: typeof AppRouteRouteWithChildren
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren
   FlightLazyRoute: typeof FlightLazyRoute
-  AuthLoginLazyRoute: typeof AuthLoginLazyRoute
-  AuthRegisterLazyRoute: typeof AuthRegisterLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
+  AuthRouteRoute: AuthRouteRouteWithChildren,
   FlightLazyRoute: FlightLazyRoute,
-  AuthLoginLazyRoute: AuthLoginLazyRoute,
-  AuthRegisterLazyRoute: AuthRegisterLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -230,9 +262,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/app",
-        "/flight",
-        "/auth/login",
-        "/auth/register"
+        "/auth",
+        "/flight"
       ]
     },
     "/": {
@@ -243,6 +274,13 @@ export const routeTree = rootRoute
       "children": [
         "/app/checkout",
         "/app/payment"
+      ]
+    },
+    "/auth": {
+      "filePath": "auth/route.tsx",
+      "children": [
+        "/auth/login",
+        "/auth/register"
       ]
     },
     "/flight": {
@@ -257,10 +295,12 @@ export const routeTree = rootRoute
       "parent": "/app"
     },
     "/auth/login": {
-      "filePath": "auth/login.lazy.tsx"
+      "filePath": "auth/login.lazy.tsx",
+      "parent": "/auth"
     },
     "/auth/register": {
-      "filePath": "auth/register.lazy.tsx"
+      "filePath": "auth/register.lazy.tsx",
+      "parent": "/auth"
     }
   }
 }
