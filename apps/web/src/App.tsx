@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
 import { client } from "./client/client.gen";
+import { useAuthStore } from "./lib/zustand";
 import { routeTree } from "./routeTree.gen";
 import { theme } from "./theme";
 
@@ -23,8 +24,7 @@ const router = createRouter({
   routeTree,
   context: {
     queryClient: null!,
-    user: null,
-    token: null!,
+    auth: null!,
   },
   defaultStaleTime: 1_500,
 });
@@ -37,6 +37,7 @@ declare module "@tanstack/react-router" {
 
 function App() {
   const queryClient = useMemo(() => new QueryClient(), []);
+  const authStore = useAuthStore();
 
   return (
     <Fragment>
@@ -49,7 +50,7 @@ function App() {
               router={router}
               context={{
                 queryClient,
-                token: localStorage.getItem("token"),
+                auth: authStore.auth,
               }}
             />
 

@@ -3,7 +3,7 @@ import { Fragment } from "react/jsx-runtime";
 
 export const Route = createFileRoute("/app")({
   beforeLoad: ({ context }) => {
-    if (!context.user) {
+    if (!context.auth) {
       throw redirect({
         to: "/auth/login",
       });

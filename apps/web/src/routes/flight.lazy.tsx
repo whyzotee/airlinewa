@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/lib/zustand";
 import { Button } from "@mui/material";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useCallback } from "react";
@@ -8,12 +9,13 @@ export const Route = createLazyFileRoute("/flight")({
 });
 
 function RouteComponent() {
-  const { token } = Route.useRouteContext();
   const navigate = Route.useNavigate();
+  const authStore = useAuthStore();
 
   const handleClick = useCallback(async () => {
-    if (!token) {
+    if (!authStore.auth) {
       toast.error("Please login!");
+
       navigate({
         to: "/auth/login",
       });
@@ -36,7 +38,7 @@ function RouteComponent() {
     //     }
     //   }
     // }, 500);
-  }, [navigate, token]);
+  }, [authStore.login, navigate]);
 
   // const callAPI = () => {
   //   toast.promise(APICheckout(), {
