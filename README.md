@@ -22,5 +22,5 @@ bun run web
 To run backend service:
 
 ```bash
-bun run api
+bun run api....
 ``` -->
