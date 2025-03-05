@@ -2,6 +2,6 @@
   "name": "server",
   "private": true,
   "scripts": {
-    "dev": "uv run python run.py"
+    "dev": "uv run fastapi dev main.py"
   }
 }

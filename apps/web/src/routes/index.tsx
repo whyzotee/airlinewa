@@ -2,8 +2,6 @@ import { LOGO_PATH } from "@/utils";
 import { Avatar, Button } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { delay } from "../app/function";
 import { APIGetAirport } from "../services/home";
 
 const HomeDrawer = lazy(() => import("@/components/HomeDrawer"));
@@ -13,23 +11,11 @@ export const Route = createFileRoute("/")({
 });
 
 function RouteComponent() {
-  // const navigate = Route.useNavigate();
-
-  const dummyGetFlight = async () => {
-    return;
-    toast.promise(delay(1000), {
-      loading: "Getting flight....",
-      success: () => {
-        // navigate("/flight");
-        return "Founded";
-      },
-      error: () => "Error!",
-    });
-  };
+  const [airport, setAirport] = useState<[] | null>(null);
 
   const getAddress = async () => {
     const res = await APIGetAirport();
-    console.log("getAddress", res);
+    setAirport(res.airport_list);
   };
 
   const logoutBTN = () => {
@@ -40,8 +26,8 @@ function RouteComponent() {
   useEffect(() => {
     getAddress();
 
-    dummyGetFlight();
-  });
+    // dummyGetFlight();
+  }, []);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -77,7 +63,6 @@ function RouteComponent() {
           variant="outlined"
           color="warning"
           className="text-white border border-white rounded-lg cursor-pointer"
-          // onClick={dummyGetFlight}
           onClick={() => setIsOpen(true)}
         >
           Fly Now, Book Here
@@ -98,7 +83,7 @@ function RouteComponent() {
         ) : null}
 
         <Suspense>
-          <HomeDrawer open={isOpen} setOpen={setIsOpen} />
+          <HomeDrawer open={isOpen} setOpen={setIsOpen} airports={airport} />
         </Suspense>
       </div>
     </main>
