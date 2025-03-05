@@ -1,8 +1,10 @@
-import { APILogin } from "@/services/authentication";
+import { loginApiLoginPostMutation } from "@/client/@tanstack/react-query.gen";
 import { LOGO_PATH } from "@/utils";
 import { Avatar, Button, TextField } from "@mui/material";
+import { useForm } from "@tanstack/react-form";
+import { useMutation } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 
 export const Route = createLazyFileRoute("/auth/login")({
@@ -11,30 +13,49 @@ export const Route = createLazyFileRoute("/auth/login")({
 
 function RouteComponent() {
   const navigate = Route.useNavigate();
+  const loginMutation = useMutation(loginApiLoginPostMutation());
 
-  const [loading, setLoading] = useState(false);
+  const form = useForm({
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+    onSubmit: ({ value }) => {
+      if (loginMutation.isPending) return;
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+      const { username, password } = value;
 
-  const loginBTNPress = async () => {
-    if (loading) return;
+      const login = loginMutation.mutateAsync({
+        body: {
+          username,
+          password,
+        },
+      });
 
-    setLoading(true);
-    toast.promise(APILogin(username, password), {
-      loading: "Loading...",
-      success: (data) => {
-        localStorage.setItem("token", data);
-        window.close();
-        return null;
-      },
-      error: (err) => {
-        console.log(err);
-        setLoading(false);
-        return err.message;
-      },
-    });
-  };
+      toast.promise(login, {
+        loading: "Loading...",
+        success: (data) => {
+          localStorage.setItem("token", data);
+          navigate({ to: "/flight" });
+
+          return "Login success.";
+        },
+        error: (err) => {
+          const error = err as AxiosError;
+          console.log(error);
+
+          // @ts-ignore
+          const errorDetail = error.response?.data.detail;
+          if (errorDetail === "CREDENTIAL_INVALID") {
+            return "Credential invalid!";
+          }
+
+          return err.message;
+        },
+      });
+      console.debug(value);
+    },
+  });
 
   return (
     <main className="w-screen h-screen">
@@ -49,47 +70,64 @@ function RouteComponent() {
         <p className="text-gray-500">
           you can continue your flight after log in
         </p>
-        <TextField
-          id="username"
-          label="Username"
-          variant="outlined"
-          fullWidth
-          size="small"
-          disabled={loading}
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <TextField
-          id="password"
-          label="Password"
-          variant="outlined"
-          fullWidth
-          type="password"
-          size="small"
-          disabled={loading}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <Button
-          variant="contained"
-          disableElevation
-          fullWidth
-          onClick={loginBTNPress}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            form.handleSubmit();
+          }}
         >
-          Log in
-        </Button>
-        <p className="text-gray-500">No have any account?</p>
-        <Button
-          variant="outlined"
-          fullWidth
-          onClick={() =>
-            navigate({
-              to: "/auth/register",
-            })
-          }
-        >
-          Register
-        </Button>
+          <form.Field
+            name="username"
+            children={(field) => (
+              <TextField
+                id={field.name}
+                name={field.name}
+                label="Username"
+                variant="outlined"
+                fullWidth
+                size="small"
+                disabled={loginMutation.isPending}
+                value={field.state.value}
+                onChange={(evt) => field.handleChange(evt.target.value)}
+                onBlur={field.handleBlur}
+              />
+            )}
+          />
+
+          <form.Field
+            name="password"
+            children={(field) => (
+              <TextField
+                id={field.name}
+                name={field.name}
+                label="Password"
+                variant="outlined"
+                fullWidth
+                size="small"
+                type="password"
+                disabled={loginMutation.isPending}
+                value={field.state.value}
+                onChange={(evt) => field.handleChange(evt.target.value)}
+                onBlur={field.handleBlur}
+              />
+            )}
+          />
+          <Button variant="contained" disableElevation fullWidth type="submit">
+            Log in
+          </Button>
+          <p className="text-gray-500">No have any account?</p>
+          <Button
+            variant="outlined"
+            fullWidth
+            onClick={() =>
+              navigate({
+                to: "/auth/register",
+              })
+            }
+          >
+            Register
+          </Button>
+        </form>
       </div>
     </main>
   );
