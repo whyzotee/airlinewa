@@ -1,7 +1,6 @@
-import { delay, openWindow } from "@/app/function";
-import { APICheckout } from "@/services/checkout";
 import { Button } from "@mui/material";
 import { createLazyFileRoute } from "@tanstack/react-router";
+import { useCallback } from "react";
 import toast from "react-hot-toast";
 
 export const Route = createLazyFileRoute("/flight")({
@@ -9,50 +8,56 @@ export const Route = createLazyFileRoute("/flight")({
 });
 
 function RouteComponent() {
+  const { token } = Route.useRouteContext();
   const navigate = Route.useNavigate();
 
-  const handleClick = () => {
-    if (localStorage.getItem("token") != null) {
-      return callAPI();
+  const handleClick = useCallback(async () => {
+    if (!token) {
+      toast.error("Please login!");
+      navigate({
+        to: "/auth/login",
+      });
+
+      return;
     }
 
-    const loginWindow = openWindow("/login", "Test", 650, 650);
+    // const loginWindow = openWindow("/login", "Test", 650, 650);
 
-    if (loginWindow == null) return;
+    // if (loginWindow == null) return;
 
-    const checkInterval = setInterval(async () => {
-      if (loginWindow && loginWindow.closed) {
-        clearInterval(checkInterval);
+    // const checkInterval = setInterval(async () => {
+    //   if (loginWindow && loginWindow.closed) {
+    //     clearInterval(checkInterval);
 
-        if (localStorage.getItem("token") != null) {
-          toast.success("Login success");
-          await delay(1000);
-          return callAPI();
-        }
-      }
-    }, 500);
-  };
+    //     if (localStorage.getItem("token") != null) {
+    //       toast.success("Login success");
+    //       await delay(1000);
+    //       // return callAPI();
+    //     }
+    //   }
+    // }, 500);
+  }, [navigate, token]);
 
-  const callAPI = () => {
-    toast.promise(APICheckout(), {
-      loading: "Loading...",
-      success: (data) => {
-        // navigate(`/checkout`, { state: data });
-        navigate({
-          to: "/app/checkout",
-          state: {
-            data,
-          },
-        });
+  // const callAPI = () => {
+  //   toast.promise(APICheckout(), {
+  //     loading: "Loading...",
+  //     success: (data) => {
+  //       // navigate(`/checkout`, { state: data });
+  //       navigate({
+  //         to: "/app/checkout",
+  //         state: {
+  //           data,
+  //         },
+  //       });
 
-        return `Founded`;
-      },
-      error: (err) => {
-        console.log(err);
-        return err.message;
-      },
-    });
-  };
+  //       return `Founded`;
+  //     },
+  //     error: (err) => {
+  //       console.log(err);
+  //       return err.message;
+  //     },
+  //   });
+  // };
 
   return (
     <main className="p-8">
