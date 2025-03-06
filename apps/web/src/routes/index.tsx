@@ -1,8 +1,7 @@
 import { LOGO_PATH } from "@/utils";
 import { Avatar, Button } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useEffect, useState } from "react";
-import { APIGetAirport } from "../services/home";
+import { lazy, Suspense, useState } from "react";
 
 const HomeDrawer = lazy(() => import("@/components/HomeDrawer"));
 
@@ -11,23 +10,23 @@ export const Route = createFileRoute("/")({
 });
 
 function RouteComponent() {
-  const [airport, setAirport] = useState<[] | null>(null);
+  // const [airport, setAirport] = useState<[] | null>(null);
 
-  const getAddress = async () => {
-    const res = await APIGetAirport();
-    setAirport(res.airport_list);
-  };
+  // const getAddress = async () => {
+  //   const res = await APIGetAirport();
+  //   setAirport(res.airport_list);
+  // };
 
-  const logoutBTN = () => {
-    localStorage.removeItem("token");
-    location.reload();
-  };
+  // const logoutBTN = () => {
+  //   localStorage.removeItem("token");
+  //   location.reload();
+  // };
 
-  useEffect(() => {
-    getAddress();
+  // useEffect(() => {
+  //   getAddress();
 
-    // dummyGetFlight();
-  }, []);
+  //   // dummyGetFlight();
+  // }, []);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -75,7 +74,7 @@ function RouteComponent() {
               variant="outlined"
               color="warning"
               className="text-white border border-white rounded-lg cursor-pointer"
-              onClick={logoutBTN}
+              // onClick={logoutBTN}
             >
               Logout
             </Button>
@@ -83,7 +82,7 @@ function RouteComponent() {
         ) : null}
 
         <Suspense>
-          <HomeDrawer open={isOpen} setOpen={setIsOpen} airports={airport} />
+          <HomeDrawer open={isOpen} setOpen={setIsOpen} />
         </Suspense>
       </div>
     </main>

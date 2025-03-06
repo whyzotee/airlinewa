@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
-import checkoutUserReducer from '../features/checkout/slices/checkoutUser'
-import checkoutContactReducer from '../features/checkout/slices/checkoutContact'
+import checkoutContactReducer from '../components/checkout/slices/checkoutContact'
+import checkoutUserReducer from '../components/checkout/slices/checkoutUser'
 
 
 export const store = configureStore({

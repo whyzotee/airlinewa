@@ -6,6 +6,12 @@ export const zApiCheckout = z.object({
     id: z.string()
 });
 
+export const zAirport = z.object({
+    name: z.string(),
+    address: z.string(),
+    code: z.string()
+});
+
 export const zGetPayment = z.object({
     name: z.string(),
     lastname: z.string(),
@@ -60,3 +66,5 @@ export const zValidationError = z.object({
     msg: z.string(),
     type: z.string()
 });
+
+export const zApiGetAirportListApiAirportGetResponse = z.array(zAirport);

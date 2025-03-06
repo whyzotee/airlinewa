@@ -4,6 +4,12 @@ export type ApiCheckout = {
     id: string;
 };
 
+export type Airport = {
+    name: string;
+    address: string;
+    code: string;
+};
+
 export type GetPayment = {
     name: string;
     lastname: string;
@@ -62,7 +68,7 @@ export type ApiCheckoutApiCheckoutPostData = {
     body: ApiCheckout;
     path?: never;
     query?: never;
-    url: '/api_checkout';
+    url: '/api/checkout';
 };
 
 export type ApiCheckoutApiCheckoutPostErrors = {
@@ -85,7 +91,7 @@ export type GetPaymentApiPaymentPostData = {
     body: GetPayment;
     path?: never;
     query?: never;
-    url: '/api_payment';
+    url: '/api/payment';
 };
 
 export type GetPaymentApiPaymentPostErrors = {
@@ -104,48 +110,50 @@ export type GetPaymentApiPaymentPostResponses = {
     200: unknown;
 };
 
-export type LoginApiLoginPostData = {
+export type LoginApiAuthLoginPostData = {
     body: LoginModel;
     path?: never;
     query?: never;
-    url: '/api_login';
+    url: '/api/auth/login';
 };
 
-export type LoginApiLoginPostErrors = {
+export type LoginApiAuthLoginPostErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type LoginApiLoginPostError = LoginApiLoginPostErrors[keyof LoginApiLoginPostErrors];
+export type LoginApiAuthLoginPostError = LoginApiAuthLoginPostErrors[keyof LoginApiAuthLoginPostErrors];
 
-export type LoginApiLoginPostResponses = {
+export type LoginApiAuthLoginPostResponses = {
     /**
      * Successful Response
      */
     200: unknown;
 };
 
-export type GetAirportApiGetAirportGetData = {
+export type ApiGetAirportListApiAirportGetData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api_get_airport';
+    url: '/api/airport';
 };
 
-export type GetAirportApiGetAirportGetResponses = {
+export type ApiGetAirportListApiAirportGetResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: Array<Airport>;
 };
+
+export type ApiGetAirportListApiAirportGetResponse = ApiGetAirportListApiAirportGetResponses[keyof ApiGetAirportListApiAirportGetResponses];
 
 export type GetTestApiTestGetData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api_test';
+    url: '/api/test';
 };
 
 export type GetTestApiTestGetResponses = {
@@ -155,7 +163,7 @@ export type GetTestApiTestGetResponses = {
     200: unknown;
 };
 
-export type GetFlightApiSearchFlightGetData = {
+export type ApiSearchFlightApiFlightGetData = {
     body?: never;
     path?: never;
     query: {
@@ -163,19 +171,19 @@ export type GetFlightApiSearchFlightGetData = {
         dest: string;
         date: string;
     };
-    url: '/api_search_flight';
+    url: '/api/flight';
 };
 
-export type GetFlightApiSearchFlightGetErrors = {
+export type ApiSearchFlightApiFlightGetErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type GetFlightApiSearchFlightGetError = GetFlightApiSearchFlightGetErrors[keyof GetFlightApiSearchFlightGetErrors];
+export type ApiSearchFlightApiFlightGetError = ApiSearchFlightApiFlightGetErrors[keyof ApiSearchFlightApiFlightGetErrors];
 
-export type GetFlightApiSearchFlightGetResponses = {
+export type ApiSearchFlightApiFlightGetResponses = {
     /**
      * Successful Response
      */

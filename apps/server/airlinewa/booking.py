@@ -22,3 +22,4 @@ class Booking:
 
     def calculate_payment(self):
         return 100.00
+    

@@ -1,8 +1,8 @@
-import CheckoutCard from "@/features/checkout/components/CheckoutCard";
-import CheckoutContact from "@/features/checkout/components/CheckoutContact";
-import FlightDetail from "@/features/checkout/components/CheckoutFlightDetails";
-import CheckoutServiceBag from "@/features/checkout/components/CheckoutServiceBag";
-import UserDetail from "@/features/checkout/components/CheckoutUser";
+import CheckoutCard from "@/components/checkout/components/CheckoutCard";
+import CheckoutContact from "@/components/checkout/components/CheckoutContact";
+import FlightDetail from "@/components/checkout/components/CheckoutFlightDetails";
+import CheckoutServiceBag from "@/components/checkout/components/CheckoutServiceBag";
+import UserDetail from "@/components/checkout/components/CheckoutUser";
 import { LOGO_PATH } from "@/utils";
 import { Avatar, Breadcrumbs, Typography } from "@mui/material";
 import { createFileRoute, Link } from "@tanstack/react-router";

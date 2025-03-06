@@ -1,14 +1,14 @@
 from datetime import datetime
+import random
 
 from fastapi import HTTPException
 
 from .air import *
-from .booking import Booking
-from .flight import *
-from .passenger import Passenger
-from .service import *
 from .user import *
-
+from .flight import *
+from .service import *
+from .booking import Booking
+from .passenger import Passenger
 
 class Airlinewa:
     def __init__(self):
@@ -27,18 +27,6 @@ class Airlinewa:
         self.__airport_list = list_airport
 
     # ============================ API ============================ #
-    def api_get_all_airport(self):
-        return_list = []
-        for airport in self.__airport_list:
-            return_list.append(
-                {
-                    "name": airport.get_name,
-                    "address": airport.get_address,
-                    "code": airport.get_code,
-                }
-            )
-
-        return {"res": "ok", "airport_list": return_list}
 
     def api_search_flight(self, src:str, dest:str, date:str):
         if not src or not dest or not date:
@@ -154,7 +142,7 @@ class Airlinewa:
 
         return None
 
-    def get_all_airport(self) -> list[Airport]:
+    def get_airport_list(self) -> list[Airport]:
         return self.__airport_list
 
     def create_booking(
@@ -335,16 +323,28 @@ class Airlinewa:
         airline.set_user(self.gen_users())
         airline.set_airport(self.gen_airport())
 
-        bkk = Airport("Bangkok", "Suvarnabhumi Airport", "BKK")
-        cnx = Airport("ChaingMai", "ChaingMai Airport", "CNX")
-
         sche_001 = FlightSchedule("sche_001", {1, 2, 3}, "18:00", "19:40", 100)
-        all_airport = airline.get_all_airport()
+        all_airport = airline.get_airport_list()
 
-        gen_routeA = [FlightRoute(f"AW 01{i:02d}", all_airport[i], all_airport[19-i], "OK", sche_001, 1500, datetime.today().isoformat()) for i in range(20)]
-        gen_routeB = [FlightRoute(f"AW 02{i:02d}", all_airport[19-i], all_airport[i], "OK", sche_001, 1500, datetime.today().isoformat()) for i in range(20)]
-        airline.set_flight(gen_routeA+ gen_routeB)
+        gen_flights = []
+        flight_id = 1
+
+        for l in range(3):
+            for i in range(len(all_airport)):
+                for j in range(len(all_airport)):
+                    if i != j:
+                        flight = FlightRoute(
+                            f"AW {flight_id:03d}",
+                            all_airport[i],
+                            all_airport[j],
+                            "OK",
+                            sche_001,
+                            random.randint(1000, 5000),
+                            datetime.today().isoformat(),
+                        )
+                        gen_flights.append(flight)
+                        flight_id += 1
+
+        airline.set_flight(gen_flights)
         
-        for i in gen_routeA+ gen_routeB:
-            print(i.get_id, i.get_origin[-1], i.get_destination[-1])
         return airline

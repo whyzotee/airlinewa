@@ -4,6 +4,7 @@ import random
 from typing import Union
 from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 # ============================ Initialize Backend ============================ #
@@ -19,6 +20,11 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
 )
+
+class Airport(BaseModel):
+    name: str
+    address: str
+    code: str
 
 class APICheckout(BaseModel):
     id: str
@@ -53,29 +59,46 @@ class LoginModel(BaseModel):
 def read_root():
     return {"Hello World!": "This is root path FastAPI"}
 
-@app.post("/api_checkout")
+@app.post("/api/checkout")
 async def api_checkout(model: APICheckout):
     return airline.api_checkout(model.id)
 
-@app.post("/api_payment")
+@app.post("/api/payment")
 def get_payment(model: GetPayment):
     # print(model)
     # res = airline.api_booking(airline.get_test_user.get_id, "flight_001", [])
     # return {"price": res, "type": "dollar", "q":q}
     return {"res": "OK", "data": model}
 
-@app.post("/api_login")
+@app.post("/api/auth/login")
 def login(model: LoginModel):
     return airline.api_login(model.username, model.password)
 
-@app.get("/api_get_airport")
-def get_airport():
-    return airline.api_get_all_airport()
+@app.get("/api/airport")
+async def api_get_airport_list() -> list[Airport]:
+    airport_list = airline.get_airport_list()
 
-@app.get("/api_test")
+    if len(airport_list) <= 0:
+        raise HTTPException(status_code=404, detail="no flight found")
+
+    airports = []
+    
+    for airport in airport_list:
+        # return_list.append(
+        #         {
+        #             "name": airport.get_name,
+        #             "address": airport.get_address,
+        #             "code": airport.get_code,
+        #         }
+        #     )
+        airports.append(Airport(code=airport.get_code, name=airport.get_name, address=airport.get_address))
+
+    return airports
+
+@app.get("/api/test")
 def get_test():
-    return {"res": "test" }
+    return {"res": "test"}
 
-@app.get("/api_search_flight")
-def get_flight(src: str, dest: str, date: str):
+@app.get("/api/flight")
+def api_search_flight(src: str, dest: str, date: str):
     return airline.api_search_flight(src, dest, date)
