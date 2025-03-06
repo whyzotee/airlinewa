@@ -4,4 +4,3 @@ __pycache__/
 node_modules
 .turbo
 bun.lock
-.vscode
