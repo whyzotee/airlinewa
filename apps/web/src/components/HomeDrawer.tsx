@@ -247,7 +247,7 @@ const HomeDrawer: FC<Prop> = ({ open, setOpen }) => {
               className="px-4 py-2 cursor-pointer"
             >
               {/* {peopleCountAll[0]} ผู้โดยสาร{" "}
-              {flightClass.filter((value) => value.id == seatClass)[0].title} */}
+              {seatsClass.filter((value) => value.id == seatClass)[0].title} */}
             </button>
 
             <Menu
@@ -330,6 +330,7 @@ const HomeDrawer: FC<Prop> = ({ open, setOpen }) => {
               }}
             />
           </div>
+
           <div className="flex lg:flex-row flex-col items-center gap-4">
             <form.Field
               name="destinationCode"
@@ -376,25 +377,26 @@ const HomeDrawer: FC<Prop> = ({ open, setOpen }) => {
               name="originCode"
               children={(field) => {
                 const { value } = field.state;
+
                 const options =
                   airports
-                    .filter((value) => {
-                      if (value == "BKK" && value.code == "DMK") return false;
-                      return value != value.code;
+                    .filter((airport) => {
+                      if (value == "BKK" && airport.code == "DMK") return false;
+                      return value != airport.code;
                     })
-                    .map((value) => value.name) ?? [];
+                    .map((value) => value) ?? [];
 
                 return (
                   <Autocomplete
                     size="small"
                     className="lg:max-w-56 w-full"
                     options={options}
-                    onChange={(_, v: string | null) => {
-                      const airport = airports?.filter(
-                        (value) => value.name == v
-                      );
-                      // if (airport != null) setDestValue(airport[0]?.code);
-                    }}
+                    // onChange={(_, v: string | null) => {
+                    //   const airport = airports?.filter(
+                    //     (value) => value.name == v
+                    //   );
+                    //   // if (airport != null) setDestValue(airport[0]?.code);
+                    // }}
                     renderInput={(params) => (
                       <TextField {...params} label="ถึง" />
                     )}
@@ -410,19 +412,19 @@ const HomeDrawer: FC<Prop> = ({ open, setOpen }) => {
                     label="วันออกเดินทาง"
                     minDate={currentYear}
                     slotProps={{ textField: { size: "small" } }}
-                    value={goDate}
-                    onChange={(value) => setGoDate(value)}
+                    // value={goDate}
+                    // onChange={(value) => setGoDate(value)}
                   />
                 </DemoContainer>
               </LocalizationProvider>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={["DatePicker"]}>
-                  {trip == "go-back" ? (
+                  {"go-back" == "go-back" ? (
                     <DatePicker
                       label="วันออกเดินทาง"
                       minDate={currentYear}
-                      value={backDate}
-                      onChange={(value) => setBackDate(value)}
+                      // value={backDate}
+                      // onChange={(value) => setBackDate(value)}
                       slotProps={{ textField: { size: "small" } }}
                     />
                   ) : null}
@@ -434,8 +436,8 @@ const HomeDrawer: FC<Prop> = ({ open, setOpen }) => {
               size="small"
               variant="outlined"
               className="w-full lg:w-fit"
-              fullWidth={trip != "go-back"}
-              onClick={apiSearchFlight}
+              // fullWidth={trip != "go-back"}
+              // onClick={apiSearchFlight}
             >
               <p className="py-1 px-16">ค้นหา</p>
             </Button>

@@ -10,24 +10,6 @@ export const Route = createFileRoute("/")({
 });
 
 function RouteComponent() {
-  // const [airport, setAirport] = useState<[] | null>(null);
-
-  // const getAddress = async () => {
-  //   const res = await APIGetAirport();
-  //   setAirport(res.airport_list);
-  // };
-
-  // const logoutBTN = () => {
-  //   localStorage.removeItem("token");
-  //   location.reload();
-  // };
-
-  // useEffect(() => {
-  //   getAddress();
-
-  //   // dummyGetFlight();
-  // }, []);
-
   const [isOpen, setIsOpen] = useState(false);
 
   return (
