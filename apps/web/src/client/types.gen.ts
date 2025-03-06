@@ -155,6 +155,33 @@ export type GetTestApiTestGetResponses = {
     200: unknown;
 };
 
+export type GetFlightApiSearchFlightGetData = {
+    body?: never;
+    path?: never;
+    query: {
+        src: string;
+        dest: string;
+        date: string;
+    };
+    url: '/api_search_flight';
+};
+
+export type GetFlightApiSearchFlightGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetFlightApiSearchFlightGetError = GetFlightApiSearchFlightGetErrors[keyof GetFlightApiSearchFlightGetErrors];
+
+export type GetFlightApiSearchFlightGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
 export type ClientOptions = {
     baseURL: 'http://127.0.0.1:8000' | (string & {});
 };
