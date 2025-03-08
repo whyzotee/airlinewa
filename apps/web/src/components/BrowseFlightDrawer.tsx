@@ -1,3 +1,4 @@
+import { Airport } from "@/client";
 import { apiGetAirportListApiAirportGetOptions } from "@/client/@tanstack/react-query.gen";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -12,20 +13,13 @@ import {
   TextField,
 } from "@mui/material";
 
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { useForm } from "@tanstack/react-form";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import dayjs from "dayjs";
-import { FC, useMemo, useState } from "react";
-
-// interface Airport {
-//   name: string;
-//   address: string;
-//   code: string;
-// }
+import { FC, useCallback, useMemo, useState } from "react";
 
 type SeatClass = "economy" | "business" | "eco-premium" | "first-class";
 
@@ -52,8 +46,8 @@ interface Prop {
   // airports: Array<Airport> | null;
 }
 
-const HomeDrawer: FC<Prop> = ({ open, setOpen }) => {
-  const seatsClass = useMemo<{ id: SeatClass; title: string }[]>(
+const BrowseFlightDrawer: FC<Prop> = ({ open, setOpen }) => {
+  const seatClassOptions = useMemo<{ id: SeatClass; title: string }[]>(
     () => [
       { id: "economy", title: "ชั้นประหยัด" },
       { id: "business", title: "ชั้นธุรกิจ" },
@@ -90,8 +84,6 @@ const HomeDrawer: FC<Prop> = ({ open, setOpen }) => {
     apiGetAirportListApiAirportGetOptions()
   );
   const airports = airportsQuery.data;
-
-  // console.debug(airports);
 
   const form = useForm({
     defaultValues: {
@@ -203,6 +195,28 @@ const HomeDrawer: FC<Prop> = ({ open, setOpen }) => {
   //   );
   // };
 
+  const getAirportOptions = useCallback(
+    (airports: Airport[], value: string | null) => {
+      const originCode = form.getFieldValue("originCode");
+      // console.debug(originCode);
+
+      return airports
+        .filter((airport) => {
+          // if (originCode == "BKK" && airport.code == "DMK") {
+          //   return false;
+          // }
+          // return value !== airport.code;
+
+          return true;
+        })
+        .map((airport) => ({
+          id: airport.code,
+          label: airport.name,
+        }));
+    },
+    [form]
+  );
+
   return (
     <Drawer anchor="top" open={open} onClose={() => setOpen(false)}>
       <form
@@ -298,7 +312,7 @@ const HomeDrawer: FC<Prop> = ({ open, setOpen }) => {
                 <Divider />
                 <p>ประเภทที่นั่ง</p>
                 <div className="grid grid-cols-2 gap-4">
-                  {seatsClass.map((value) => {
+                  {seatClassOptions.map((value) => {
                     return (
                       <button
                         key={value.id}
@@ -333,17 +347,15 @@ const HomeDrawer: FC<Prop> = ({ open, setOpen }) => {
 
           <div className="flex lg:flex-row flex-col items-center gap-4">
             <form.Field
-              name="destinationCode"
+              name="originCode"
+              listeners={{
+                onChange: ({ fieldApi }) => {
+                  fieldApi.form.setFieldValue("destinationCode", null);
+                },
+              }}
               children={(field) => {
                 const { value } = field.state;
-
-                const options = airports.filter((airport) => {
-                  if (value == "BKK" && airport.code == "DMK") {
-                    return false;
-                  }
-
-                  return value != airport.code;
-                });
+                const options = getAirportOptions(airports, value);
 
                 return (
                   <Autocomplete
@@ -351,20 +363,13 @@ const HomeDrawer: FC<Prop> = ({ open, setOpen }) => {
                     className="lg:max-w-56 w-full"
                     id={field.name}
                     options={options}
-                    // options={
-                    //   airports
-                    //     ?.filter((value) => {
-                    //       if (destValue == "BKK" && value.code == "DMK") return false;
-                    //       return destValue != value.code;
-                    //     })
-                    //     .map((value) => value.name) ?? []
+                    onChange={(_, value) =>
+                      field.handleChange(value ? value.id : null)
+                    }
+                    // value={
+                    //   field.state.value === null ? field.state.value : undefined
                     // }
-                    // onChange={(_, v: string | null) => {
-                    //   const airport = airports?.filter(
-                    //     (value) => value.name == v
-                    //   );
-                    //   if (airport != null) setSrcValue(airport[0]?.code);
-                    // }}
+                    onBlur={field.handleBlur}
                     renderInput={(params) => (
                       <TextField {...params} name={field.name} label="จาก" />
                     )}
@@ -374,29 +379,31 @@ const HomeDrawer: FC<Prop> = ({ open, setOpen }) => {
             />
 
             <form.Field
-              name="originCode"
+              name="destinationCode"
               children={(field) => {
                 const { value } = field.state;
 
-                const options =
-                  airports
-                    .filter((airport) => {
-                      if (value == "BKK" && airport.code == "DMK") return false;
-                      return value != airport.code;
-                    })
-                    .map((value) => value) ?? [];
+                const options = getAirportOptions(airports, value);
 
                 return (
                   <Autocomplete
                     size="small"
                     className="lg:max-w-56 w-full"
                     options={options}
-                    // onChange={(_, v: string | null) => {
-                    //   const airport = airports?.filter(
-                    //     (value) => value.name == v
-                    //   );
-                    //   // if (airport != null) setDestValue(airport[0]?.code);
-                    // }}
+                    onChange={(_, value) =>
+                      field.handleChange(value ? value.id : null)
+                    }
+                    getOptionDisabled={(option) => {
+                      if (option.id === form.getFieldValue("originCode")) {
+                        return true;
+                      }
+
+                      return false;
+                    }}
+                    // value={
+                    //   field.state.value === null ? undefined : field.state.value
+                    // }
+                    onBlur={field.handleBlur}
                     renderInput={(params) => (
                       <TextField {...params} label="ถึง" />
                     )}
@@ -406,30 +413,26 @@ const HomeDrawer: FC<Prop> = ({ open, setOpen }) => {
             />
 
             <div className="flex gap-4 mb-0.5">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={["DatePicker"]}>
+              <DemoContainer components={["DatePicker"]}>
+                <DatePicker
+                  label="วันออกเดินทาง"
+                  minDate={currentYear}
+                  slotProps={{ textField: { size: "small" } }}
+                  // value={goDate}
+                  // onChange={(value) => setGoDate(value)}
+                />
+              </DemoContainer>
+              <DemoContainer components={["DatePicker"]}>
+                {"go-back" == "go-back" ? (
                   <DatePicker
                     label="วันออกเดินทาง"
                     minDate={currentYear}
+                    // value={backDate}
+                    // onChange={(value) => setBackDate(value)}
                     slotProps={{ textField: { size: "small" } }}
-                    // value={goDate}
-                    // onChange={(value) => setGoDate(value)}
                   />
-                </DemoContainer>
-              </LocalizationProvider>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={["DatePicker"]}>
-                  {"go-back" == "go-back" ? (
-                    <DatePicker
-                      label="วันออกเดินทาง"
-                      minDate={currentYear}
-                      // value={backDate}
-                      // onChange={(value) => setBackDate(value)}
-                      slotProps={{ textField: { size: "small" } }}
-                    />
-                  ) : null}
-                </DemoContainer>
-              </LocalizationProvider>
+                ) : null}
+              </DemoContainer>
             </div>
 
             <Button
@@ -448,4 +451,4 @@ const HomeDrawer: FC<Prop> = ({ open, setOpen }) => {
   );
 };
 
-export default HomeDrawer;
+export default BrowseFlightDrawer;
