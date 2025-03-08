@@ -37,13 +37,12 @@ const CheckoutCard = ({ user_id, flight_route_id, price }: GetPayment) => {
     });
 
     const data = response.data;
-    console.log("res", data);
 
     if (response.status != 200 || data == null) {
       throw new Error("Something error please try again");
     }
 
-    return data.data;
+    return data;
   };
 
   const handleClick = () => {

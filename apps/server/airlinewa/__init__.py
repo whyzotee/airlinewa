@@ -60,7 +60,6 @@ class Airlinewa:
             raise Exception("NO_SEAT_LEFT")
         
         reserve_seat = flight.aircraft.reserve_seat(len(passengers))
-        print("reserve_seat", reserve_seat)
 
         payment_method = Payment.method()
 

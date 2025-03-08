@@ -1,8 +1,10 @@
+import itertools
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 from .air import Airport, Aircraft
 from .user import User, Account
 from .flight import Flight,FlightRoute, FlightSchedule
+# from .mock import *
 
 class MockUp:
     @staticmethod
@@ -169,7 +171,11 @@ class MockUp:
             "KOP",
             "HGN",
         ]
-
+        # return [
+        #     Airport(mock_airport_name[i].strip('"'), mock_airport_address[i].strip('"'), mock_airport_code[i].strip('"'))
+        #     for i in range(len(mock_airport_name))
+        # ]
+    
         return [
             Airport(list_airport_name[i], list_airport_addr[i], list_airport_code[i])
             for i in range(20)
@@ -184,22 +190,23 @@ class MockUp:
 
         flight_id = 1
 
-        for l in range(3):
-            for i in range(len(airport_list)):
-                for j in range(len(airport_list)):
-                    if i != j:
-                        gen_flight = FlightRoute(
-                            f"AW {flight_id:03d}",
-                            airport_list[i],
-                            airport_list[j],
-                            FlightRoute.STATUS_AVALIABLE,
-                            sche_001,
-                            random.randint(1000, 5000),
-                            datetime.today().isoformat(),
-                        )
+        for l in range(10):  
+            for i in range(len(aircraft_list)): 
+                for j in range(i + 1, len(aircraft_list)):
+                    random_date = datetime.today() + timedelta(days=l)
+                    
+                    gen_flight = FlightRoute(
+                        f"AW {flight_id:05d}",
+                        airport_list[i],
+                        airport_list[j],
+                        FlightRoute.STATUS_AVALIABLE,
+                        sche_001,
+                        random.randint(1000, 5000),
+                        random_date,
+                    )
 
-                        gen_flights.append(Flight(gen_flight, random.choice(aircraft_list)))
-                        gen_flights_route.append(gen_flight)
-                        flight_id += 1
-        
+                    gen_flights.append(Flight(gen_flight, random.choice(aircraft_list)))
+                    gen_flights_route.append(gen_flight)
+                    flight_id += 1
+
         return gen_flights, gen_flights_route

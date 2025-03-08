@@ -161,7 +161,6 @@ def get_payment(model: GetPayment):
             model.contact)
 
     except Exception as err:
-        print(err)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err)
     except:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TRY_AGAIN")
@@ -169,10 +168,8 @@ def get_payment(model: GetPayment):
     if not airline.is_flight_route(flight_route) or flight_route == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="NO_FLIGHT_FOUND")
 
-    print(type(flight_route))
-
     return { 
-        "id": flight_route, 
+        "id": flight_route.get_id, 
         "info": {
             "origin": flight_route.get_origin,
             "destination": flight_route.get_destination,
