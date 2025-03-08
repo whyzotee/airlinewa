@@ -4,7 +4,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { APIGetAirport } from "../services/home";
 
-const HomeDrawer = lazy(() => import("@/components/BrowseFlightDrawer"));
+const HomeDrawer = lazy(
+  () => import("@/components/browseFlight/BrowseFlightDrawer")
+);
 
 export const Route = createFileRoute("/backup")({
   component: RouteComponent,

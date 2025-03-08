@@ -13,7 +13,6 @@ export const APISearchFlight = async (src: string, dest: string, date: string) =
         const data = response.data;
 
         if (data.error) throw new Error(data.error);
-        console.log(data);
 
         return data.flights; // คืนค่าเฉพาะ flights
     } catch (error) {

@@ -29,7 +29,6 @@ class Airport(BaseModel):
 class APICheckout(BaseModel):
     id: str
 
-
 class GetPaymentIdentity(BaseModel):
     type: str
     number: str
@@ -44,21 +43,22 @@ class GetPaymentContact(BaseModel):
     countryCode: str
     phoneNumber: str
 
-
-class GetPayment(BaseModel):
+class Passenger(BaseModel):
     name: str
     lastname: str
     gender: str
     country: str
     birthday: str
     identityType: GetPaymentIdentity
-    contact: GetPaymentContact
 
+class GetPayment(BaseModel):
+    flight_id: str
+    passenger: Passenger
+    contact: GetPaymentContact
 
 class LoginModel(BaseModel):
     username: str
     password: str
-
 
 @app.get("/")
 def read_root():
@@ -67,21 +67,39 @@ def read_root():
 
 @app.post("/api/checkout")
 async def api_checkout(model: APICheckout):
-    return airline.api_checkout(model.id)
+    flight = airline.get_flight_route(model.id)
+    if flight == None:
+        return {"error": "Can't find id"}
 
+    return {
+        "id": flight.get_id,
+        "info": {
+            "origin": flight.get_origin,
+            "destination": flight.get_destination,
+            "schedule": flight.get_schedule.get_info,
+            "date": flight.get_date,
+        },
+        "price": [flight.get_price, flight.get_tax],
+        "service": airline.get_all_services,
+        }
 
 @app.post("/api/payment")
 def get_payment(model: GetPayment):
-    # print(model)
-    # res = airline.api_booking(airline.get_test_user.get_id, "flight_001", [])
-    # return {"price": res, "type": "dollar", "q":q}
-    return {"res": "OK", "data": model}
+    print(model)
+    # res = airline.
 
+    return {"flight_details": "OK", "data": model}
 
 @app.post("/api/auth/login")
 def login(model: LoginModel):
-    return airline.api_login(model.username, model.password)
-
+    for user in airline.get_all_users:
+        response = user.get_accout.login(model.username, model.password)
+        if response:
+            return {"id": user.get_id}
+        else:
+            break
+        # return {"error": "Username or password wrong, please try again."}
+    raise HTTPException(status_code=401, detail="CREDENTIAL_INVALID")
 
 @app.get(
     "/api/airport",
@@ -110,6 +128,7 @@ def get_test():
 
 @app.get("/api/flight")
 def api_search_flight(origin: str, destination: str, date: str):
+
     if origin is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="ORIGIN_INVALID"
@@ -125,4 +144,36 @@ def api_search_flight(origin: str, destination: str, date: str):
             status_code=status.HTTP_400_BAD_REQUEST, detail="DATE_INVALID"
         )
 
-    return airline.api_search_flight(origin, destination, date)
+    src = origin.upper()
+    dest = destination.upper()
+
+    print(src, dest, date)
+
+    flights = []
+
+    for flight in airline.get_flight_route_list():
+        flight_origin = flight.get_origin
+        flight_destination = flight.get_destination
+        flight_date = flight.get_date
+
+        origin_upper = flight_origin[-1].upper()
+        destination_upper = flight_destination[-1].upper()
+
+        if origin_upper == src and destination_upper == dest and flight.is_avaliable:
+            flights.append({
+                "id": str(flight.get_id),
+                "origin": flight.get_origin,
+                "destination": flight.get_destination,
+                "schedule": {
+                    "departure": flight.get_schedule.get_departure(),
+                    "arrival": flight.get_schedule.get_arrival()
+                },
+                "date": flight_date,
+                "price": flight.get_price,
+                # "status": flight_status
+            })
+
+    if flights:
+        return flights
+
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="NO_FLIGHT_FOUND")

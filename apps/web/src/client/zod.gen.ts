@@ -13,15 +13,18 @@ export const zAirport = z.object({
 });
 
 export const zGetPayment = z.object({
-    name: z.string(),
-    lastname: z.string(),
-    gender: z.string(),
-    country: z.string(),
-    birthday: z.string(),
-    identityType: z.object({
-        type: z.string(),
-        number: z.string(),
-        out_date: z.string()
+    flight_id: z.string(),
+    passenger: z.object({
+        name: z.string(),
+        lastname: z.string(),
+        gender: z.string(),
+        country: z.string(),
+        birthday: z.string(),
+        identityType: z.object({
+            type: z.string(),
+            number: z.string(),
+            out_date: z.string()
+        })
     }),
     contact: z.object({
         prefix: z.string(),
@@ -61,10 +64,19 @@ export const zLoginModel = z.object({
     password: z.string()
 });
 
+export const zPassenger = z.object({
+    name: z.string(),
+    lastname: z.string(),
+    gender: z.string(),
+    country: z.string(),
+    birthday: z.string(),
+    identityType: zGetPaymentIdentity
+});
+
 export const zValidationError = z.object({
     loc: z.array(z.unknown()),
     msg: z.string(),
     type: z.string()
 });
 
-export const zApiGetAirportListApiAirportGetResponse = z.array(zAirport);
+export const zGetAirportsApiAirportGetResponse = z.array(zAirport);

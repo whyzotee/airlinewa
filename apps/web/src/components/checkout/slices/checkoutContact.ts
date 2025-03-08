@@ -33,7 +33,6 @@ const checkoutContactSlice = createSlice({
             state.contactData = { ...state.contactData, ...action.payload }
             state.isValid = checkoutContactForm.safeParse(state.contactData).success;
 
-            console.log(state.contactData, state.isValid);
         },
         resetForm: (state) => {
             state.isValid = false;

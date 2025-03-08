@@ -1,4 +1,4 @@
-import { loginApiLoginPostMutation } from "@/client/@tanstack/react-query.gen";
+import { loginApiAuthLoginPostMutation } from "@/client/@tanstack/react-query.gen";
 import { useAuthStore } from "@/lib/zustand";
 import { Button, TextField, Typography } from "@mui/material";
 import { useForm } from "@tanstack/react-form";
@@ -14,7 +14,7 @@ export const Route = createLazyFileRoute("/auth/login")({
 
 function RouteComponent() {
   const navigate = Route.useNavigate();
-  const loginMutation = useMutation(loginApiLoginPostMutation({}));
+  const loginMutation = useMutation(loginApiAuthLoginPostMutation({}));
   const authStore = useAuthStore();
 
   const form = useForm({
@@ -56,7 +56,6 @@ function RouteComponent() {
         },
         error: (err) => {
           const error = err as AxiosError;
-          console.log(error);
 
           // @ts-ignore
           const errorDetail = error.response?.data.detail;

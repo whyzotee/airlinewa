@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense, useState } from "react";
 
 const BrowseFlightDrawer = lazy(
-  () => import("@/components/BrowseFlightDrawer")
+  () => import("@/components/browseFlight/BrowseFlightDrawer")
 );
 
 export const Route = createFileRoute("/")({

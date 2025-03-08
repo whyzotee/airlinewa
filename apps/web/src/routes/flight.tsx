@@ -1,27 +1,37 @@
-import { apiSearchFlightApiFlightGetOptions } from "@/client/@tanstack/react-query.gen";
+import {
+  apiCheckoutApiCheckoutPostMutation,
+  apiSearchFlightApiFlightGetOptions,
+} from "@/client/@tanstack/react-query.gen";
+import AppBar from "@/components/appBar";
+import BrowseFlightForm from "@/components/browseFlight/form";
 import { useAuthStore } from "@/lib/zustand";
-import { APICheckout } from "@/services/checkout";
-import { Button, Card, CardContent, Typography } from "@mui/material";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import {
+  Breadcrumbs,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+} from "@mui/material";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 
 import toast from "react-hot-toast";
 
 type FlightSearch = {
-  origin: string | unknown;
-  destination: string | unknown;
-  date: string | unknown;
+  originCode: string | unknown;
+  destinationCode: string | unknown;
+  departureDate: string | unknown;
 };
 
 export const Route = createFileRoute("/flight")({
   validateSearch: (search: Record<string, unknown>): FlightSearch => {
     // validate and parse the search params into a typed state
     return {
-      origin: search.originCode,
-      destination: search.destinationCode,
-      date: search.departureDate,
+      originCode: search.originCode,
+      destinationCode: search.destinationCode,
+      departureDate: search.departureDate,
     };
   },
   loader: ({ location }) => {
@@ -34,19 +44,14 @@ function RouteComponent() {
   // const { flights } = Route.useLoaderData();
   const navigate = Route.useNavigate();
 
-  const flightsQuery = useSuspenseQuery(
+  const flightsQuery: any = useSuspenseQuery(
     apiSearchFlightApiFlightGetOptions({
       query: {
-        src: Route.useSearch().origin,
-        dest: Route.useSearch().destination,
-        date: Route.useSearch().date,
+        origin: Route.useSearch().originCode,
+        destination: Route.useSearch().destinationCode,
+        date: Route.useSearch().departureDate,
       },
     })
-  );
-
-  console.log(
-    "flightsQueryflightsQueryflightsQueryflightsQuery",
-    flightsQuery.data
   );
 
   const authStore = useAuthStore();
@@ -74,6 +79,7 @@ function RouteComponent() {
   // useEffect(() => {
   //   fetchFlights("DMK", "KOP", "2025-03-11");
   // }, []);
+  const checkoutMutation = useMutation(apiCheckoutApiCheckoutPostMutation({}));
 
   const handleClick = useCallback(
     async (id: string) => {
@@ -87,7 +93,11 @@ function RouteComponent() {
         return;
       }
 
-      toast.promise(APICheckout(id), {
+      if (checkoutMutation.isPending) return;
+
+      const checkout = checkoutMutation.mutateAsync({ body: { id } });
+
+      toast.promise(checkout, {
         loading: "Loading...",
         success: (data) => {
           navigate({
@@ -97,7 +107,7 @@ function RouteComponent() {
           return `Founded`;
         },
         error: (err) => {
-          console.log(err);
+          console.error(err);
           return err.message;
         },
       });
@@ -126,52 +136,64 @@ function RouteComponent() {
     [handleClick]
   );
 
-  // console.log("Testtttttttt", [...flights]);
-
   return (
-    <main className="p-8">
-      <Typography variant="h4">เที่ยวบินที่มีให้เลือก</Typography>
-      <br />
-      {flightsQuery.data.flights.length > 0 ? (
-        flightsQuery.data.flights.map((flight, index) => {
-          console.log(flight, index);
+    <main className="font-noto-thai">
+      <AppBar />
 
-          return (
-            <Card key={index} className="mb-4 p-4 shadow-lg rounded-lg">
-              <CardContent>
-                <Typography variant="h6">เที่ยวบิน {flight.id}</Typography>
-                <Typography>
-                  จาก: {flight.origin} → ถึง: {flight.destination}
-                </Typography>
-                <Typography>
-                  เวลาออกเดินทาง: {flight.schedule.departure}
-                </Typography>
-                <Typography>
-                  เวลาถึงที่หมาย: {flight.schedule.arrival}
-                </Typography>
-                <Typography>วันที่: {flight.date}</Typography>
-                <Typography>ราคา: {flight.price} บาท</Typography>
+      <div className="max-w-7xl m-auto">
+        <div className="my-4 flex justify-between text-sm">
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link to="/">หน้าแรก</Link>
+            <Typography>เลือกเที่ยวบิน</Typography>
+            <Typography sx={{ color: "text.primary" }}>
+              รายละเอียดผู้โดยสาร
+            </Typography>
+          </Breadcrumbs>
+        </div>
+        <BrowseFlightForm />
+        <br />
 
-                {/* ปุ่มเลือกและดูรายละเอียด */}
-                <div className="flex justify-between mt-4">
-                  <Button
-                    variant="contained"
-                    style={{
-                      backgroundColor:
-                        selectedFlight?.id === flight.id
-                          ? "#0faa44"
-                          : "#22c55e",
-                      color: "white",
-                      borderRadius: "20px",
-                      fontWeight: "bold",
-                      padding: "8px 20px",
-                    }}
-                    onClick={() => handleSelectFlight(flight)}
-                  >
-                    เลือก
-                  </Button>
+        <Typography variant="h4">เที่ยวบินที่มีให้เลือก</Typography>
+        <br />
 
-                  {/* <Button
+        {flightsQuery.data.length > 0 ? (
+          flightsQuery.data.map((flight, index) => {
+            return (
+              <Card key={index} className="mb-4 p-4 shadow-lg rounded-lg">
+                <CardContent>
+                  <Typography variant="h6">เที่ยวบิน {flight.id}</Typography>
+                  <Typography>
+                    จาก: {flight.origin} → ถึง: {flight.destination}
+                  </Typography>
+                  <Typography>
+                    เวลาออกเดินทาง: {flight.schedule.departure}
+                  </Typography>
+                  <Typography>
+                    เวลาถึงที่หมาย: {flight.schedule.arrival}
+                  </Typography>
+                  <Typography>วันที่: {flight.date}</Typography>
+                  <Typography>ราคา: {flight.price} บาท</Typography>
+
+                  {/* ปุ่มเลือกและดูรายละเอียด */}
+                  <div className="flex justify-between mt-4">
+                    <Button
+                      variant="contained"
+                      style={{
+                        backgroundColor:
+                          selectedFlight?.id === flight.id
+                            ? "#0faa44"
+                            : "#22c55e",
+                        color: "white",
+                        borderRadius: "20px",
+                        fontWeight: "bold",
+                        padding: "8px 20px",
+                      }}
+                      onClick={() => handleSelectFlight(flight)}
+                    >
+                      เลือก
+                    </Button>
+
+                    {/* <Button
                 variant="outlined"
                 style={{
                   borderColor: "#e63946",
@@ -183,14 +205,15 @@ function RouteComponent() {
               >
                 ดูรายละเอียด ▼
               </Button> */}
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })
-      ) : (
-        <Typography>ไม่พบเที่ยวบิน</Typography>
-      )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })
+        ) : (
+          <Typography>ไม่พบเที่ยวบิน</Typography>
+        )}
+      </div>
     </main>
   );
 }

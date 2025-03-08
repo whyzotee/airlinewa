@@ -11,12 +11,8 @@ export type Airport = {
 };
 
 export type GetPayment = {
-    name: string;
-    lastname: string;
-    gender: string;
-    country: string;
-    birthday: string;
-    identityType: GetPaymentIdentity;
+    flight_id: string;
+    passenger: Passenger;
     contact: GetPaymentContact;
 };
 
@@ -42,6 +38,15 @@ export type HttpValidationError = {
 export type LoginModel = {
     username: string;
     password: string;
+};
+
+export type Passenger = {
+    name: string;
+    lastname: string;
+    gender: string;
+    country: string;
+    birthday: string;
+    identityType: GetPaymentIdentity;
 };
 
 export type ValidationError = {
@@ -133,21 +138,21 @@ export type LoginApiAuthLoginPostResponses = {
     200: unknown;
 };
 
-export type ApiGetAirportListApiAirportGetData = {
+export type GetAirportsApiAirportGetData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/airport';
 };
 
-export type ApiGetAirportListApiAirportGetResponses = {
+export type GetAirportsApiAirportGetResponses = {
     /**
      * Successful Response
      */
     200: Array<Airport>;
 };
 
-export type ApiGetAirportListApiAirportGetResponse = ApiGetAirportListApiAirportGetResponses[keyof ApiGetAirportListApiAirportGetResponses];
+export type GetAirportsApiAirportGetResponse = GetAirportsApiAirportGetResponses[keyof GetAirportsApiAirportGetResponses];
 
 export type GetTestApiTestGetData = {
     body?: never;
@@ -167,8 +172,8 @@ export type ApiSearchFlightApiFlightGetData = {
     body?: never;
     path?: never;
     query: {
-        src: string;
-        dest: string;
+        origin: string;
+        destination: string;
         date: string;
     };
     url: '/api/flight';

@@ -1,3 +1,4 @@
+import AppBar from "@/components/appBar";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/app/payment")({
@@ -12,12 +13,12 @@ export const Route = createFileRoute("/app/payment")({
 function RouteComponent() {
   const { data } = Route.useLoaderData();
 
-  console.log(data);
-
   return (
     <main className="font-noto-thai">
+      <AppBar />
       <h1>Payment</h1>
       <h1>{JSON.stringify(data)}</h1>
+      {/* <FlightDetail id={""} info={undefined} /> */}
     </main>
   );
 }

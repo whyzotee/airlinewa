@@ -5,7 +5,7 @@ const API_URL = "http://127.0.0.1:8000";
 
 export const APICheckout = async (flight_id: string) => {
     await delay(1000);
-    const response = await axios.post(`${API_URL}/api_checkout`, {
+    const response = await axios.post(`${API_URL}/api/checkout`, {
         id: flight_id,
     });
 
@@ -13,7 +13,6 @@ export const APICheckout = async (flight_id: string) => {
 
     if (data.error != null) throw new Error(data.error);
 
-    console.log(data);
 
     return data;
 };

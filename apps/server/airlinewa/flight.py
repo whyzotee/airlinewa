@@ -1,6 +1,15 @@
 from datetime import datetime
 from .air import Airport
 
+STATUS_AVALIABLE = "AVALIABLE"
+STATUS_NOT_AVALIABLE = "NOT_AVALIABLE"
+STATUS_PENDING_PAYMENT = "PENDING_PAYMENT"
+STATUS_REFUNDED = "REFUNDED"
+STATUS_CHECK_IN = "NOT_AVALIABLE"
+STATUS_BOARDED = "BOARDED"
+STATUS_CANCELED = "CANCELED"
+STATUS_COMPLETED = "COMPLETED"
+
 class FlightSchedule:
     def __init__(self, id, dayOfWeek, departureTime, arriveTime, duration):
         self.__id = id
@@ -62,6 +71,10 @@ class FlightRoute:
     @property
     def get_status(self):
         return self.__status
+    
+    @property
+    def is_avaliable(self):
+        return self.__status == STATUS_AVALIABLE
 
     @property
     def get_price(self):

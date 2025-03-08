@@ -1,13 +1,13 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 
-import { useSelector } from "react-redux";
-import { RootState } from "../../../app/store";
+import { delay } from "@/app/function";
 import { Button, Card, Divider } from "@mui/material";
 import { useNavigate } from "@tanstack/react-router";
-import { delay } from "@/app/function";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../app/store";
 
-const CheckoutCard = ({ price }: { price: number[] }) => {
+const CheckoutCard = ({ id, price }: { id: string; price: number[] }) => {
   const navigate = useNavigate();
 
   const dataUser = useSelector((state: RootState) => state.checkoutUser);
@@ -21,14 +21,17 @@ const CheckoutCard = ({ price }: { price: number[] }) => {
     if (!dataContact.isValid)
       throw new Error("Please fill all the contact form");
 
-    const response = await axios.post("http://127.0.0.1:8000/api_payment", {
-      ...dataUser.formData,
+    const response = await axios.post("http://127.0.0.1:8000/api/payment", {
+      flight_id: id,
+      passenger: dataUser.formData,
       contact: dataContact.contactData,
     });
 
     const data = response.data;
 
-    if (data.res == null) throw new Error("Something error please try again");
+    if (response.status != 200 || data == null) {
+      throw new Error("Something error please try again");
+    }
 
     return data.data;
   };

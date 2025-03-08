@@ -1,10 +1,10 @@
+import AppBar from "@/components/appBar";
 import CheckoutCard from "@/components/checkout/components/CheckoutCard";
 import CheckoutContact from "@/components/checkout/components/CheckoutContact";
 import FlightDetail from "@/components/checkout/components/CheckoutFlightDetails";
 import CheckoutServiceBag from "@/components/checkout/components/CheckoutServiceBag";
 import UserDetail from "@/components/checkout/components/CheckoutUser";
-import { LOGO_PATH } from "@/utils";
-import { Avatar, Breadcrumbs, Typography } from "@mui/material";
+import { Breadcrumbs, Typography } from "@mui/material";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/app/checkout")({
@@ -19,7 +19,7 @@ const PathAndTimeout = () => {
     <div className="flex justify-between text-sm">
       <Breadcrumbs aria-label="breadcrumb">
         <Link to="/">หน้าแรก</Link>
-        <Link to="/flight">เลือกเที่ยวบิน</Link>
+        <Typography>เลือกเที่ยวบิน</Typography>
         <Typography sx={{ color: "text.primary" }}>
           รายละเอียดผู้โดยสาร
         </Typography>
@@ -39,19 +39,10 @@ function RouteComponent() {
   // const data = useLocation().state;
   const { data } = Route.useLoaderData();
 
-  console.log("asdsaaaaaaaaaaaaaaaaaaaaaaaaaaaa", data);
-
   return (
     <main className="font-noto-thai">
-      <div className="h-16 p-2 shadow-lg">
-        <Link to="/">
-          <div className="container m-auto flex items-center gap-4">
-            <Avatar alt="log" src={LOGO_PATH} sx={{ width: 48, height: 48 }} />
-            <h1 className="text-3xl font-bold">Airlinewa</h1>
-          </div>
-        </Link>
-      </div>
-      <div className="container mx-auto py-8 px-16 flex xl:flex-row flex-col gap-16">
+      <AppBar />
+      <div className="container mx-auto mt-8 flex xl:flex-row flex-col gap-16">
         <div className="flex flex-col gap-4 w-full xl:w-[70%]">
           <PathAndTimeout />
           <FlightDetail id={data.id} info={data.info} />
@@ -61,7 +52,7 @@ function RouteComponent() {
           <CheckoutServiceBag user={["Adult 1"]} />
         </div>
 
-        <CheckoutCard price={data.price} />
+        <CheckoutCard id={data.id} price={data.price} />
       </div>
     </main>
   );
