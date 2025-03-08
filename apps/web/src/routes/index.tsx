@@ -3,7 +3,9 @@ import { Avatar, Button } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense, useState } from "react";
 
-const HomeDrawer = lazy(() => import("@/components/HomeDrawer"));
+const BrowseFlightDrawer = lazy(
+  () => import("@/components/BrowseFlightDrawer")
+);
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
@@ -64,7 +66,7 @@ function RouteComponent() {
         ) : null}
 
         <Suspense>
-          <HomeDrawer open={isOpen} setOpen={setIsOpen} />
+          <BrowseFlightDrawer open={isOpen} setOpen={setIsOpen} />
         </Suspense>
       </div>
     </main>

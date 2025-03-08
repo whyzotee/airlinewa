@@ -2,6 +2,8 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { Fragment, useMemo } from "react";
 
 import { CssBaseline, ThemeProvider } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
@@ -41,23 +43,25 @@ function App() {
 
   return (
     <Fragment>
-      <QueryClientProvider client={queryClient}>
-        <Provider store={store}>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <QueryClientProvider client={queryClient}>
+          <Provider store={store}>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
 
-            <RouterProvider
-              router={router}
-              context={{
-                queryClient,
-                auth: authStore.auth,
-              }}
-            />
+              <RouterProvider
+                router={router}
+                context={{
+                  queryClient,
+                  auth: authStore.auth,
+                }}
+              />
 
-            <Toaster position="bottom-right" />
-          </ThemeProvider>
-        </Provider>
-      </QueryClientProvider>
+              <Toaster position="bottom-right" />
+            </ThemeProvider>
+          </Provider>
+        </QueryClientProvider>
+      </LocalizationProvider>
     </Fragment>
   );
 }

@@ -24,6 +24,7 @@ const PathAndTimeout = () => {
           รายละเอียดผู้โดยสาร
         </Typography>
       </Breadcrumbs>
+
       {/* <span className="flex gap-1 text-sm">
         <p className="text-green-800">{"08"}</p>
         min
