@@ -14,7 +14,6 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as FlightImport } from './routes/flight'
-import { Route as BackupImport } from './routes/backup'
 import { Route as AuthRouteImport } from './routes/auth/route'
 import { Route as AppRouteImport } from './routes/app/route'
 import { Route as IndexImport } from './routes/index'
@@ -31,12 +30,6 @@ const AuthLoginLazyImport = createFileRoute('/auth/login')()
 const FlightRoute = FlightImport.update({
   id: '/flight',
   path: '/flight',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const BackupRoute = BackupImport.update({
-  id: '/backup',
-  path: '/backup',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -105,13 +98,6 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/backup': {
-      id: '/backup'
-      path: '/backup'
-      fullPath: '/backup'
-      preLoaderRoute: typeof BackupImport
       parentRoute: typeof rootRoute
     }
     '/flight': {
@@ -186,7 +172,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
-  '/backup': typeof BackupRoute
   '/flight': typeof FlightRoute
   '/app/checkout': typeof AppCheckoutRoute
   '/app/payment': typeof AppPaymentRoute
@@ -198,7 +183,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
-  '/backup': typeof BackupRoute
   '/flight': typeof FlightRoute
   '/app/checkout': typeof AppCheckoutRoute
   '/app/payment': typeof AppPaymentRoute
@@ -211,7 +195,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
-  '/backup': typeof BackupRoute
   '/flight': typeof FlightRoute
   '/app/checkout': typeof AppCheckoutRoute
   '/app/payment': typeof AppPaymentRoute
@@ -225,7 +208,6 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
-    | '/backup'
     | '/flight'
     | '/app/checkout'
     | '/app/payment'
@@ -236,7 +218,6 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
-    | '/backup'
     | '/flight'
     | '/app/checkout'
     | '/app/payment'
@@ -247,7 +228,6 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
-    | '/backup'
     | '/flight'
     | '/app/checkout'
     | '/app/payment'
@@ -260,7 +240,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
-  BackupRoute: typeof BackupRoute
   FlightRoute: typeof FlightRoute
 }
 
@@ -268,7 +247,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
-  BackupRoute: BackupRoute,
   FlightRoute: FlightRoute,
 }
 
@@ -285,7 +263,6 @@ export const routeTree = rootRoute
         "/",
         "/app",
         "/auth",
-        "/backup",
         "/flight"
       ]
     },
@@ -305,9 +282,6 @@ export const routeTree = rootRoute
         "/auth/login",
         "/auth/register"
       ]
-    },
-    "/backup": {
-      "filePath": "backup.tsx"
     },
     "/flight": {
       "filePath": "flight.tsx"

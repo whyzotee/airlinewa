@@ -381,7 +381,7 @@ const BrowseFlightForm = ({
             }}
           />
 
-          <div className="flex gap-4 mb-0.5">
+          <div className="flex gap-4 mb-2">
             <DemoContainer components={["DatePicker"]}>
               <form.Field
                 name="departureDate"

@@ -4,6 +4,7 @@ import CheckoutContact from "@/components/checkout/components/CheckoutContact";
 import FlightDetail from "@/components/checkout/components/CheckoutFlightDetails";
 import CheckoutServiceBag from "@/components/checkout/components/CheckoutServiceBag";
 import UserDetail from "@/components/checkout/components/CheckoutUser";
+import { useAuthStore } from "@/lib/zustand";
 import { Breadcrumbs, Typography } from "@mui/material";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
@@ -36,13 +37,12 @@ const PathAndTimeout = () => {
 };
 
 function RouteComponent() {
-  // const data = useLocation().state;
   const { data } = Route.useLoaderData();
-
+  const authStore = useAuthStore((state) => state.auth);
   return (
     <main className="font-noto-thai">
       <AppBar />
-      <div className="container mx-auto mt-8 flex xl:flex-row flex-col gap-16">
+      <div className="container mx-auto my-8 flex xl:flex-row flex-col gap-16">
         <div className="flex flex-col gap-4 w-full xl:w-[70%]">
           <PathAndTimeout />
           <FlightDetail id={data.id} info={data.info} />
@@ -52,7 +52,11 @@ function RouteComponent() {
           <CheckoutServiceBag user={["Adult 1"]} />
         </div>
 
-        <CheckoutCard id={data.id} price={data.price} />
+        <CheckoutCard
+          user_id={authStore?.userId}
+          flight_route_id={data.id}
+          price={data.price}
+        />
       </div>
     </main>
   );

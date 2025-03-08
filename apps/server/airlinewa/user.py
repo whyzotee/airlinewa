@@ -34,3 +34,12 @@ class User:
     @property
     def get_accout(self) -> Account:
         return self.__account
+
+class Contact:
+    def __init__(self, title, name, lastname, email, country_code, phone_number):
+        self.__title = title
+        self.__name = name
+        self.__lastname = lastname
+        self.__email = email
+        self.__country_code = country_code
+        self.__phone_nubmer = phone_number

@@ -1,6 +1,6 @@
 import { Drawer } from "@mui/material";
 import { FC } from "react";
-import BrowseFlightForm from "./form";
+import BrowseFlightForm from "./BrowseFlightDrawerForm";
 
 interface Prop {
   open: boolean;

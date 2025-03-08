@@ -3,7 +3,7 @@ import {
   apiSearchFlightApiFlightGetOptions,
 } from "@/client/@tanstack/react-query.gen";
 import AppBar from "@/components/appBar";
-import BrowseFlightForm from "@/components/browseFlight/form";
+import BrowseFlightForm from "@/components/browseFlight/BrowseFlightDrawerForm";
 import { useAuthStore } from "@/lib/zustand";
 import {
   Breadcrumbs,

@@ -1,5 +1,8 @@
-from .air import Airport
+import random
+from datetime import datetime
+from .air import Airport, Aircraft
 from .user import User, Account
+from .flight import Flight,FlightRoute, FlightSchedule
 
 class MockUp:
     @staticmethod
@@ -17,6 +20,7 @@ class MockUp:
             "92711594-2719-4947-8417-54f996b4dd3c",
             "be46fe6f-a105-420f-aabe-c30bcf2644cd",
         ]
+
         gen_name = [
             "whyzotee",
             "Teerapat",
@@ -30,6 +34,7 @@ class MockUp:
             "Chayanan",
             "Peeraphat",
         ]
+
         gen_phone_numbers = [
             "000-000-0000",
             "089-123-4567",
@@ -43,6 +48,7 @@ class MockUp:
             "091-369-2587",
             "086-543-2109",
         ]
+
         gen_emails = [
             "t",
             "alex.johnson@example.com",
@@ -56,6 +62,7 @@ class MockUp:
             "james.garcia@example.com",
             "mia.martinez@example.com",
         ]
+        
         gen_passwords = [
             "t",
             "Xy9@pLq3!",
@@ -80,6 +87,17 @@ class MockUp:
             gen_user.append(user)
 
         return gen_user
+
+    @staticmethod
+    def gen_aircraft():
+        aircraft_models = [
+            "Boeing 737", "Boeing 747", "Boeing 787", "Airbus A320", "Airbus A380",
+            "Embraer E190", "Bombardier CRJ900", "McDonnell Douglas MD-80"
+        ]
+
+        aircraft_list = [Aircraft(i, random.choice(aircraft_models)) for i in range(1, 10)]
+
+        return aircraft_list
     
     @staticmethod
     def gen_airport() -> list[Airport]:
@@ -157,3 +175,30 @@ class MockUp:
             for i in range(20)
         ]
 
+    @staticmethod
+    def gen_flight_and_flight_route(airport_list:list[Airport], aircraft_list:list[Aircraft]):
+        gen_flights = []
+        gen_flights_route = []
+
+        sche_001 = FlightSchedule("sche_001", {1, 2, 3}, "18:00", "19:40", 100)
+
+        flight_id = 1
+
+        for l in range(3):
+            for i in range(len(airport_list)):
+                for j in range(len(airport_list)):
+                    if i != j:
+                        gen_flight = FlightRoute(
+                            f"AW {flight_id:03d}",
+                            airport_list[i],
+                            airport_list[j],
+                            FlightRoute.STATUS_AVALIABLE,
+                            sche_001,
+                            random.randint(1000, 5000),
+                            datetime.today().isoformat(),
+                        )
+
+                        gen_flights.append(Flight(gen_flight, random.choice(aircraft_list)))
+                        flight_id += 1
+        
+        return [gen_flights, gen_flights_route]

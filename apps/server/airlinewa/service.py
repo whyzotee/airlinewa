@@ -1,25 +1,24 @@
 class Service:
-    def get_all_services():
-        return {
-            "food": Food.get_service(),
-            "package": Package.get_service(),
-            "insurance": Insurance.get_service(),
-            "assistance": Assistance.get_service()
-        }
-        # return [Food.get_service(), Package.get_service(), Insurance.get_service(), Assistance.get_service()]
+    @staticmethod
+    def get_services():
+        return [Food.services(), Package.services(), Insurance.services(), Assistance.services()]
 
 class Food(Service):
-    def get_service():
+    @staticmethod
+    def services():
         return ["Mama", "Coke"]
 
 class Package(Service):
-    def get_service():
+    @staticmethod
+    def services():
         return []
 
 class Insurance(Service):
-    def get_service():
+    @staticmethod
+    def services():
         return []
 
 class Assistance(Service):
-    def get_service():
+    @staticmethod
+    def services():
         return []

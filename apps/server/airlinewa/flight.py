@@ -1,14 +1,5 @@
 from datetime import datetime
-from .air import Airport
-
-STATUS_AVALIABLE = "AVALIABLE"
-STATUS_NOT_AVALIABLE = "NOT_AVALIABLE"
-STATUS_PENDING_PAYMENT = "PENDING_PAYMENT"
-STATUS_REFUNDED = "REFUNDED"
-STATUS_CHECK_IN = "NOT_AVALIABLE"
-STATUS_BOARDED = "BOARDED"
-STATUS_CANCELED = "CANCELED"
-STATUS_COMPLETED = "COMPLETED"
+from .air import Airport, Aircraft
 
 class FlightSchedule:
     def __init__(self, id, dayOfWeek, departureTime, arriveTime, duration):
@@ -43,6 +34,11 @@ class FlightSchedule:
     #     return aircarft
     
 class FlightRoute:
+    STATUS_AVALIABLE = "AVALIABLE"
+    STATUS_BOARDED = "BOARDED"
+    STATUS_COMPLETED = "COMPLETED"
+    STATUS_NOT_AVALIABLE = "NOT_AVALIABLE"
+
     def __init__(self, id, origin: Airport, destination:Airport, status, flight_schedule:FlightSchedule, base_price, date):
         self.__id = id
         self.__schedule = flight_schedule
@@ -68,13 +64,15 @@ class FlightRoute:
     def get_destination(self):
         return self.__destination.get_info
     
-    @property
     def get_status(self):
         return self.__status
     
+    def set_status(self, status):
+        self.__status = status
+    
     @property
     def is_avaliable(self):
-        return self.__status == STATUS_AVALIABLE
+        return self.__status == FlightRoute.STATUS_AVALIABLE
 
     @property
     def get_price(self):
@@ -87,3 +85,18 @@ class FlightRoute:
     @property
     def get_date(self) -> datetime:
         return self.__date
+    
+    status = property(get_status, set_status)
+
+class Flight:
+    def __init__(self, flight_route: FlightRoute, aircraft: Aircraft):
+        self.__flight_route = flight_route
+        self.__aircraft = aircraft
+
+    @property
+    def flight_route(self):
+        return self.__flight_route
+
+    @property
+    def aircraft(self):
+        return self.__aircraft

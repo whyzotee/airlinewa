@@ -7,27 +7,37 @@ import { useNavigate } from "@tanstack/react-router";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
 
-const CheckoutCard = ({ id, price }: { id: string; price: number[] }) => {
+interface GetPayment {
+  user_id: string | undefined;
+  flight_route_id: string;
+  price: number[];
+}
+
+const CheckoutCard = ({ user_id, flight_route_id, price }: GetPayment) => {
   const navigate = useNavigate();
 
   const dataUser = useSelector((state: RootState) => state.checkoutUser);
 
   const dataContact = useSelector((state: RootState) => state.checkoutContact);
-
   const callAPI = async () => {
-    await delay(1000);
+    if (!user_id) throw new Error("Please login first");
+
     if (!dataUser.isValid) throw new Error("Please fill all the user form");
 
     if (!dataContact.isValid)
       throw new Error("Please fill all the contact form");
 
+    await delay(1000);
+
     const response = await axios.post("http://127.0.0.1:8000/api/payment", {
-      flight_id: id,
-      passenger: dataUser.formData,
+      user_id: user_id,
+      flight_route_id: flight_route_id,
+      passengers: [dataUser.formData],
       contact: dataContact.contactData,
     });
 
     const data = response.data;
+    console.log("res", data);
 
     if (response.status != 200 || data == null) {
       throw new Error("Something error please try again");

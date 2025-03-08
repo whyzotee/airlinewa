@@ -1,5 +1,10 @@
+import random
+
 class SeatStatus:
-    OK = "avaliable"
+    AVALIABLE = "avaliable"
+    PENDING_PAYMENT ="PENDING_PAYMENT"
+    CANCEL = "CANCEL"
+    SOLD = "SOLD"
 
 class Seat:
     def __init__(self, id, status, price):
@@ -12,12 +17,16 @@ class Seat:
         return self.__id
     
     @property
+    def get_price(self):
+        return self.__price
+
     def get_status(self):
         return self.__status
     
-    @property
-    def get_price(self):
-        return self.__price
+    def set_status(self, status: SeatStatus):
+        self.__status = status
+
+    status = property(get_status, set_status)
 
 class Airport:
     def __init__(self, name, address, code):
@@ -48,7 +57,7 @@ class Aircraft:
         self.__seats = self.gen_seat()
 
     def gen_seat(self) -> list[Seat]:
-        return [Seat(f"seat_00{index}", SeatStatus.OK, "$59.49") for index in range(50)]
+        return [Seat(f"seat_00{index}", SeatStatus.AVALIABLE, "$59.49") for index in range(random.randint(100, 400))]
 
     @property
     def get_id(self):
@@ -61,3 +70,25 @@ class Aircraft:
     @property
     def get_seats(self):
         return self.__seats
+
+    def get_avaliable_seat(self):
+        list_avaliable_seats = []
+
+        for seat in self.__seats:
+            if seat.status == SeatStatus.AVALIABLE:
+                list_avaliable_seats.append(seat)
+        
+        return list_avaliable_seats
+    
+    def reserve_seat(self, passenger_count):
+        seat_id = []
+
+        for seat in self.__seats:
+            if len(seat_id) == passenger_count:
+                break
+
+            if seat.status == SeatStatus.AVALIABLE:
+                seat.status = SeatStatus.PENDING_PAYMENT
+                seat_id.append(seat)
+        
+        return seat_id

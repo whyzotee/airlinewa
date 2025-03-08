@@ -1,69 +1,70 @@
-import random
-from datetime import datetime
-
 from .air import *
 from .user import *
 from .flight import *
 from .service import *
 from .booking import Booking
-from .passenger import Passenger
+from .payment import Payment
+from .passenger import GENDER, IDENTITY_TYPE, Passenger
 
 from .mockup import MockUp
 
 class Airlinewa:
     def __init__(self):
-        self.__user_list: list[User] = []
+        self.__user_list: list[User] = MockUp.gen_users()
+        self.__fight_list: list[Flight] = []
         self.__fight_route_list: list[FlightRoute] = []
         self.__booking_list: list[Booking] = []
-        self.__airport_list: list[Airport] = []
+        self.__aircraft_list: list[Aircraft] = MockUp.gen_aircraft()
+        self.__airport_list: list[Airport] = MockUp.gen_airport()
 
-    def set_user(self, list_user: list[User]):
-        self.__user_list = list_user
+    def set_flight(self, list_flight: list[Flight]):
+        self.__fight_list = list_flight
 
-    def set_flight(self, list_flight_route: list[FlightRoute]):
+    def set_flight_route(self, list_flight_route: list[FlightRoute]):
         self.__fight_route_list = list_flight_route
 
-    def set_airport(self, list_airport: list[Airport]):
-        self.__airport_list = list_airport
-
     # ============================ Medthod ============================ #
-    def get_all_services():
-        return Service.get_all_services()
 
-    @property
-    def get_all_users(self):
-        return self.__user_list
-
-    @property
-    def get_booking_list(self) -> list[Booking]:
-        return self.__booking_list
-
-    @property
-    def get_test_user(self) -> User:
-        return self.__user_list[0]
-
-    def get_user(self, user_id) -> User:
-        for user in self.__user_list:
-            if user.get_id == user_id:
-                return user
-
-    def get_flight_route_list(self) -> list[FlightRoute] :
-        return self.__fight_route_list
-
-    def get_flight_route(self, flight_id) -> FlightRoute:
-        for flight in self.__fight_route_list:
-            if flight.get_id == flight_id:
+    # Function Section
+    def get_flight(self, flight_id) -> Flight:
+        for flight in self.__fight_list:
+            if flight.flight_route.get_id == flight_id:
                 return flight
+            
+    def get_flight_route(self, flight_route_id) -> FlightRoute:
+         for flight_route in self.__fight_route_list:
+            if flight_route.get_id == flight_route_id:
+                return flight_route
+    
+    @staticmethod
+    def is_flight_route(flight_route) -> bool:
+        return isinstance(flight_route, FlightRoute)
+    
+    def booking_flight_route(self, 
+                             user_id, 
+                             flight_route_id, 
+                             passengers: list[Passenger] | None, 
+                             contact: Contact) ->  tuple[FlightRoute, list[str]]:
+        
+        user = self.get_user(user_id)
+        
+        if user == None:
+            raise Exception("USER_NOT_FOUND")
+        
+        flight = self.get_flight(flight_route_id)
+        if flight == None:
+            raise Exception("FLIGHT_NOT_FOUND")
 
-    def get_airport(self, code) -> Airport | None:
-        for airport in self.__airport_list:
-            if airport.get_code == code:
-                return airport
+        seats = flight.aircraft.get_avaliable_seat()
+        if len(seats) <= 0 or len(seats) < len(passengers):
+            raise Exception("NO_SEAT_LEFT")
+        
+        reserve_seat = flight.aircraft.reserve_seat(len(passengers))
+        print("reserve_seat", reserve_seat)
 
-        return None
+        payment_method = Payment.method()
 
-    def get_airport_list(self) -> list[Airport]:
-        return self.__airport_list
+        return flight.flight_route, payment_method
 
     def create_booking(
         self,
@@ -79,38 +80,60 @@ class Airlinewa:
         return booking_instance
 
     def create_passenger(self, passenger_data) -> list[Passenger]:
-        return [Passenger("passenger_001")]
+        test = Passenger(GENDER.MALE, "Chatnarint", "Boonsaeng", datetime(2546, 1, 26), IDENTITY_TYPE.CARD, "1581878512")
+   
+        return [test]
+    
+    def create_contact(self, title, name, lastname, email, country_code, phone_number) -> Contact:
+        contact = Contact(title, name, lastname, email, country_code, phone_number)
 
+        return contact
+
+    # Property Section
+    @property
+    def get_all_services(self):
+        return Service.get_services()
+    
+    @property
+    def get_all_users(self):
+        return self.__user_list
+
+    # @property
+    # def get_booking_list(self) -> list[Booking]:
+    #     return self.__booking_list
+
+    def get_user(self, user_id) -> User:
+        for user in self.__user_list:
+            if user.get_id == user_id:
+                return user
+
+    @property
+    def get_flight_list(self) -> list[Flight]:
+        return self.__fight_list
+
+    @property
+    def get_flight_route_list(self) -> list[FlightRoute] :
+        return self.__fight_route_list
+
+    @property
+    def get_aircraft_list(self) -> list[Aircraft]:
+        return self.__aircraft_list
+
+    @property
+    def get_airport_list(self) -> list[Airport]:
+        return self.__airport_list
+    
     # ===================== Initialize ===================== #
     @classmethod
     def initialize(self):
         airline = Airlinewa()
 
-        airline.set_user(MockUp.gen_users())
-        airline.set_airport(MockUp.gen_airport())
+        airport_list = airline.get_airport_list
+        aircraft_list = airline.get_aircraft_list
 
-        sche_001 = FlightSchedule("sche_001", {1, 2, 3}, "18:00", "19:40", 100)
-        all_airport = airline.get_airport_list()
+        gen_flights = MockUp.gen_flight_and_flight_route(airport_list, aircraft_list)
 
-        gen_flights = []
-        flight_id = 1
-
-        for l in range(3):
-            for i in range(len(all_airport)):
-                for j in range(len(all_airport)):
-                    if i != j:
-                        flight = FlightRoute(
-                            f"AW {flight_id:03d}",
-                            all_airport[i],
-                            all_airport[j],
-                            STATUS_AVALIABLE,
-                            sche_001,
-                            random.randint(1000, 5000),
-                            datetime.today().isoformat(),
-                        )
-                        gen_flights.append(flight)
-                        flight_id += 1
-
-        airline.set_flight(gen_flights)
+        airline.set_flight(gen_flights[0])
+        airline.set_flight_route(gen_flights[1])
         
         return airline
