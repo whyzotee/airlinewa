@@ -112,7 +112,7 @@ class Airlinewa:
         return self.__fight_list
 
     @property
-    def get_flight_route_list(self) -> list[FlightRoute] :
+    def get_flight_route_list(self) -> list[FlightRoute]:
         return self.__fight_route_list
 
     @property
@@ -131,9 +131,9 @@ class Airlinewa:
         airport_list = airline.get_airport_list
         aircraft_list = airline.get_aircraft_list
 
-        gen_flights = MockUp.gen_flight_and_flight_route(airport_list, aircraft_list)
+        gen_flights, gen_flight_route  = MockUp.gen_flight_and_flight_route(airport_list, aircraft_list)
 
-        airline.set_flight(gen_flights[0])
-        airline.set_flight_route(gen_flights[1])
+        airline.set_flight(gen_flights)
+        airline.set_flight_route(gen_flight_route)
         
         return airline

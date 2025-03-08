@@ -94,7 +94,6 @@ def login(model: LoginModel):
 
 @app.get("/api/flight")
 def api_search_flight(origin: str, destination: str, date: str):
-
     if origin is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="ORIGIN_INVALID"
@@ -110,11 +109,6 @@ def api_search_flight(origin: str, destination: str, date: str):
             status_code=status.HTTP_400_BAD_REQUEST, detail="DATE_INVALID"
         )
 
-    src = origin.upper()
-    dest = destination.upper()
-
-    print(src, dest, date)
-
     flight_route_list = []
 
     for flight_route in airline.get_flight_route_list:
@@ -122,10 +116,7 @@ def api_search_flight(origin: str, destination: str, date: str):
         flight_destination = flight_route.get_destination
         flight_date = flight_route.get_date
 
-        origin_upper = flight_origin[-1].upper()
-        destination_upper = flight_destination[-1].upper()
-
-        if origin_upper == src and destination_upper == dest and flight_route.is_avaliable:
+        if flight_origin[-1] == origin and flight_destination[-1] == destination and flight_route.is_avaliable:
             flight_route_list.append({
                 "id": str(flight_route.get_id),
                 "origin": flight_route.get_origin,
@@ -139,9 +130,6 @@ def api_search_flight(origin: str, destination: str, date: str):
                 # "status": flight_status
             })
 
-    if len(flight_route_list) <= 0:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="NO_FLIGHT_FOUND")
-    
     return flight_route_list
 
 @app.post("/api/checkout")

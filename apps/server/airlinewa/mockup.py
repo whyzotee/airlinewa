@@ -199,6 +199,7 @@ class MockUp:
                         )
 
                         gen_flights.append(Flight(gen_flight, random.choice(aircraft_list)))
+                        gen_flights_route.append(gen_flight)
                         flight_id += 1
         
-        return [gen_flights, gen_flights_route]
+        return gen_flights, gen_flights_route
