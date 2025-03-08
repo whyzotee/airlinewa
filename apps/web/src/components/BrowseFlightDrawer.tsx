@@ -1,3 +1,4 @@
+import { delay } from "@/app/function";
 import { Airport } from "@/client";
 import { apiGetAirportListApiAirportGetOptions } from "@/client/@tanstack/react-query.gen";
 import AddIcon from "@mui/icons-material/Add";
@@ -18,8 +19,9 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { useForm } from "@tanstack/react-form";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import dayjs from "dayjs";
-import { FC, useCallback, useMemo, useState } from "react";
+import dayjs, { Dayjs } from "dayjs";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 
 type SeatClass = "economy" | "business" | "eco-premium" | "first-class";
 
@@ -31,8 +33,8 @@ interface BrowseFlightForm {
   promotionCode: string;
   originCode: string | null;
   destinationCode: string | null;
-  departureDate: string | null;
-  returnDate: string | null;
+  departureDate: Dayjs | string | null;
+  returnDate: Dayjs | string | null;
   passenger: {
     adult: number;
     kid: number;
@@ -100,16 +102,46 @@ const BrowseFlightDrawer: FC<Prop> = ({ open, setOpen }) => {
         child: 0,
       },
     } as BrowseFlightForm,
-  });
+    onSubmit: ({ value }) => {
+      const formData = { ...value };
 
-  // const [trip, setTrip] = useState("onetrip");
-  // const [seatClass, setSeatClass] = useState("eco");
-  // const [promoCode, setPromoCode] = useState("");
-  // const [srcValue, setSrcValue] = useState<string | null>(null);
-  // const [destValue, setDestValue] = useState<string | null>(null);
-  // const [goDate, setGoDate] = useState<Dayjs | null>(null);
-  // const [backDate, setBackDate] = useState<Dayjs | null>(null);
-  // const [peopleCountAll, setPeopleCountAll] = useState([1, 1, 0, 0]);
+      if (value.originCode === null || value.destinationCode === null) {
+        return toast.error("Please select origin and destination");
+      }
+
+      if (value.departureDate == null) {
+        return toast.error("Please select go Date");
+      }
+
+      if (value.tripeType == "go-back" && value.returnDate == null) {
+        return toast.error("Please select back Date");
+      }
+
+      if (
+        formData.departureDate != null &&
+        dayjs.isDayjs(formData.departureDate)
+      ) {
+        formData.departureDate = formData.departureDate.toISOString();
+      }
+
+      console.log(formData);
+
+      toast.promise(delay(1000), {
+        loading: "Getting flight....",
+        success: () => {
+          navigate({
+            to: "/flight",
+            search: {
+              ...formData,
+            },
+            // state: { flights: data },
+          });
+          return "Founded";
+        },
+        error: "Error!",
+      });
+    },
+  });
 
   const navigate = useNavigate();
   const currentYear = dayjs();
@@ -147,54 +179,6 @@ const BrowseFlightDrawer: FC<Prop> = ({ open, setOpen }) => {
 
   const handleClosePassengerMenu = () => setAnchorEl(null);
 
-  // const apiSearchFlight = async () => {
-  //   if (srcValue === null || destValue === null) {
-  //     return toast.error("Please select origin and destination");
-  //   }
-
-  //   if (goDate == null) {
-  //     return toast.error("Please select go Date");
-  //   }
-
-  //   if (trip == "go-back" && backDate == null) {
-  //     return toast.error("Please select back Date");
-  //   }
-
-  //   const formatData = {
-  //     tripType: trip,
-  //     seatClass: seatClass,
-  //     peopleCount: peopleCountAll,
-  //     src: srcValue,
-  //     dest: destValue,
-  //     departureDate: goDate?.toISOString(),
-  //     returnDate: backDate?.toISOString(),
-  //   };
-
-  //   console.log(formatData);
-
-  //   await toast.promise(
-  //     APISearchFlight(
-  //       formatData.src,
-  //       formatData.dest,
-  //       formatData.departureDate
-  //     ),
-  //     {
-  //       loading: "Getting flight....",
-  //       success: (data) => {
-  //         navigate({
-  //           to: "/flight",
-  //           search: {
-  //             ...formatData,
-  //           },
-  //           // state: { flights: data },
-  //         });
-  //         return "Founded";
-  //       },
-  //       error: "Error!",
-  //     }
-  //   );
-  // };
-
   const getAirportOptions = useCallback(
     (airports: Airport[], value: string | null) => {
       const originCode = form.getFieldValue("originCode");
@@ -216,6 +200,18 @@ const BrowseFlightDrawer: FC<Prop> = ({ open, setOpen }) => {
     },
     [form]
   );
+
+  const [tripType, setTripType] = useState<Trip | undefined>(
+    form.getFieldValue("tripeType")
+  );
+
+  useEffect(() => {
+    const unsubscribe = form.store.subscribe(() => {
+      setTripType(form.store.state.values.tripeType);
+    });
+
+    return () => unsubscribe();
+  }, [form]);
 
   return (
     <Drawer anchor="top" open={open} onClose={() => setOpen(false)}>
@@ -414,16 +410,25 @@ const BrowseFlightDrawer: FC<Prop> = ({ open, setOpen }) => {
 
             <div className="flex gap-4 mb-0.5">
               <DemoContainer components={["DatePicker"]}>
-                <DatePicker
-                  label="วันออกเดินทาง"
-                  minDate={currentYear}
-                  slotProps={{ textField: { size: "small" } }}
-                  // value={goDate}
-                  // onChange={(value) => setGoDate(value)}
+                <form.Field
+                  name="departureDate"
+                  children={(field) => {
+                    return (
+                      <DatePicker
+                        label="วันออกเดินทาง"
+                        minDate={currentYear}
+                        slotProps={{ textField: { size: "small" } }}
+                        value={field.state.value}
+                        onChange={(value) =>
+                          field.handleChange(value ? value : null)
+                        }
+                      />
+                    );
+                  }}
                 />
               </DemoContainer>
               <DemoContainer components={["DatePicker"]}>
-                {"go-back" == "go-back" ? (
+                {tripType == "go-back" ? (
                   <DatePicker
                     label="วันออกเดินทาง"
                     minDate={currentYear}
@@ -439,8 +444,7 @@ const BrowseFlightDrawer: FC<Prop> = ({ open, setOpen }) => {
               size="small"
               variant="outlined"
               className="w-full lg:w-fit"
-              // fullWidth={trip != "go-back"}
-              // onClick={apiSearchFlight}
+              type="submit"
             >
               <p className="py-1 px-16">ค้นหา</p>
             </Button>

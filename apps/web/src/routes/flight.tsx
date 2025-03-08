@@ -1,4 +1,4 @@
-import { getFlightApiSearchFlightGetOptions } from "@/client/@tanstack/react-query.gen";
+import { apiSearchFlightApiFlightGetOptions } from "@/client/@tanstack/react-query.gen";
 import { useAuthStore } from "@/lib/zustand";
 import { APICheckout } from "@/services/checkout";
 import { Button, Card, CardContent, Typography } from "@mui/material";
@@ -10,18 +10,18 @@ import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 
 type FlightSearch = {
-  src: string;
-  dest: string;
-  date: string;
+  origin: string | unknown;
+  destination: string | unknown;
+  date: string | unknown;
 };
 
 export const Route = createFileRoute("/flight")({
   validateSearch: (search: Record<string, unknown>): FlightSearch => {
     // validate and parse the search params into a typed state
     return {
-      src: search.src,
-      dest: search.dest,
-      date: search.date,
+      origin: search.originCode,
+      destination: search.destinationCode,
+      date: search.departureDate,
     };
   },
   loader: ({ location }) => {
@@ -35,18 +35,23 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
 
   const flightsQuery = useSuspenseQuery(
-    getFlightApiSearchFlightGetOptions({
+    apiSearchFlightApiFlightGetOptions({
       query: {
-        src,
-        dest,
-        date,
+        src: Route.useSearch().origin,
+        dest: Route.useSearch().destination,
+        date: Route.useSearch().date,
       },
     })
   );
 
+  console.log(
+    "flightsQueryflightsQueryflightsQueryflightsQuery",
+    flightsQuery.data
+  );
+
   const authStore = useAuthStore();
   // const flighsQuery = useSuspenseQuery(
-  //   getFlightApiSearchFlightGetOptions({
+  //   apiSearchFlightApiFlightGetOptions({
   //     query: {
   //       src: "BKK",
   //       dest: "KOP",
@@ -127,8 +132,8 @@ function RouteComponent() {
     <main className="p-8">
       <Typography variant="h4">เที่ยวบินที่มีให้เลือก</Typography>
       <br />
-      {flights.length > 0 ? (
-        flights.map((flight, index) => {
+      {flightsQuery.data.flights.length > 0 ? (
+        flightsQuery.data.flights.map((flight, index) => {
           console.log(flight, index);
 
           return (

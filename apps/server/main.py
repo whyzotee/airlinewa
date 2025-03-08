@@ -26,7 +26,6 @@ class Airport(BaseModel):
     address: str
     code: str
 
-
 class APICheckout(BaseModel):
     id: str
 
