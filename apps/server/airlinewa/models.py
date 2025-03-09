@@ -62,6 +62,15 @@ class PaymentModel(BaseModel):
     contact: PaymentContact
 
 
+class PaymentGateway(BaseModel):
+    payment_id: str
+    type: str
+    number: str
+    out_date: str
+    cvv: str
+    holder_name: str
+    
+
 class LoginModel(BaseModel):
     username: str
     password: str

@@ -130,12 +130,12 @@ const UserDetail = () => {
           <div className="grid grid-cols-3 gap-4">
             <Select
               displayEmpty
-              value={formData.identityType.type}
+              value={formData.identity_type.type}
               onChange={(e) =>
                 dispatch(
                   updateFormData({
-                    identityType: {
-                      ...formData.identityType,
+                    identity_type: {
+                      ...formData.identity_type,
                       type: e.target.value,
                     },
                   })
@@ -151,15 +151,15 @@ const UserDetail = () => {
               label="Number"
               variant="outlined"
               customInput={TextField}
-              value={formData.identityType.number}
+              value={formData.identity_type.number}
               className={
-                formData.identityType.type == "passport" ? "" : "col-span-2"
+                formData.identity_type.type == "passport" ? "" : "col-span-2"
               }
               onChange={(e) =>
                 dispatch(
                   updateFormData({
-                    identityType: {
-                      ...formData.identityType,
+                    identity_type: {
+                      ...formData.identity_type,
                       number: e.target.value,
                     },
                   })
@@ -167,17 +167,17 @@ const UserDetail = () => {
               }
             />
 
-            {formData.identityType.type === "passport" ? (
+            {formData.identity_type.type === "passport" ? (
               <TextField
                 id="outdate"
                 label="Out Date"
                 variant="outlined"
-                value={formData.identityType.out_date}
+                value={formData.identity_type.out_date}
                 onChange={(e) =>
                   dispatch(
                     updateFormData({
-                      identityType: {
-                        ...formData.identityType,
+                      identity_type: {
+                        ...formData.identity_type,
                         out_date: e.target.value,
                       },
                     })

@@ -82,8 +82,7 @@ const BrowseFlightForm = ({
     []
   );
 
-  const airportsQuery = useSuspenseQuery(airportGetAirportsOptions());
-
+  const airportsQuery = useSuspenseQuery(airportGetAirportsOptions({}));
   const airports = airportsQuery.data;
 
   const flights: BrowseFlightForm = useSearch("/flight");

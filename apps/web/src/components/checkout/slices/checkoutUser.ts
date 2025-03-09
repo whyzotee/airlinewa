@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { checkoutUserForm } from '../validation';
 
 interface CheckoutUserState {
@@ -9,7 +9,7 @@ interface CheckoutUserState {
         gender: string;
         country: string;
         birthday: string;
-        identityType: {
+        identity_type: {
             type: string,
             number: string,
             out_date: string,
@@ -26,7 +26,7 @@ const initialState = {
         gender: "",
         country: "",
         birthday: "",
-        identityType: {
+        identity_type: {
             type: "id_card",
             number: "",
             out_date: "",
@@ -46,8 +46,8 @@ const checkoutUserSlice = createSlice({
             state.formData = { ...state.formData, ...action.payload };
             state.isValid = checkoutUserForm.safeParse(state.formData).success;
 
-            if (state.formData.identityType.type == "passport") {
-                if (!state.formData.identityType.out_date.trim()) {
+            if (state.formData.identity_type.type == "passport") {
+                if (!state.formData.identity_type.out_date.trim()) {
                     state.isValid = false;
                 }
             }

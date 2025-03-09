@@ -1,9 +1,15 @@
+import { delay } from "@/app/function";
+import { paymentPaymentGatewayMutation } from "@/client/@tanstack/react-query.gen";
 import AppBar from "@/components/appBar";
 import FlightDetail from "@/components/checkout/components/CheckoutFlightDetails";
 import PaymentCard from "@/components/payment/PaymentCard";
 import PaymentTabs from "@/components/payment/PaymentTabs";
+import { usePaymentStore } from "@/lib/zustand";
 import { Breadcrumbs, Typography } from "@mui/material";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 export const Route = createFileRoute("/app/payment")({
   loader: ({ location }) => {
@@ -15,7 +21,67 @@ export const Route = createFileRoute("/app/payment")({
 });
 
 function RouteComponent() {
+  const navigate = useNavigate();
+
   const { data } = Route.useLoaderData();
+  const { payment, setPayment } = usePaymentStore();
+  const paymentMutation = useMutation(paymentPaymentGatewayMutation());
+
+  const payBTNClick = () => {
+    if (paymentMutation.isPending) return;
+
+    if (payment.number.trim().length != 16) {
+      return toast.error("Error: Enter your card number");
+    }
+
+    if (payment.out_date.trim().length != 5) {
+      return toast.error("Error: Enter your card out date");
+    }
+    console.log(payment.cvv.trim().length);
+
+    if (payment.cvv.trim().length != 3) {
+      return toast.error("Error: Enter your card cvv");
+    }
+
+    if (payment.holder_name.trim() == "") {
+      return toast.error("Error: Enter your holder name");
+    }
+
+    const payGateway = paymentMutation.mutateAsync({
+      body: payment,
+    });
+
+    toast.promise(
+      async () => {
+        await delay(2000);
+        return await payGateway;
+      },
+      {
+        loading: "Peding payment...",
+        success: (value) => {
+          console.log("Payment sucess", value);
+
+          navigate({
+            to: "/app/success",
+            search: {
+              payment_id: value.res.payment_id,
+            },
+            // replace: true,
+          });
+          return "Success";
+        },
+        error: (error) => {
+          console.error(error);
+          return error.response.data.detail;
+        },
+      }
+    );
+  };
+
+  useEffect(() => {
+    setPayment({ ["type"]: "CREDIT_DEBIT" });
+    setPayment({ ["payment_id"]: data.payment_id });
+  }, [setPayment, data.payment_id]);
 
   return (
     <main className="font-noto-thai">
@@ -35,10 +101,10 @@ function RouteComponent() {
           <PaymentTabs />
         </div>
 
-        <PaymentCard price={data.price} />
+        <PaymentCard onClick={payBTNClick} price={data.price} />
       </div>
-      <h1>Payment</h1>
-      <h1>{JSON.stringify(data)}</h1>
+      {/* <h1>Payment</h1> */}
+      {/* <h1>{JSON.stringify(data)}</h1> */}
     </main>
   );
 }

@@ -1,4 +1,4 @@
-from airlinewa.models import CheckoutModel, PaymentModel
+from airlinewa.models import CheckoutModel, PaymentGateway, PaymentModel
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
 
@@ -7,16 +7,10 @@ from airlinewa import airline
 router = APIRouter(prefix="/payment", tags=["payment"])
 
 
-class PaymentGateway(BaseModel):
-    payment_id: str
-    type: str
-    payment_date: str
-
-
 @router.post("/")
 def payments(model: PaymentModel):
     try:
-        flight_route, payment_method = airline.booking_flight_route(
+        flight_route, payment_transaction, payment_method = airline.booking_flight_route(
             model.user_id, model.flight_route_id, model.passengers, model.contact
         )
 
@@ -39,6 +33,7 @@ def payments(model: PaymentModel):
             "date": flight_route.date,
         },
         "price": [flight_route.price, flight_route.tax],
+        "payment_id": payment_transaction.id,
         "payment_method": payment_method,
     }
 
@@ -68,18 +63,14 @@ async def checkout(model: CheckoutModel):
     }
 
 
-# @router.post("/gateway", status_code=status.HTTP_200_OK)
-# def payment_gateway(model: PaymentGateway):
-#     model
-
-#     return {
-#         "id": flight_route.get_id,
-#         "info": {
-#             "origin": flight_route.get_origin,
-#             "destination": flight_route.get_destination,
-#             "schedule": flight_route.get_schedule.get_info,
-#             "date": flight_route.get_date,
-#         },
-#         "price": [flight_route.get_price, flight_route.get_tax],
-#         "payment_method": payment_method
-#     }
+@router.post("/payment_gateway")
+def payment_gateway(model: PaymentGateway):
+    if model.number == "2"*16:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="CARD_DECLINED")
+    
+    if model.number == "3"*16:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="CARD_DECLINED")
+    
+    return { 
+        "res": model
+    }

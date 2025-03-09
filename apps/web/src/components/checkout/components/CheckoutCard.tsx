@@ -1,8 +1,9 @@
-import axios from "axios";
 import toast from "react-hot-toast";
 
 import { delay } from "@/app/function";
+import { paymentPaymentsMutation } from "@/client/@tanstack/react-query.gen";
 import { Button, Card, Divider } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
@@ -17,9 +18,13 @@ const CheckoutCard = ({ user_id, flight_route_id, price }: GetPayment) => {
   const navigate = useNavigate();
 
   const dataUser = useSelector((state: RootState) => state.checkoutUser);
-
   const dataContact = useSelector((state: RootState) => state.checkoutContact);
+
+  const paymentMutation = useMutation(paymentPaymentsMutation());
+
   const callAPI = async () => {
+    if (paymentMutation.isPending) return;
+
     if (!user_id) throw new Error("Please login first");
 
     if (!dataUser.isValid) throw new Error("Please fill all the user form");
@@ -29,27 +34,35 @@ const CheckoutCard = ({ user_id, flight_route_id, price }: GetPayment) => {
 
     await delay(1000);
 
-    const response = await axios.post("http://127.0.0.1:8000/api/payment", {
-      user_id: user_id,
-      flight_route_id: flight_route_id,
-      passengers: [dataUser.formData],
-      contact: dataContact.contactData,
+    const payment = paymentMutation.mutateAsync({
+      body: {
+        user_id: user_id,
+        flight_route_id: flight_route_id,
+        passengers: [dataUser.formData],
+        contact: dataContact.contactData,
+      },
     });
+    // const response = await axios.post("http://127.0.0.1:8000/api/payment", {
+    //   user_id: user_id,
+    //   flight_route_id: flight_route_id,
+    //   passengers: [dataUser.formData],
+    //   contact: dataContact.contactData,
+    // });
 
-    const data = response.data;
+    // const data = payment.data;
 
-    if (response.status != 200 || data == null) {
-      throw new Error("Something error please try again");
-    }
+    // if (payment.status != 200 || data == null) {
+    //   throw new Error("Something error please try again");
+    // }
 
-    return data;
+    return payment;
   };
 
   const handleClick = () => {
     toast.promise(callAPI(), {
       loading: "Loading...",
       success: (data) => {
-        navigate({ to: "/app/payment", state: data });
+        navigate({ to: "/app/payment", state: data }); //replace: true });
         return null;
       },
       error: (err) => {

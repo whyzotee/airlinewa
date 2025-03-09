@@ -51,6 +51,15 @@ export type PaymentContact = {
     phone_number: string;
 };
 
+export type PaymentGateway = {
+    payment_id: string;
+    type: string;
+    number: string;
+    out_date: string;
+    cvv: string;
+    holder_name: string;
+};
+
 export type PaymentIdentity = {
     type: string;
     number: string;
@@ -192,6 +201,29 @@ export type PaymentCheckoutErrors = {
 export type PaymentCheckoutError = PaymentCheckoutErrors[keyof PaymentCheckoutErrors];
 
 export type PaymentCheckoutResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type PaymentPaymentGatewayData = {
+    body: PaymentGateway;
+    path?: never;
+    query?: never;
+    url: '/api/payment/payment_gateway';
+};
+
+export type PaymentPaymentGatewayErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PaymentPaymentGatewayError = PaymentPaymentGatewayErrors[keyof PaymentPaymentGatewayErrors];
+
+export type PaymentPaymentGatewayResponses = {
     /**
      * Successful Response
      */

@@ -15,7 +15,12 @@ class Payment:
     def method():
         return [PaymentType.CREDIT_DEBIT, PaymentType.WALLET]
 
-    def __init__(self, payment_id, status, type=None, payment_date: datetime=None):
+    @staticmethod
+    def create_payment(flight_route_id: str):
+        pay = Payment(f"PAY_{flight_route_id.replace(" ","_")}", PaymentStatus.PENDING_PAYMENT)
+        return pay
+
+    def __init__(self, payment_id, status, type=None, payment_date: datetime | None = None):
         self.__payment_id = payment_id
         self.__type = type
         self.__payment_date = payment_date

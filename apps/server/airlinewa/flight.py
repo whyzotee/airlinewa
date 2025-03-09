@@ -2,10 +2,9 @@ from datetime import datetime
 
 from .air import Aircraft, Airport
 
-
 class FlightSchedule:
     def __init__(
-        self, id: str, day_of_week: str, departure_time: str, arrive_time: str, duration
+        self, id: str, day_of_week, departure_time: str, arrive_time: str, duration
     ):
         self.__id = id
         self.__day_of_week = day_of_week

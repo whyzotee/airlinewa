@@ -28,3 +28,44 @@ export const useAuthStore = create<AuthState>()(
     )
   )
 );
+
+interface PaymentData {
+  payment_id: string;
+  type: string;
+  number: string;
+  out_date: string;
+  cvv: string;
+  holder_name: string;
+}
+
+interface PaymentStore {
+  payment: PaymentData;
+  setPayment: (newPayment: Partial<PaymentData>) => void;
+  resetPayment: () => void;
+}
+
+export const usePaymentStore = create<PaymentStore>((set) => ({
+  payment: {
+    payment_id: "",
+    type: "",
+    number: "",
+    out_date: "",
+    cvv: "",
+    holder_name: "",
+  },
+  setPayment: (newPayment) =>
+    set((state) => ({
+      payment: { ...state.payment, ...newPayment },
+    })),
+  resetPayment: () =>
+    set((state) => ({
+      payment: {
+        payment_id: state.payment.payment_id,
+        type: "",
+        number: "",
+        out_date: "",
+        cvv: "",
+        holder_name: "",
+      },
+    })),
+}));

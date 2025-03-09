@@ -99,8 +99,8 @@ export default function CheckoutContact() {
           <Autocomplete
             disablePortal
             options={contryCode}
-            value={checkout.contactData.countryCode}
-            onChange={(_, v) => dispatch(updateFormData({ countryCode: v! }))}
+            value={checkout.contactData.country_code}
+            onChange={(_, v) => dispatch(updateFormData({ country_code: v! }))}
             renderInput={(params) => (
               <TextField {...params} label="Contry Code" />
             )}
@@ -112,9 +112,9 @@ export default function CheckoutContact() {
             maxLength={12}
             customInput={TextField}
             className="col-span-2"
-            value={checkout.contactData.phoneNumber}
+            value={checkout.contactData.phone_number}
             onChange={(e) =>
-              dispatch(updateFormData({ phoneNumber: e.target.value }))
+              dispatch(updateFormData({ phone_number: e.target.value }))
             }
           />
           <h1 className="text-xs text-gray-500 col-span-5">

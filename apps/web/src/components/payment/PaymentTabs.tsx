@@ -2,10 +2,11 @@ import { TextField } from "@mui/material";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
-import { useState } from "react";
 
+import { usePaymentStore } from "@/lib/zustand";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
+import { useState } from "react";
 import { PatternFormat } from "react-number-format";
 
 interface TabPanelProps {
@@ -39,17 +40,25 @@ function a11yProps(index: number) {
 }
 
 const PaymentTabs = () => {
+  const { setPayment, resetPayment } = usePaymentStore();
   const [value, setValue] = useState(0);
 
-  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
+
+    resetPayment();
+    setPayment({ ["type"]: newValue == 0 ? "CREDIT_DEBIT" : "WALLET" });
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPayment({ [e.target.id]: e.target.value.replace(/ /g, "") });
   };
 
   return (
     <Box className="flex p-4 border-gray-200 border-1 rounded-lg">
       <Tabs
         value={value}
-        onChange={handleChange}
+        onChange={handleTabChange}
         orientation="vertical"
         aria-label="basic tabs example"
         sx={{ borderRight: 1, borderColor: "divider" }}
@@ -76,7 +85,8 @@ const PaymentTabs = () => {
       <TabPanel value={value} index={0}>
         <div className="flex flex-col gap-4">
           <PatternFormat
-            id="card_number"
+            id="number"
+            onChange={handleInputChange}
             label="หมายเลขบัตร"
             valueIsNumericString
             customInput={TextField}
@@ -86,13 +96,14 @@ const PaymentTabs = () => {
 
           <div className="flex gap-4">
             <PatternFormat
-              id="card_out_date"
+              id="out_date"
               label="วันที่หมดอายุ"
               valueIsNumericString
               placeholder="MM/YY"
               customInput={TextField}
               format="##/##"
               mask=" "
+              onChange={handleInputChange}
             />
             <PatternFormat
               id="cvv"
@@ -102,6 +113,7 @@ const PaymentTabs = () => {
               customInput={TextField}
               format="###"
               mask=" "
+              onChange={handleInputChange}
             />
           </div>
           <TextField
@@ -109,6 +121,7 @@ const PaymentTabs = () => {
             label="ชื่อผู้ถือบัตร"
             variant="outlined"
             fullWidth
+            onChange={handleInputChange}
           />
         </div>
       </TabPanel>

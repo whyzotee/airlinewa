@@ -7,8 +7,8 @@ interface ContactState {
         name: string;
         lastname: string;
         email: string;
-        countryCode: string;
-        phoneNumber: string;
+        country_code: string;
+        phone_number: string;
     }
     isValid: boolean,
 }
@@ -19,8 +19,8 @@ const initialState = {
         name: "",
         lastname: "",
         email: "",
-        countryCode: "",
-        phoneNumber: "",
+        country_code: "",
+        phone_number: "",
     },
     isValid: false,
 } as ContactState

@@ -8,7 +8,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
     "web": "cd apps/web && pnpm dev",
-    "api": "cd apps/server && fastapi dev main.py"
+    "api": "cd apps/server && fastapi dev main.py",
+    "clean-cache": "python ./apps/server/clean_cache.py"
   },
   "devDependencies": {
     "prettier": "^3.5.3",

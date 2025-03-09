@@ -61,6 +61,15 @@ export const zPaymentContact = z.object({
     phone_number: z.string()
 });
 
+export const zPaymentGateway = z.object({
+    payment_id: z.string(),
+    type: z.string(),
+    number: z.string(),
+    out_date: z.string(),
+    cvv: z.string(),
+    holder_name: z.string()
+});
+
 export const zPaymentIdentity = z.object({
     type: z.string(),
     number: z.string(),

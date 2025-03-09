@@ -1,8 +1,7 @@
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import FlightLandIcon from "@mui/icons-material/FlightLand";
+import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 
-import logo from "/logo.jpg";
 import {
   Accordion,
   AccordionDetails,
@@ -10,6 +9,7 @@ import {
   Avatar,
   Divider,
 } from "@mui/material";
+import logo from "/logo.jpg";
 
 interface Schedule {
   id: string;

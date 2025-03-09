@@ -8,7 +8,6 @@ from .payment import Payment
 from .service import *
 from .user import *
 
-
 class Airlinewa:
     def __init__(self):
         self.__user_list: list[User] = MockUp.gen_users()
@@ -17,6 +16,7 @@ class Airlinewa:
         self.__booking_list: list[Booking] = []
         self.__aircraft_list: list[Aircraft] = MockUp.gen_aircraft()
         self.__airport_list: list[Airport] = MockUp.gen_airport()
+        self.__payment_list: list[Payment]  = []
 
     def set_flight(self, list_flight: list[Flight]):
         self.__fight_list = list_flight
@@ -27,12 +27,12 @@ class Airlinewa:
     # ============================ Medthod ============================ #
 
     # Function Section
-    def get_flight(self, flight_id) -> Flight:
+    def get_flight(self, flight_id) -> Flight | None:
         for flight in self.__fight_list:
             if flight.flight_route.id == flight_id:
                 return flight
-
-    def get_flight_route(self, flight_route_id) -> FlightRoute:
+        
+    def get_flight_route(self, flight_route_id) -> FlightRoute | None:
         for flight_route in self.__fight_route_list:
             if flight_route.id == flight_route_id:
                 return flight_route
@@ -45,13 +45,13 @@ class Airlinewa:
         self,
         user_id,
         flight_route_id,
-        passengers: list[Passenger] | None,
-        contact: Contact,
-    ) -> tuple[FlightRoute, list[str]]:
+        passengers,
+        contact,
+    ) -> tuple[FlightRoute, Payment, list[str]]:
 
         user = self.get_user(user_id)
-
-        if user == None:
+        
+        if not user or not passengers:
             raise Exception("USER_NOT_FOUND")
 
         flight = self.get_flight(flight_route_id)
@@ -65,8 +65,10 @@ class Airlinewa:
         reserve_seat = flight.aircraft.reserve_seat(len(passengers))
 
         payment_method = Payment.method()
+        payment_trasaction = Payment.create_payment(flight.flight_route.id)
+        self.__payment_list.append(payment_trasaction)
 
-        return flight.flight_route, payment_method
+        return flight.flight_route, payment_trasaction, payment_method
 
     def create_booking(
         self,
@@ -116,7 +118,7 @@ class Airlinewa:
     # def get_booking_list(self) -> list[Booking]:
     #     return self.__booking_list
 
-    def get_user(self, user_id) -> User:
+    def get_user(self, user_id) -> User | None:
         for user in self.__user_list:
             if user.get_id == user_id:
                 return user
@@ -138,8 +140,8 @@ class Airlinewa:
         return self.__airport_list
 
     # ===================== Initialize ===================== #
-    @classmethod
-    def initialize(self):
+    @staticmethod
+    def initialize():
         airline = Airlinewa()
 
         airport_list = airline.airport_list

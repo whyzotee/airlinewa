@@ -1,7 +1,7 @@
 from .flight import FlightRoute
 from .passenger import Passenger
 from .user import User
-
+from .service import Service
 
 class Booking:
     # def __init__(self, id, user:User, flight_instance: Flight, ticket, payment, passenger:list[Passenger],service):
@@ -11,7 +11,7 @@ class Booking:
         user: User,
         flight_route: FlightRoute,
         passenger: list[Passenger],
-        services: list,
+        services: list[Service] | None,
     ):
         self.__id = id
         self.__user = user
