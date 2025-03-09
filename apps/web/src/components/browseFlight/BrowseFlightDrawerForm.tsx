@@ -97,7 +97,7 @@ const BrowseFlightForm = ({
       originCode: flights.originCode,
       destinationCode: flights.destinationCode,
       departureDate: isHome ? null : dayjs(flights.departureDate),
-      returnDate: null,
+      returnDate: isHome ? null : dayjs(flights.returnDate),
       passenger: {
         adult: 0,
         kid: 0,
@@ -151,7 +151,6 @@ const BrowseFlightForm = ({
     (airports: Airport[], value: string | null) => {
       const originCode = form.getFieldValue("originCode");
       // console.debug(originCode);
-
       return airports
         .filter((airport) => {
           // if (originCode == "BKK" && airport.code == "DMK") {
@@ -399,6 +398,8 @@ const BrowseFlightForm = ({
                       minDate={currentYear}
                       slotProps={{ textField: { size: "small" } }}
                       value={field.state.value}
+                      format="DD/MM/YYYY"
+                      views={["day", "month", "year"]}
                       onChange={(value) =>
                         field.handleChange(value ? value : null)
                       }
@@ -412,6 +413,7 @@ const BrowseFlightForm = ({
                 <DatePicker
                   label="วันออกเดินทาง"
                   minDate={currentYear}
+                  format="DD/MM/YYYY"
                   // value={backDate}
                   // onChange={(value) => setBackDate(value)}
                   slotProps={{ textField: { size: "small" } }}

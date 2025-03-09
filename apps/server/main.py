@@ -54,6 +54,11 @@ class GetPayment(BaseModel):
     passengers: list[Passenger]
     contact: GetPaymentContact
 
+class PaymentGateway(BaseModel):
+    payment_id: str
+    type: str
+    payment_date: str
+
 class LoginModel(BaseModel):
     username: str
     password: str
@@ -168,6 +173,23 @@ def get_payment(model: GetPayment):
     if not airline.is_flight_route(flight_route) or flight_route == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="NO_FLIGHT_FOUND")
 
+    return { 
+        "id": flight_route.get_id, 
+        "info": {
+            "origin": flight_route.get_origin,
+            "destination": flight_route.get_destination,
+            "schedule": flight_route.get_schedule.get_info,
+            "date": flight_route.get_date,
+        },
+        "price": [flight_route.get_price, flight_route.get_tax],
+        "payment_method": payment_method
+    }
+
+@app.post("/api/payment_gateway", status_code=status.HTTP_200_OK)
+def payment_gateway(model: PaymentGateway):
+    model
+    # HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err)
+    
     return { 
         "id": flight_route.get_id, 
         "info": {

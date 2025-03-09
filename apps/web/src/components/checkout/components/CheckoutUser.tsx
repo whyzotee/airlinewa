@@ -1,5 +1,5 @@
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AccessibilityIcon from "@mui/icons-material/Accessibility";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import {
   Accordion,
@@ -13,9 +13,13 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import dayjs from "dayjs";
+import { NumericFormat } from "react-number-format";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
 import { updateFormData } from "../slices/checkoutUser";
-import { useDispatch, useSelector } from "react-redux";
 
 const options = [{ label: "Thailand" }, { label: "Singapore" }];
 
@@ -92,6 +96,7 @@ const UserDetail = () => {
               }
             />
             <Autocomplete
+              className="pt-2"
               disablePortal
               options={options}
               value={{ label: formData.country }}
@@ -102,15 +107,22 @@ const UserDetail = () => {
                 <TextField {...params} label="Country" />
               )}
             />
-            <TextField
-              id="brith"
-              label="Brithday"
-              variant="outlined"
-              value={formData.birthday}
-              onChange={(e) =>
-                dispatch(updateFormData({ birthday: e.target.value }))
-              }
-            />
+            <DemoContainer
+              components={["DatePicker", "DatePicker", "DatePicker"]}
+            >
+              <DatePicker
+                // maxDate={dayjs("2025/12/31")}
+                label="Brithday"
+                format="DD/MM/YYYY"
+                views={["day", "month", "year"]}
+                value={
+                  formData.birthday != "" ? dayjs(formData.birthday) : null
+                }
+                onChange={(value) =>
+                  dispatch(updateFormData({ birthday: value?.toISOString() }))
+                }
+              />
+            </DemoContainer>
           </div>
 
           <p className="text-sm font-bold">ประเภทเอกสารการเดินทาง</p>
@@ -134,10 +146,11 @@ const UserDetail = () => {
               <MenuItem value="passport">Passport</MenuItem>
             </Select>
 
-            <TextField
+            <NumericFormat
               id="number"
               label="Number"
               variant="outlined"
+              customInput={TextField}
               value={formData.identityType.number}
               className={
                 formData.identityType.type == "passport" ? "" : "col-span-2"
