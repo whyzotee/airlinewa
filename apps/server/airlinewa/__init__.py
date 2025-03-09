@@ -1,12 +1,13 @@
 from .air import *
-from .user import *
-from .flight import *
-from .service import *
 from .booking import Booking
+from .flight import *
+from .mockup import MockUp
 from .payment import Payment, PaymentStatus
 from .passenger import GENDER, IDENTITY_TYPE, Passenger
+from .payment import Payment
+from .service import *
+from .user import *
 
-from .mockup import MockUp
 
 class Airlinewa:
     def __init__(self):
@@ -28,29 +29,31 @@ class Airlinewa:
     # Function Section
     def get_flight(self, flight_id) -> Flight:
         for flight in self.__fight_list:
-            if flight.flight_route.get_id == flight_id:
+            if flight.flight_route.id == flight_id:
                 return flight
-            
+
     def get_flight_route(self, flight_route_id) -> FlightRoute:
-         for flight_route in self.__fight_route_list:
-            if flight_route.get_id == flight_route_id:
+        for flight_route in self.__fight_route_list:
+            if flight_route.id == flight_route_id:
                 return flight_route
-    
+
     @staticmethod
     def is_flight_route(flight_route) -> bool:
         return isinstance(flight_route, FlightRoute)
-    
-    def booking_flight_route(self, 
-                             user_id, 
-                             flight_route_id, 
-                             passengers: list[Passenger] | None, 
-                             contact: Contact) ->  tuple[FlightRoute, list[str]]:
-        
+
+    def booking_flight_route(
+        self,
+        user_id,
+        flight_route_id,
+        passengers: list[Passenger] | None,
+        contact: Contact,
+    ) -> tuple[FlightRoute, list[str]]:
+
         user = self.get_user(user_id)
-        
+
         if user == None:
             raise Exception("USER_NOT_FOUND")
-        
+
         flight = self.get_flight(flight_route_id)
         if flight == None:
             raise Exception("FLIGHT_NOT_FOUND")
@@ -58,7 +61,7 @@ class Airlinewa:
         seats = flight.aircraft.get_avaliable_seat()
         if len(seats) <= 0 or len(seats) < len(passengers):
             raise Exception("NO_SEAT_LEFT")
-        
+
         reserve_seat = flight.aircraft.reserve_seat(len(passengers))
 
         payment_method = Payment.method()
@@ -79,11 +82,20 @@ class Airlinewa:
         return booking_instance
 
     def create_passenger(self, passenger_data) -> list[Passenger]:
-        test = Passenger(GENDER.MALE, "Chatnarint", "Boonsaeng", datetime(2546, 1, 26), IDENTITY_TYPE.CARD, "1581878512")
-   
+        test = Passenger(
+            GENDER.MALE,
+            "Chatnarint",
+            "Boonsaeng",
+            datetime(2546, 1, 26),
+            IDENTITY_TYPE.CARD,
+            "1581878512",
+        )
+
         return [test]
-    
-    def create_contact(self, title, name, lastname, email, country_code, phone_number) -> Contact:
+
+    def create_contact(
+        self, title, name, lastname, email, country_code, phone_number
+    ) -> Contact:
         contact = Contact(title, name, lastname, email, country_code, phone_number)
 
         return contact
@@ -93,11 +105,11 @@ class Airlinewa:
 
     # Property Section
     @property
-    def get_all_services(self):
+    def services(self):
         return Service.get_services()
-    
+
     @property
-    def get_all_users(self):
+    def users(self):
         return self.__user_list
 
     # @property
@@ -110,32 +122,37 @@ class Airlinewa:
                 return user
 
     @property
-    def get_flight_list(self) -> list[Flight]:
+    def flight_list(self) -> list[Flight]:
         return self.__fight_list
 
     @property
-    def get_flight_route_list(self) -> list[FlightRoute]:
+    def flight_route_list(self) -> list[FlightRoute]:
         return self.__fight_route_list
 
     @property
-    def get_aircraft_list(self) -> list[Aircraft]:
+    def aircraft_list(self) -> list[Aircraft]:
         return self.__aircraft_list
 
     @property
-    def get_airport_list(self) -> list[Airport]:
+    def airport_list(self) -> list[Airport]:
         return self.__airport_list
-    
+
     # ===================== Initialize ===================== #
     @classmethod
     def initialize(self):
         airline = Airlinewa()
 
-        airport_list = airline.get_airport_list
-        aircraft_list = airline.get_aircraft_list
+        airport_list = airline.airport_list
+        aircraft_list = airline.aircraft_list
 
-        gen_flights, gen_flight_route  = MockUp.gen_flight_and_flight_route(airport_list, aircraft_list)
+        gen_flights, gen_flight_route = MockUp.gen_flight_and_flight_route(
+            airport_list, aircraft_list
+        )
 
         airline.set_flight(gen_flights)
         airline.set_flight_route(gen_flight_route)
-        
+
         return airline
+
+
+airline = Airlinewa.initialize()

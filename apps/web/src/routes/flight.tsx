@@ -1,6 +1,6 @@
 import {
-  apiCheckoutApiCheckoutPostMutation,
-  apiSearchFlightApiFlightGetOptions,
+  flightSearchFlightOptions,
+  paymentCheckoutMutation,
 } from "@/client/@tanstack/react-query.gen";
 import AppBar from "@/components/appBar";
 import BrowseFlightForm from "@/components/browseFlight/BrowseFlightDrawerForm";
@@ -20,18 +20,18 @@ import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 
 type FlightSearch = {
-  originCode: string | unknown;
-  destinationCode: string | unknown;
-  departureDate: string | unknown;
+  originCode: string;
+  destinationCode: string;
+  departureDate: string;
 };
 
 export const Route = createFileRoute("/flight")({
   validateSearch: (search: Record<string, unknown>): FlightSearch => {
     // validate and parse the search params into a typed state
     return {
-      originCode: search.originCode,
-      destinationCode: search.destinationCode,
-      departureDate: search.departureDate,
+      originCode: String(search.originCode),
+      destinationCode: String(search.destinationCode),
+      departureDate: String(search.departureDate),
     };
   },
   loader: ({ location }) => {
@@ -43,17 +43,18 @@ export const Route = createFileRoute("/flight")({
 function RouteComponent() {
   // const { flights } = Route.useLoaderData();
   const navigate = Route.useNavigate();
-  const flights = Route.useSearch();
+  const { originCode, destinationCode, departureDate } = Route.useSearch();
 
   const flightsQuery = useSuspenseQuery(
-    apiSearchFlightApiFlightGetOptions({
+    flightSearchFlightOptions({
       query: {
-        origin: flights.originCode,
-        destination: flights.destinationCode,
-        date: flights.departureDate,
+        origin: originCode,
+        destination: destinationCode,
+        date: departureDate,
       },
     })
   );
+  const flights = flightsQuery.data;
 
   const authStore = useAuthStore();
   // const flighsQuery = useSuspenseQuery(
@@ -80,7 +81,7 @@ function RouteComponent() {
   // useEffect(() => {
   //   fetchFlights("DMK", "KOP", "2025-03-11");
   // }, []);
-  const checkoutMutation = useMutation(apiCheckoutApiCheckoutPostMutation({}));
+  const checkoutMutation = useMutation(paymentCheckoutMutation());
 
   const handleClick = useCallback(
     async (id: string) => {
@@ -125,7 +126,7 @@ function RouteComponent() {
       //   }
       // }, 500);
     },
-    [navigate, authStore.auth]
+    [authStore.auth, checkoutMutation, navigate]
   );
 
   const handleSelectFlight = useCallback(
@@ -157,8 +158,8 @@ function RouteComponent() {
         <Typography variant="h4">เที่ยวบินที่มีให้เลือก</Typography>
         <br />
 
-        {flightsQuery.data.length > 0 ? (
-          flightsQuery.data.map((flight, index) => {
+        {flights.length > 0 ? (
+          flights.map((flight, index) => {
             return (
               <Card key={index} className="mb-4 p-4 shadow-lg rounded-lg">
                 <CardContent>

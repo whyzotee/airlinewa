@@ -7,7 +7,7 @@ export const Route = createFileRoute("/auth")({
   loader: ({ context }) => {
     if (context.auth) {
       throw redirect({
-        to: "/flight",
+        to: "/",
       });
     }
   },

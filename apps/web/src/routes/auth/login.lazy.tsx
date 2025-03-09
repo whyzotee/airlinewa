@@ -1,4 +1,4 @@
-import { loginApiAuthLoginPostMutation } from "@/client/@tanstack/react-query.gen";
+import { authLoginMutation } from "@/client/@tanstack/react-query.gen";
 import { useAuthStore } from "@/lib/zustand";
 import { Button, TextField, Typography } from "@mui/material";
 import { useForm } from "@tanstack/react-form";
@@ -14,7 +14,7 @@ export const Route = createLazyFileRoute("/auth/login")({
 
 function RouteComponent() {
   const navigate = Route.useNavigate();
-  const loginMutation = useMutation(loginApiAuthLoginPostMutation({}));
+  const loginMutation = useMutation(authLoginMutation());
   const authStore = useAuthStore();
 
   const form = useForm({
