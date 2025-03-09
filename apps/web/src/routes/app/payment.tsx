@@ -1,7 +1,7 @@
 import AppBar from "@/components/appBar";
 import FlightDetail from "@/components/checkout/components/CheckoutFlightDetails";
+import PaymentCard from "@/components/payment/PaymentCard";
 import PaymentTabs from "@/components/payment/PaymentTabs";
-import PaymentCard from "@/components/payment/paymentCard";
 import { Breadcrumbs, Typography } from "@mui/material";
 import { createFileRoute, Link } from "@tanstack/react-router";
 

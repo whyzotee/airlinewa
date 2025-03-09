@@ -1,45 +1,62 @@
 from datetime import datetime
-from .air import Airport, Aircraft
+
+from .air import Aircraft, Airport
+
 
 class FlightSchedule:
-    def __init__(self, id, dayOfWeek, departureTime, arriveTime, duration):
+    def __init__(
+        self, id: str, day_of_week: str, departure_time: str, arrive_time: str, duration
+    ):
         self.__id = id
-        self.__dayOfWeek = dayOfWeek
-        self.__departureTime = departureTime
-        self.__arriveTime = arriveTime
+        self.__day_of_week = day_of_week
+        self.__departure_time = departure_time
+        self.__arrive_time = arrive_time
         self.__duration = duration
 
     @property
-    def get_info(self):
+    def info(self):
         return {
-            "id":self.__id,
-            "dayOfWeek": self.__dayOfWeek,
-            "departure": self.__departureTime,
-            "arrive": self.__arriveTime,
-            "duration":  self.__duration
+            "id": self.__id,
+            "day_of_week": self.__day_of_week,
+            "departure": self.__departure_time,
+            "arrive": self.__arrive_time,
+            "duration": self.__duration,
         }
-    
-    def get_departure(self):
-        return self.__departureTime
-    
-    def get_arrival(self):
-        return self.__arriveTime
+
+    @property
+    def departure(self):
+        return self.__departure_time
+
+    @property
+    def arrival(self):
+        return self.__arrive_time
+
     # def gen_aircraft(self)-> Aircraft:
     #     model_aircrafts = ["FMS P-51D Mustang", "E-flite F-16 Thunderbirds", "HobbyZone Carbon Cub S2", "Freewing A-10 Thunderbolt II", "Dynam Spitfire Mk IX", "E-flite Extra 300 3D", "VolantexRC Trainstar Ascent", "Freewing F-22 Raptor", "Dancing Wings Piper J-3 Cub", "Skywalker X8"]
-        
+
     #     num = random.randint(0,9)
     #     model = model_aircrafts[num]
     #     aircarft = Aircraft(f"aircarft_00${num}", model)
 
     #     return aircarft
-    
+
+
 class FlightRoute:
     STATUS_AVALIABLE = "AVALIABLE"
     STATUS_BOARDED = "BOARDED"
     STATUS_COMPLETED = "COMPLETED"
     STATUS_NOT_AVALIABLE = "NOT_AVALIABLE"
 
-    def __init__(self, id, origin: Airport, destination:Airport, status, flight_schedule:FlightSchedule, base_price, date):
+    def __init__(
+        self,
+        id,
+        origin: Airport,
+        destination: Airport,
+        status,
+        flight_schedule: FlightSchedule,
+        base_price,
+        date,
+    ):
         self.__id = id
         self.__schedule = flight_schedule
         self.__origin = origin
@@ -47,46 +64,47 @@ class FlightRoute:
         self.__status = status
         self.__base_price = base_price
         self.__date = date
-    
+
     @property
-    def get_id(self) -> str:
+    def id(self) -> str:
         return self.__id
-    
+
     @property
-    def get_schedule(self):
+    def schedule(self):
         return self.__schedule
 
     @property
-    def get_origin(self):
-        return self.__origin.get_info
-    
+    def origin(self):
+        return self.__origin.info
+
     @property
-    def get_destination(self):
-        return self.__destination.get_info
-    
-    def get_status(self):
+    def destination(self):
+        return self.__destination.info
+
+    def __get_status(self):
         return self.__status
-    
-    def set_status(self, status):
+
+    def __set_status(self, status):
         self.__status = status
-    
+
     @property
     def is_avaliable(self):
         return self.__status == FlightRoute.STATUS_AVALIABLE
 
     @property
-    def get_price(self):
+    def price(self):
         return self.__base_price
 
     @property
-    def get_tax(self):
+    def tax(self):
         return round(self.__base_price * 0.15, 2)
-    
+
     @property
-    def get_date(self) -> datetime:
+    def date(self) -> datetime:
         return self.__date
-    
-    status = property(get_status, set_status)
+
+    status = property(__get_status, __set_status)
+
 
 class Flight:
     def __init__(self, flight_route: FlightRoute, aircraft: Aircraft):

@@ -2,53 +2,14 @@
 
 import { z } from 'zod';
 
-export const zApiCheckout = z.object({
-    id: z.string()
-});
-
 export const zAirport = z.object({
     name: z.string(),
     address: z.string(),
     code: z.string()
 });
 
-export const zGetPayment = z.object({
-    flight_id: z.string(),
-    passenger: z.object({
-        name: z.string(),
-        lastname: z.string(),
-        gender: z.string(),
-        country: z.string(),
-        birthday: z.string(),
-        identityType: z.object({
-            type: z.string(),
-            number: z.string(),
-            out_date: z.string()
-        })
-    }),
-    contact: z.object({
-        prefix: z.string(),
-        name: z.string(),
-        lastname: z.string(),
-        email: z.string(),
-        countryCode: z.string(),
-        phoneNumber: z.string()
-    })
-});
-
-export const zGetPaymentContact = z.object({
-    prefix: z.string(),
-    name: z.string(),
-    lastname: z.string(),
-    email: z.string(),
-    countryCode: z.string(),
-    phoneNumber: z.string()
-});
-
-export const zGetPaymentIdentity = z.object({
-    type: z.string(),
-    number: z.string(),
-    out_date: z.string()
+export const zCheckoutModel = z.object({
+    id: z.string()
 });
 
 export const zHttpValidationError = z.object({
@@ -70,7 +31,33 @@ export const zPassenger = z.object({
     gender: z.string(),
     country: z.string(),
     birthday: z.string(),
-    identityType: zGetPaymentIdentity
+    identity_type: z.object({
+        type: z.string(),
+        number: z.string(),
+        out_date: z.string()
+    })
+});
+
+export const zPaymentContact = z.object({
+    prefix: z.string(),
+    name: z.string(),
+    lastname: z.string(),
+    email: z.string(),
+    country_code: z.string(),
+    phone_number: z.string()
+});
+
+export const zPaymentIdentity = z.object({
+    type: z.string(),
+    number: z.string(),
+    out_date: z.string()
+});
+
+export const zPaymentModel = z.object({
+    user_id: z.string(),
+    flight_route_id: z.string(),
+    passengers: z.array(zPassenger),
+    contact: zPaymentContact
 });
 
 export const zValidationError = z.object({
@@ -79,4 +66,6 @@ export const zValidationError = z.object({
     type: z.string()
 });
 
-export const zGetAirportsApiAirportGetResponse = z.array(zAirport);
+export const zAirportGetAirportsResponse = z.array(zAirport);
+
+export const zUtilsHealthCheckResponse = z.boolean();

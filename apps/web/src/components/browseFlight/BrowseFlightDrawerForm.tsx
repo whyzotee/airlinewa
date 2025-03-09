@@ -1,6 +1,4 @@
 import { delay } from "@/app/function";
-import { Airport } from "@/client";
-import { getAirportsApiAirportGetOptions } from "@/client/@tanstack/react-query.gen";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import {
@@ -19,6 +17,8 @@ import dayjs, { Dayjs } from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 
+import { Airport } from "@/client";
+import { airportGetAirportsOptions } from "@/client/@tanstack/react-query.gen";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 
@@ -81,7 +81,7 @@ const BrowseFlightForm = ({
     []
   );
 
-  const airportsQuery = useSuspenseQuery(getAirportsApiAirportGetOptions());
+  const airportsQuery = useSuspenseQuery(airportGetAirportsOptions());
 
   const airports = airportsQuery.data;
 
@@ -145,11 +145,11 @@ const BrowseFlightForm = ({
 
   const getAirportOptions = useCallback(
     (airports: Airport[], value: string | null) => {
-      const originCode = form.getFieldValue("originCode");
+      // const originCode = form.getFieldValue("originCode");
       // console.debug(originCode);
 
       return airports
-        .filter((airport) => {
+        .filter(() => {
           // if (originCode == "BKK" && airport.code == "DMK") {
           //   return false;
           // }
@@ -162,7 +162,7 @@ const BrowseFlightForm = ({
           label: airport.name,
         }));
     },
-    [form]
+    []
   );
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
