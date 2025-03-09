@@ -10,7 +10,7 @@ from airlinewa import Airlinewa
 
 def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
-
+  
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
