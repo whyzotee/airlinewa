@@ -1,5 +1,7 @@
 # import uuid
 
+from datetime import datetime
+
 from pydantic import BaseModel
 
 # from sqlmodel import Field, Relationship, SQLModel
@@ -18,11 +20,11 @@ class FlightRoutSchedule(BaseModel):
 
 class FlightRoute(BaseModel):
     id: str
-    origin: str
-    destination: str
+    origin: list[str]
+    destination: list[str]
     schedule: FlightRoutSchedule
-    date: str
-    price: str
+    date: datetime
+    price: int
 
 
 class CheckoutModel(BaseModel):
