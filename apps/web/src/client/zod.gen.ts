@@ -12,6 +12,20 @@ export const zCheckoutModel = z.object({
     id: z.string()
 });
 
+export const zFlightRoutSchedule = z.object({
+    departure: z.string(),
+    arrival: z.string()
+});
+
+export const zFlightRoute = z.object({
+    id: z.string(),
+    origin: z.array(z.string()),
+    destination: z.array(z.string()),
+    schedule: zFlightRoutSchedule,
+    date: z.string().datetime(),
+    price: z.number().int()
+});
+
 export const zHttpValidationError = z.object({
     detail: z.array(z.object({
         loc: z.array(z.unknown()),
@@ -67,5 +81,7 @@ export const zValidationError = z.object({
 });
 
 export const zAirportGetAirportsResponse = z.array(zAirport);
+
+export const zFlightSearchFlightResponse = z.array(zFlightRoute);
 
 export const zUtilsHealthCheckResponse = z.boolean();
