@@ -6,7 +6,7 @@ import { useState } from "react";
 
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
-import LocalAtmIcon from "@mui/icons-material/LocalAtm";
+import { PatternFormat } from "react-number-format";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -66,30 +66,43 @@ const PaymentTabs = () => {
           label="Wallet"
           {...a11yProps(1)}
         />
-        <Tab
+        {/* <Tab
           icon={<LocalAtmIcon />}
           iconPosition="start"
           label="Paypal"
           {...a11yProps(2)}
-        />
+        /> */}
       </Tabs>
       <TabPanel value={value} index={0}>
         <div className="flex flex-col gap-4">
-          <TextField
+          <PatternFormat
             id="card_number"
             label="หมายเลขบัตร"
-            variant="outlined"
-            fullWidth
+            valueIsNumericString
+            customInput={TextField}
+            format="#### #### #### ####"
+            mask=" "
           />
+
           <div className="flex gap-4">
-            <TextField
+            <PatternFormat
               id="card_out_date"
               label="วันที่หมดอายุ"
+              valueIsNumericString
               placeholder="MM/YY"
-              variant="outlined"
-              fullWidth
+              customInput={TextField}
+              format="##/##"
+              mask=" "
             />
-            <TextField id="cvv" label="CVC/CVV" variant="outlined" fullWidth />
+            <PatternFormat
+              id="cvv"
+              label="CVC/CVV"
+              valueIsNumericString
+              placeholder="CVC/CVV"
+              customInput={TextField}
+              format="###"
+              mask=" "
+            />
           </div>
           <TextField
             id="holder_name"
@@ -102,9 +115,10 @@ const PaymentTabs = () => {
       <TabPanel value={value} index={1}>
         Item Two
       </TabPanel>
-      <TabPanel value={value} index={2}>
+      {/* <TabPanel value={value} index={2}>
+        
         Item Three
-      </TabPanel>
+      </TabPanel> */}
     </Box>
   );
 };

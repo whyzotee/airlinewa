@@ -9,6 +9,7 @@ import {
   Select,
   TextField,
 } from "@mui/material";
+import { NumericFormat } from "react-number-format";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
 import { updateFormData } from "../slices/checkoutContact";
@@ -105,10 +106,11 @@ export default function CheckoutContact() {
             )}
             className="col-span-2"
           />
-          <TextField
+          <NumericFormat
             id="contact_phonenumber"
             label="Phone Number"
-            variant="outlined"
+            maxLength={12}
+            customInput={TextField}
             className="col-span-2"
             value={checkout.contactData.phoneNumber}
             onChange={(e) =>

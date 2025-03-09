@@ -2,6 +2,7 @@ from .air import *
 from .booking import Booking
 from .flight import *
 from .mockup import MockUp
+from .payment import Payment, PaymentStatus
 from .passenger import GENDER, IDENTITY_TYPE, Passenger
 from .payment import Payment
 from .service import *
@@ -98,6 +99,9 @@ class Airlinewa:
         contact = Contact(title, name, lastname, email, country_code, phone_number)
 
         return contact
+
+    def create_payment(self):
+        return Payment("pay_001_002", PaymentStatus.PENDING_PAYMENT)
 
     # Property Section
     @property

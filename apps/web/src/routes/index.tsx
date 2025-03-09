@@ -1,11 +1,8 @@
+import BrowseFlightForm from "@/components/browseFlight/BrowseFlightDrawerForm";
 import { LOGO_PATH } from "@/utils";
-import { Avatar, Button } from "@mui/material";
+import { Avatar, Button, Drawer } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useState } from "react";
-
-const BrowseFlightDrawer = lazy(
-  () => import("@/components/browseFlight/BrowseFlightDrawer")
-);
+import { Suspense, useState } from "react";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
@@ -66,7 +63,9 @@ function RouteComponent() {
         ) : null}
 
         <Suspense>
-          <BrowseFlightDrawer open={isOpen} setOpen={setIsOpen} />
+          <Drawer anchor="top" open={isOpen} onClose={() => setIsOpen(false)}>
+            <BrowseFlightForm drawerSetOpen={setIsOpen} />
+          </Drawer>
         </Suspense>
       </div>
     </main>
