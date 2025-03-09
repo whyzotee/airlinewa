@@ -1,9 +1,16 @@
 from airlinewa.models import CheckoutModel, PaymentModel
 from fastapi import APIRouter, HTTPException, status
+from pydantic import BaseModel
 
 from airlinewa import airline
 
 router = APIRouter(prefix="/payment", tags=["payment"])
+
+
+class PaymentGateway(BaseModel):
+    payment_id: str
+    type: str
+    payment_date: str
 
 
 @router.post("/")
@@ -59,3 +66,20 @@ async def checkout(model: CheckoutModel):
         "price": [flight_route.price, flight_route.tax],
         "services": services,
     }
+
+
+# @router.post("/gateway", status_code=status.HTTP_200_OK)
+# def payment_gateway(model: PaymentGateway):
+#     model
+
+#     return {
+#         "id": flight_route.get_id,
+#         "info": {
+#             "origin": flight_route.get_origin,
+#             "destination": flight_route.get_destination,
+#             "schedule": flight_route.get_schedule.get_info,
+#             "date": flight_route.get_date,
+#         },
+#         "price": [flight_route.get_price, flight_route.get_tax],
+#         "payment_method": payment_method
+#     }
