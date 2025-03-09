@@ -43,13 +43,14 @@ export const Route = createFileRoute("/flight")({
 function RouteComponent() {
   // const { flights } = Route.useLoaderData();
   const navigate = Route.useNavigate();
+  const flights = Route.useSearch();
 
-  const flightsQuery: any = useSuspenseQuery(
+  const flightsQuery = useSuspenseQuery(
     apiSearchFlightApiFlightGetOptions({
       query: {
-        origin: Route.useSearch().originCode,
-        destination: Route.useSearch().destinationCode,
-        date: Route.useSearch().departureDate,
+        origin: flights.originCode,
+        destination: flights.destinationCode,
+        date: flights.departureDate,
       },
     })
   );

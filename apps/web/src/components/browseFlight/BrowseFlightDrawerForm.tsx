@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { useForm } from "@tanstack/react-form";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouterState, useSearch } from "@tanstack/react-router";
 import dayjs, { Dayjs } from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -47,6 +47,7 @@ const BrowseFlightForm = ({
   drawerSetOpen?: (open: boolean) => void;
 }) => {
   const navigate = useNavigate();
+  const router = useRouterState();
 
   const seatClassOptions = useMemo<{ id: SeatClass; title: string }[]>(
     () => [
@@ -85,14 +86,17 @@ const BrowseFlightForm = ({
 
   const airports = airportsQuery.data;
 
+  const flights: BrowseFlightForm = useSearch("/flight");
+  const isHome = router.location.pathname == "/";
+
   const form = useForm({
     defaultValues: {
       tripeType: "onetrip",
       seatClass: "economy",
       promotionCode: "",
-      originCode: null,
-      destinationCode: null,
-      departureDate: null,
+      originCode: flights.originCode,
+      destinationCode: flights.destinationCode,
+      departureDate: isHome ? null : dayjs(flights.departureDate),
       returnDate: null,
       passenger: {
         adult: 0,
@@ -175,7 +179,6 @@ const BrowseFlightForm = ({
   //   };
 
   //   const handleClosePassengerMenu = () => setAnchorEl(null);
-
   const [tripType, setTripType] = useState<Trip | undefined>(
     form.getFieldValue("tripeType")
   );
@@ -317,6 +320,7 @@ const BrowseFlightForm = ({
         <div className="flex lg:flex-row flex-col items-center gap-4">
           <form.Field
             name="originCode"
+            defaultValue={flights.originCode}
             listeners={{
               onChange: ({ fieldApi }) => {
                 fieldApi.form.setFieldValue("destinationCode", null);
@@ -332,9 +336,10 @@ const BrowseFlightForm = ({
                   className="lg:max-w-56 w-full"
                   id={field.name}
                   options={options}
-                  onChange={(_, value) =>
-                    field.handleChange(value ? value.id : null)
-                  }
+                  value={options.find((option) => option.id === value) || null}
+                  onChange={(_, value) => {
+                    field.handleChange(value ? value.id : null);
+                  }}
                   // value={
                   //   field.state.value === null ? field.state.value : undefined
                   // }
@@ -349,6 +354,7 @@ const BrowseFlightForm = ({
 
           <form.Field
             name="destinationCode"
+            defaultValue={flights.destinationCode}
             children={(field) => {
               const { value } = field.state;
 
@@ -358,6 +364,7 @@ const BrowseFlightForm = ({
                 <Autocomplete
                   size="small"
                   className="lg:max-w-56 w-full"
+                  value={options.find((option) => option.id === value) || null}
                   options={options}
                   onChange={(_, value) =>
                     field.handleChange(value ? value.id : null)

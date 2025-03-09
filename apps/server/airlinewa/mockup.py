@@ -191,11 +191,11 @@ class MockUp:
         flight_id = 1
 
         for l in range(10):  
-            for i in range(len(aircraft_list)): 
-                for j in range(i + 1, len(aircraft_list)):
+            for i in range(len(airport_list)):  
+                for j in range(i + 1, len(airport_list)):
                     random_date = datetime.today() + timedelta(days=l)
-                    
-                    gen_flight = FlightRoute(
+
+                    gen_flight_outbound = FlightRoute(
                         f"AW {flight_id:05d}",
                         airport_list[i],
                         airport_list[j],
@@ -204,9 +204,21 @@ class MockUp:
                         random.randint(1000, 5000),
                         random_date,
                     )
+                    gen_flights.append(Flight(gen_flight_outbound, random.choice(aircraft_list)))
+                    gen_flights_route.append(gen_flight_outbound)
+                    flight_id += 1
 
-                    gen_flights.append(Flight(gen_flight, random.choice(aircraft_list)))
-                    gen_flights_route.append(gen_flight)
+                    gen_flight_return = FlightRoute(
+                        f"AW {flight_id:05d}",
+                        airport_list[j],
+                        airport_list[i],
+                        FlightRoute.STATUS_AVALIABLE,
+                        sche_001,
+                        random.randint(1000, 5000),
+                        random_date,
+                    )
+                    gen_flights.append(Flight(gen_flight_return, random.choice(aircraft_list)))
+                    gen_flights_route.append(gen_flight_return)
                     flight_id += 1
 
         return gen_flights, gen_flights_route
