@@ -10,6 +10,20 @@ export type CheckoutModel = {
     id: string;
 };
 
+export type FlightRoutSchedule = {
+    departure: string;
+    arrival: string;
+};
+
+export type FlightRoute = {
+    id: string;
+    origin: Array<string>;
+    destination: Array<string>;
+    schedule: FlightRoutSchedule;
+    date: string;
+    price: number;
+};
+
 export type HttpValidationError = {
     detail?: Array<ValidationError>;
 };
@@ -133,8 +147,10 @@ export type FlightSearchFlightResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: Array<FlightRoute>;
 };
+
+export type FlightSearchFlightResponse = FlightSearchFlightResponses[keyof FlightSearchFlightResponses];
 
 export type PaymentPaymentsData = {
     body: PaymentModel;
