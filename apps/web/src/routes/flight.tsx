@@ -12,6 +12,13 @@ import {
   CardContent,
   Typography,
 } from "@mui/material";
+
+import { LOGO_PATH } from "@/utils";
+import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import LuggageIcon from "@mui/icons-material/Luggage";
+import { Avatar } from "@mui/material";
+
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -69,6 +76,7 @@ function RouteComponent() {
 
   // const [flights, setFlights] = useState([]);
   const [selectedFlight, setSelectedFlight] = useState(null);
+  const [expandedFlight, setExpandedFlight] = useState<string | null>(null);  //  Make Detaill Flight Expandable
   // const [loading, setLoading] = useState(true);
 
   // const fetchFlights = async (src, dest, date) => {
@@ -129,6 +137,7 @@ function RouteComponent() {
     [authStore.auth, checkoutMutation, navigate]
   );
 
+
   const handleSelectFlight = useCallback(
     (flight) => {
       setSelectedFlight(flight);
@@ -138,53 +147,99 @@ function RouteComponent() {
     [handleClick]
   );
 
+  const handleToggleDetails = (flightId: string) => {   //  Make Detaill Flight Expandable
+    setExpandedFlight((prev) => (prev === flightId ? null : flightId));
+  };
+
+  const testConsole = () => {
+    console.log(flights);
+  };
+
   return (
     <main className="font-noto-thai">
       <AppBar />
-
       <div className="max-w-7xl m-auto">
         <div className="my-4 flex justify-between text-sm">
-          <Breadcrumbs aria-label="breadcrumb">
+          <Breadcrumbs aria-label="bread
+          crumb">
             <Link to="/">หน้าแรก</Link>
             <Typography>เลือกเที่ยวบิน</Typography>
-            <Typography sx={{ color: "text.primary" }}>
-              รายละเอียดผู้โดยสาร
-            </Typography>
+            <Typography sx={{ color: "text.primary" }}>รายละเอียดผู้โดยสาร</Typography>
           </Breadcrumbs>
         </div>
         <BrowseFlightForm />
         <br />
-
         <Typography variant="h4">เที่ยวบินที่มีให้เลือก</Typography>
         <br />
 
-        {flights.length > 0 ? (
-          flights.map((flight, index) => {
-            return (
-              <Card key={index} className="mb-4 p-4 shadow-lg rounded-lg">
-                <CardContent>
-                  <Typography variant="h6">เที่ยวบิน {flight.id}</Typography>
-                  <Typography>
-                    จาก: {flight.origin} → ถึง: {flight.destination}
-                  </Typography>
-                  <Typography>
-                    เวลาออกเดินทาง: {flight.schedule.departure}
-                  </Typography>
-                  <Typography>
-                    เวลาถึงที่หมาย: {flight.schedule.arrival}
-                  </Typography>
-                  <Typography>วันที่: {flight.date}</Typography>
-                  <Typography>ราคา: {flight.price} บาท</Typography>
+        {/* <Button
+          variant="contained"
+          onClick={testConsole}
+          style={{
+            backgroundColor: "#22c55e",
+            color: "white",
+            borderRadius: "20px",
+            fontWeight: "bold",
+            padding: "8px 20px",
+          }}
+        >
+          ทดสอบ
+        </Button> */}
 
-                  {/* ปุ่มเลือกและดูรายละเอียด */}
-                  <div className="flex justify-between mt-4">
+        {/* แสดงเที่ยวบิน */}
+        {flights.length > 0 ? (
+          flights.map((flight, index) => (
+            <Card key={index} className="mb-4 p-4 shadow-lg rounded-lg border">
+              <CardContent>
+                {/* ชั้นโดยสาร */}
+                <div className="bg-blue-200 text-blue-800 px-3 py-1 rounded-md w-fit text-sm font-bold">
+                  ชั้นประหยัด
+                </div>
+
+                {/* สายการบิน */}
+                <Typography variant="body1" className="mt-2 font-semibold">
+                  ขาไป: Airlinewa
+                </Typography>
+
+                {/* แสดงเส้นทางบิน */}
+                <div className="flex items-center justify-between mt-4">
+                  <Avatar alt="Airline Logo" src={LOGO_PATH} sx={{ width: 48, height: 48 }} className="mr-4" />
+
+                  <div className="text-center">
+                    <Typography variant="h5" className="font-bold">{flight.schedule.departure || "N/A"}</Typography>
+                    <Typography variant="body2">{flight["origin"][2] || "N/A"}</Typography>
+                  </div>
+
+                  <div className="flex-grow mx-4 border-t-2 border-dotted border-gray-400"></div>
+
+                  <div className="text-center">
+                    <Typography variant="h5" className="font-bold">{flight.schedule.arrival || "N/A"}</Typography>
+                    <Typography variant="body2">{flight["destination"][2] || "N/A"}</Typography>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center text-gray-600 mt-2">
+                  <Typography variant="body2">1 ชม. 15 นาที</Typography>
+                  <Typography variant="body2">เที่ยวบินตรง</Typography>
+                </div>
+
+                <hr className="my-2 border-gray-300" />
+
+                <div className="flex items-center text-gray-700">
+                  <LuggageIcon className="mr-2 text-gray-500" />
+                  <Typography variant="body2">7 kg ต่อคน</Typography>
+                </div>
+
+                <div className="flex justify-between items-center mt-4">
+                  <Typography variant="h5" className="font-bold text-gray-800">
+                    THB {flight.price} <span className="text-gray-500 text-sm">/ 1 ท่าน*</span>
+                  </Typography>
+
+                  <div className="flex gap-2">
                     <Button
                       variant="contained"
                       style={{
-                        backgroundColor:
-                          selectedFlight?.id === flight.id
-                            ? "#0faa44"
-                            : "#22c55e",
+                        backgroundColor: "#0faa44",
                         color: "white",
                         borderRadius: "20px",
                         fontWeight: "bold",
@@ -195,23 +250,72 @@ function RouteComponent() {
                       เลือก
                     </Button>
 
-                    {/* <Button
-                variant="outlined"
-                style={{
-                  borderColor: "#e63946",
-                  color: "#e63946",
-                  borderRadius: "20px",
-                  fontWeight: "bold",
-                  padding: "8px 20px"
-                }}
-              >
-                ดูรายละเอียด ▼
-              </Button> */}
+                    <Button
+                      variant="text"
+                      style={{
+                        color: "#e63946",
+                        fontWeight: "bold",
+                      }}
+                      onClick={() => handleToggleDetails(flight.id)}
+                    >
+                      {expandedFlight === flight.id ? "ซ่อนรายละเอียด ▲" : "ดูรายละเอียด ▼"}
+                    </Button>
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })
+                </div>
+
+                {expandedFlight === flight.id && (
+                  <div className="mt-4 p-4 border rounded-lg" style={{ backgroundColor: "#f5f5f5" }}>
+                    <Typography variant="h6">รายละเอียดเที่ยวบิน</Typography>
+
+                    <div className="flex items-start mt-2">
+                      <FlightTakeoffIcon color="primary" className="mr-2" />
+                      <div className="border-l-2 border-gray-400 pl-4">
+                        <Typography fontWeight="bold">{flight["origin"][0]}</Typography>
+                        <Typography variant="body2">{flight["origin"][1]}</Typography>
+                        <Typography variant="body2">
+                          เวลาออกเดินทาง: {flight.schedule.departure}
+                        </Typography>
+                      </div>
+                    </div>
+
+                    <div
+                      className="ml-8 p-2 rounded-lg mt-2 flex items-center gap-2"
+                      style={{ backgroundColor: "#eeeeee" }}
+                    >
+                      <Avatar
+                        alt="Airline Logo"
+                        src={LOGO_PATH}
+                        sx={{ width: 30, height: 30 }}
+                      />
+                      <div className="flex flex-col"> 
+                        <Typography>Airlinewa, {flight.id}</Typography>
+                        <Typography variant="body2" className="text-gray-500">
+                          ชั้นประหยัด
+                        </Typography>
+                      </div>
+                    </div>
+                    
+
+                    <div className="flex items-start mt-2">
+                      <LocationOnIcon color="error" className="mr-2" />
+                      <div className="border-l-2 border-gray-400 pl-4">
+                        <Typography fontWeight="bold">{flight["destination"][0]}</Typography>
+                        <Typography variant="body2">{flight["destination"][1]}</Typography>
+                        <Typography variant="body2">
+                          เวลาถึงที่หมาย: {flight.schedule.arrival}
+                        </Typography>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center mt-4">
+                      <LuggageIcon className="mr-2" />
+                      <Typography>กระเป๋าถือขึ้นเครื่อง 7 kg x 1</Typography>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))
         ) : (
           <Typography>ไม่พบเที่ยวบิน</Typography>
         )}
