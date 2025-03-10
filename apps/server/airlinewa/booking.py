@@ -14,6 +14,18 @@ class Ticket:
         self.__passenger = passenger,
         self.__seat = seat
 
+    @property
+    def id(self):
+        return self.__ticket_id
+
+    @property
+    def passenger(self):
+        return self.__passenger
+    
+    @property
+    def seat(self):
+        return self.__seat
+
 class Booking:
     # def __init__(self, id, user:User, flight_instance: Flight, ticket, payment, passenger:list[Passenger],service):
     def __init__(
@@ -64,6 +76,10 @@ class Booking:
     @property
     def contact(self) -> "Contact":
         return self.__contact
+
+    @property
+    def seats(self) -> list["Seat"]:
+        return self.__seats
     
     def add_ticket(self, ticket: "Ticket"):
         self.__ticket.append(ticket)

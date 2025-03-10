@@ -40,7 +40,7 @@ export type PassengerModel = {
     gender: string;
     country: string;
     birthday: string;
-    identity_type: PaymentIdentity;
+    identity: PaymentIdentity;
 };
 
 export type PaymentContact = {
@@ -70,6 +70,7 @@ export type PaymentIdentity = {
 
 export type PaymentModel = {
     user_id: string;
+    seat_class: string;
     flight_route_id: string;
     passengers: Array<PassengerModel>;
     contact: PaymentContact;
@@ -138,9 +139,14 @@ export type FlightSearchFlightData = {
     body?: never;
     path?: never;
     query: {
+        tripe_type: string;
+        seat_class: string;
         origin: string;
         destination: string;
         date: string;
+        adult: number;
+        child: number;
+        kid: number;
     };
     url: '/api/flight/';
 };

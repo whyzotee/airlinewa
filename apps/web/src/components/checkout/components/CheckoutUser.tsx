@@ -130,12 +130,12 @@ const UserDetail = () => {
           <div className="grid grid-cols-3 gap-4">
             <Select
               displayEmpty
-              value={formData.identity_type.type}
+              value={formData.identity.type}
               onChange={(e) =>
                 dispatch(
                   updateFormData({
-                    identity_type: {
-                      ...formData.identity_type,
+                    identity: {
+                      ...formData.identity,
                       type: e.target.value,
                     },
                   })
@@ -151,15 +151,15 @@ const UserDetail = () => {
               label="Number"
               variant="outlined"
               customInput={TextField}
-              value={formData.identity_type.number}
+              value={formData.identity.number}
               className={
-                formData.identity_type.type == "passport" ? "" : "col-span-2"
+                formData.identity.type == "passport" ? "" : "col-span-2"
               }
               onChange={(e) =>
                 dispatch(
                   updateFormData({
-                    identity_type: {
-                      ...formData.identity_type,
+                    identity: {
+                      ...formData.identity,
                       number: e.target.value,
                     },
                   })
@@ -167,17 +167,17 @@ const UserDetail = () => {
               }
             />
 
-            {formData.identity_type.type === "passport" ? (
+            {formData.identity.type === "passport" ? (
               <TextField
                 id="outdate"
                 label="Out Date"
                 variant="outlined"
-                value={formData.identity_type.out_date}
+                value={formData.identity.out_date}
                 onChange={(e) =>
                   dispatch(
                     updateFormData({
-                      identity_type: {
-                        ...formData.identity_type,
+                      identity: {
+                        ...formData.identity,
                         out_date: e.target.value,
                       },
                     })

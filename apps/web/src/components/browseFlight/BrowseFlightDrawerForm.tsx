@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { useForm } from "@tanstack/react-form";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useNavigate, useRouterState, useSearch } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import dayjs, { Dayjs } from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -43,8 +43,10 @@ interface BrowseFlightForm {
 
 const BrowseFlightForm = ({
   drawerSetOpen,
+  flights,
 }: {
   drawerSetOpen?: (open: boolean) => void;
+  flights?: BrowseFlightForm | null;
 }) => {
   const navigate = useNavigate();
   const router = useRouterState();
@@ -75,9 +77,9 @@ const BrowseFlightForm = ({
 
   const peopleType = useMemo(
     () => [
-      { id: 1, name: "ผู้ใหญ่", age: "อายุ 12 ปีขึ้นไป" },
-      { id: 2, name: "เด็ก", age: "อายุ 2-11ปี" },
-      { id: 3, name: "เด็กทารก", age: "อายุน้อยกว่า 2ปี" },
+      { id: 1, type: "adult", name: "ผู้ใหญ่", age: "อายุ 12 ปีขึ้นไป" },
+      { id: 2, type: "kid", name: "เด็ก", age: "อายุ 2-11 ปี" },
+      { id: 3, type: "child", name: "เด็กทารก", age: "อายุน้อยกว่า 2 ปี" },
     ],
     []
   );
@@ -85,22 +87,22 @@ const BrowseFlightForm = ({
   const airportsQuery = useSuspenseQuery(airportGetAirportsOptions({}));
   const airports = airportsQuery.data;
 
-  const flights: BrowseFlightForm = useSearch("/flight");
   const isHome = router.location.pathname == "/";
+  const isNullQuery = flights != null;
 
   const form = useForm({
     defaultValues: {
-      tripeType: "onetrip",
-      seatClass: "economy",
-      promotionCode: "",
-      originCode: flights.originCode,
-      destinationCode: flights.destinationCode,
-      departureDate: isHome ? null : dayjs(flights.departureDate),
-      returnDate: isHome ? null : dayjs(flights.returnDate),
+      tripeType: isNullQuery ? flights.tripeType : "onetrip",
+      seatClass: isNullQuery ? flights.seatClass : "economy",
+      promotionCode: isNullQuery ? flights.promotionCode : "",
+      originCode: isNullQuery ? flights.originCode : null,
+      destinationCode: isNullQuery ? flights.destinationCode : null,
+      departureDate: isHome ? null : dayjs(flights?.departureDate),
+      returnDate: isHome ? null : dayjs(flights?.returnDate),
       passenger: {
-        adult: 0,
-        kid: 0,
-        child: 0,
+        adult: isNullQuery ? flights.passenger.adult : 1,
+        kid: isNullQuery ? flights.passenger.kid : 0,
+        child: isNullQuery ? flights.passenger.child : 0,
       },
     } as BrowseFlightForm,
     onSubmit: ({ value }) => {
@@ -170,24 +172,43 @@ const BrowseFlightForm = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isPassengerMenuOpen = Boolean(anchorEl);
 
-  //   const handleOpenPassengerMenu = (
-  //     event: React.MouseEvent<HTMLButtonElement>
-  //   ) => {
-  //     setAnchorEl(event.currentTarget);
-  //   };
+  const handleOpenPassengerMenu = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-  //   const handleClosePassengerMenu = () => setAnchorEl(null);
+  const handleClosePassengerMenu = () => setAnchorEl(null);
+
   const [tripType, setTripType] = useState<Trip | undefined>(
     form.getFieldValue("tripeType")
   );
+  const [seat, setSeat] = useState("ชั้นประหยัด");
+  const [allPassengerCount, setAllPassengerCount] = useState(1);
 
   useEffect(() => {
-    const unsubscribe = form.store.subscribe(() => {
-      setTripType(form.store.state.values.tripeType);
-    });
+    if (isNullQuery) {
+      const passenger = flights.passenger;
+      setAllPassengerCount(passenger.adult + passenger.kid + passenger.child);
+    }
+  }, [flights]);
 
-    return () => unsubscribe();
-  }, [form]);
+  useEffect(() => {
+    form.store.subscribe(() => {
+      const values = form.store.state.values;
+
+      setTripType(values.tripeType);
+
+      seatClassOptions.map((value) => {
+        if (value.id == values.seatClass) {
+          setSeat(value.title);
+        }
+      });
+      const passenger = values.passenger;
+      const sum = passenger.adult + passenger.child + passenger.kid;
+      setAllPassengerCount(sum);
+    });
+  }, [form, seatClassOptions]);
 
   return (
     <form
@@ -225,78 +246,114 @@ const BrowseFlightForm = ({
 
           <button
             id="basic-button"
+            type="button"
             aria-controls={isPassengerMenuOpen ? "basic-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={isPassengerMenuOpen ? "true" : undefined}
-            // onClick={handleClick}
+            onClick={handleOpenPassengerMenu}
             className="px-4 py-2 cursor-pointer"
           >
-            {/* {peopleCountAll[0]} ผู้โดยสาร{" "}
-          {seatsClass.filter((value) => value.id == seatClass)[0].title} */}
+            {allPassengerCount} ผู้โดยสาร {seat}
           </button>
 
           <Menu
             id="basic-menu"
             anchorEl={anchorEl}
             open={isPassengerMenuOpen}
-            onClose={() => {
-              // handleClose();
-            }}
+            onClose={handleClosePassengerMenu}
           >
             <div className="flex flex-col gap-4 p-4">
-              {peopleType.map((value) => {
-                return (
-                  <div key={value.id} className="flex justify-between gap-4">
+              <form.Field
+                name="passenger"
+                children={(field) => {
+                  return (
                     <div>
-                      <p>{value.name}</p>
-                      <p className="text-sm text-gray-500">{value.age}</p>
-                    </div>
-                    <div className="flex gap-4 items-center">
-                      <Button
-                        sx={{ padding: 0.5, minWidth: 32 }}
-                        variant="outlined"
-                        // onClick={() => peopleBTN(value.id, false)}
-                        // disabled={
-                        //   (value.id == 1 && peopleCountAll[value.id] <= 1) ||
-                        //   !peopleCountAll[value.id]
-                        // }
-                      >
-                        <RemoveIcon />
-                      </Button>
+                      {peopleType.map((value) => {
+                        const peopleCount = field.state.value[value.type];
+                        return (
+                          <div
+                            key={value.id}
+                            className="flex justify-between gap-4"
+                          >
+                            <div>
+                              <p>{value.name}</p>
+                              <p className="text-sm text-gray-500">
+                                {value.age}
+                              </p>
+                            </div>
 
-                      {/* <p className="text-1xl">{peopleCountAll[value.id]}</p> */}
+                            <div className="flex gap-4 items-center">
+                              <Button
+                                sx={{ padding: 0.5, minWidth: 32 }}
+                                variant="outlined"
+                                onClick={() => {
+                                  if (peopleCount <= 0) return;
 
-                      <Button
-                        sx={{ padding: 0.5, minWidth: 32 }}
-                        variant="outlined"
-                        // onClick={() => peopleBTN(value.id, true)}
-                        // disabled={peopleCountAll[0] >= 9}
-                      >
-                        <AddIcon />
-                      </Button>
+                                  field.setValue((prev) => ({
+                                    ...prev,
+                                    [value.type]: prev[value.type] - 1,
+                                  }));
+                                }}
+                                disabled={
+                                  (value.id == 1 && peopleCount <= 1) ||
+                                  peopleCount <= 0
+                                }
+                              >
+                                <RemoveIcon />
+                              </Button>
+
+                              <p className="text-1xl">{peopleCount}</p>
+
+                              <Button
+                                sx={{ padding: 0.5, minWidth: 32 }}
+                                variant="outlined"
+                                disabled={allPassengerCount >= 9}
+                                onClick={() =>
+                                  field.setValue((prev) => {
+                                    return {
+                                      ...prev,
+                                      [value.type]: prev[value.type] + 1,
+                                    };
+                                  })
+                                }
+                              >
+                                <AddIcon />
+                              </Button>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                }}
+              />
 
               <Divider />
               <p>ประเภทที่นั่ง</p>
-              <div className="grid grid-cols-2 gap-4">
-                {seatClassOptions.map((value) => {
+              <form.Field
+                name="seatClass"
+                children={(field) => {
                   return (
-                    <button
-                      key={value.id}
-                      // className={`p-4 rounded-sm border-1 cursor-pointer ${seatsClass == value.id ? "border-orange-400 text-orange-400" : "border-gray-400"}`}
-                      // onClick={() => setSeatClass(value.id)}
-                    >
-                      {value.title}
-                    </button>
+                    <div className="grid grid-cols-2 gap-4">
+                      {seatClassOptions.map((value) => {
+                        return (
+                          <button
+                            key={value.id}
+                            className={`p-4 rounded-sm border-1 cursor-pointer ${value.id == field.state.value ? "border-orange-400 text-orange-400" : "border-gray-400"}`}
+                            onClick={() => {
+                              field.handleChange(value.id);
+                            }}
+                          >
+                            {value.title}
+                          </button>
+                        );
+                      })}
+                    </div>
                   );
-                })}
-              </div>
+                }}
+              />
             </div>
           </Menu>
-
           <form.Field
             name="promotionCode"
             children={(field) => {
@@ -318,7 +375,7 @@ const BrowseFlightForm = ({
         <div className="flex lg:flex-row flex-col items-center gap-4">
           <form.Field
             name="originCode"
-            defaultValue={flights.originCode}
+            defaultValue={flights?.originCode}
             listeners={{
               onChange: ({ fieldApi }) => {
                 fieldApi.form.setFieldValue("destinationCode", null);
@@ -352,7 +409,7 @@ const BrowseFlightForm = ({
 
           <form.Field
             name="destinationCode"
-            defaultValue={flights.destinationCode}
+            defaultValue={flights?.destinationCode}
             children={(field) => {
               const { value } = field.state;
 
@@ -391,12 +448,16 @@ const BrowseFlightForm = ({
               <form.Field
                 name="departureDate"
                 children={(field) => {
+                  const value = field.state.value;
+                  const defaultValue =
+                    typeof value == "string" ? dayjs(value) : value;
+
                   return (
                     <DatePicker
                       label="วันออกเดินทาง"
                       minDate={currentYear}
                       slotProps={{ textField: { size: "small" } }}
-                      value={field.state.value}
+                      value={defaultValue}
                       format="DD/MM/YYYY"
                       views={["day", "month", "year"]}
                       onChange={(value) =>
@@ -409,13 +470,26 @@ const BrowseFlightForm = ({
             </DemoContainer>
             <DemoContainer components={["DatePicker"]}>
               {tripType == "go-back" ? (
-                <DatePicker
-                  label="วันออกเดินทาง"
-                  minDate={currentYear}
-                  format="DD/MM/YYYY"
-                  // value={backDate}
-                  // onChange={(value) => setBackDate(value)}
-                  slotProps={{ textField: { size: "small" } }}
+                <form.Field
+                  name="returnDate"
+                  children={(field) => {
+                    const value = field.state.value;
+                    const defaultValue =
+                      typeof value == "string" ? dayjs(value) : value;
+
+                    return (
+                      <DatePicker
+                        label="วันออกเดินทาง"
+                        minDate={currentYear}
+                        format="DD/MM/YYYY"
+                        value={defaultValue}
+                        onChange={(value) =>
+                          field.handleChange(value ? value : null)
+                        }
+                        slotProps={{ textField: { size: "small" } }}
+                      />
+                    );
+                  }}
                 />
               ) : null}
             </DemoContainer>

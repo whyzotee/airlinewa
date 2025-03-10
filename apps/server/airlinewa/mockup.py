@@ -96,7 +96,7 @@ class MockUp:
             "Embraer E190", "Bombardier CRJ900", "McDonnell Douglas MD-80"
         ]
 
-        aircraft_list = [Aircraft(i, random.choice(aircraft_models)) for i in range(1, 10)]
+        aircraft_list = [Aircraft(f"AIRCRAFT_{i:03d}", aircraft_models[i]) for i in range(len(aircraft_models))]
 
         return aircraft_list
     
@@ -190,7 +190,7 @@ class MockUp:
 
         flight_id = 1
 
-        for l in range(10):  
+        for l in range(-1, 10):  
             for i in range(len(airport_list)):  
                 for j in range(i + 1, len(airport_list)):
                     random_date = datetime.today() + timedelta(days=l)
@@ -217,6 +217,7 @@ class MockUp:
                         random.randint(1000, 5000),
                         random_date,
                     )
+                    
                     gen_flights.append(Flight(gen_flight_return, random.choice(aircraft_list)))
                     gen_flights_route.append(gen_flight_return)
                     flight_id += 1

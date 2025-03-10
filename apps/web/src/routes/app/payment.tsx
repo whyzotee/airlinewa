@@ -75,18 +75,19 @@ function RouteComponent() {
     );
   };
   const authStore = useAuthStore();
+  const uid = authStore.auth?.userId;
+
+  useEffect(() => {
+    if (authStore.auth) {
+      setPayment({ ["type"]: "CREDIT_DEBIT" });
+      setPayment({ ["user_id"]: uid });
+      setPayment({ ["payment_id"]: data.payment_id });
+    }
+  }, [setPayment, data.payment_id, uid, authStore.auth]);
 
   if (!authStore.auth) {
     return <h1>Login First</h1>;
   }
-
-  const uid = authStore.auth.userId;
-
-  useEffect(() => {
-    setPayment({ ["type"]: "CREDIT_DEBIT" });
-    setPayment({ ["user_id"]: uid });
-    setPayment({ ["payment_id"]: data.payment_id });
-  }, [setPayment, data.payment_id, uid]);
 
   return (
     <main className="font-noto-thai">

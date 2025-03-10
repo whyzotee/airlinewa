@@ -4,7 +4,7 @@ import { delay } from "@/app/function";
 import { paymentPaymentsMutation } from "@/client/@tanstack/react-query.gen";
 import { Button, Card, Divider } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
 
@@ -19,7 +19,7 @@ const CheckoutCard = ({ user_id, flight_route_id, price }: GetPayment) => {
 
   const dataUser = useSelector((state: RootState) => state.checkoutUser);
   const dataContact = useSelector((state: RootState) => state.checkoutContact);
-
+  const queryData = useSearch({ from: "/app/checkout" });
   const paymentMutation = useMutation(paymentPaymentsMutation());
 
   const callAPI = async () => {
@@ -36,6 +36,7 @@ const CheckoutCard = ({ user_id, flight_route_id, price }: GetPayment) => {
 
     const payment = paymentMutation.mutateAsync({
       body: {
+        seat_class: queryData.seatClass,
         user_id: user_id,
         flight_route_id: flight_route_id,
         passengers: [dataUser.formData],

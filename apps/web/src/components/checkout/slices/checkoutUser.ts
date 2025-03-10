@@ -9,7 +9,7 @@ interface CheckoutUserState {
         gender: string;
         country: string;
         birthday: string;
-        identity_type: {
+        identity: {
             type: string,
             number: string,
             out_date: string,
@@ -26,7 +26,7 @@ const initialState = {
         gender: "",
         country: "",
         birthday: "",
-        identity_type: {
+        identity: {
             type: "id_card",
             number: "",
             out_date: "",
@@ -46,8 +46,8 @@ const checkoutUserSlice = createSlice({
             state.formData = { ...state.formData, ...action.payload };
             state.isValid = checkoutUserForm.safeParse(state.formData).success;
 
-            if (state.formData.identity_type.type == "passport") {
-                if (!state.formData.identity_type.out_date.trim()) {
+            if (state.formData.identity.type == "passport") {
+                if (!state.formData.identity.out_date.trim()) {
                     state.isValid = false;
                 }
             }

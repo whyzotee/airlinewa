@@ -58,5 +58,25 @@ class Contact:
         self.__phone_nubmer = phone_number
 
     @property
+    def title(self):
+        return self.__title
+    
+    @property
+    def name(self):
+        return self.__name
+    
+    @property
+    def lastname(self):
+        return self.__lastname
+
+    @property
     def email(self):
         return self.__email
+    
+    @property
+    def country_code(self):
+        return self.__country_code
+    
+    @property
+    def phone_number(self):
+        return self.__phone_nubmer

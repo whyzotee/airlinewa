@@ -46,7 +46,7 @@ export const zPassengerModel = z.object({
     gender: z.string(),
     country: z.string(),
     birthday: z.string(),
-    identity_type: z.object({
+    identity: z.object({
         type: z.string(),
         number: z.string(),
         out_date: z.union([
@@ -86,6 +86,7 @@ export const zPaymentIdentity = z.object({
 
 export const zPaymentModel = z.object({
     user_id: z.string(),
+    seat_class: z.string(),
     flight_route_id: z.string(),
     passengers: z.array(zPassengerModel),
     contact: zPaymentContact

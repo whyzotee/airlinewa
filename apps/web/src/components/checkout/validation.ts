@@ -6,7 +6,7 @@ export const checkoutUserForm = z.object({
     gender: z.string().min(1, "Gender is required"),
     country: z.string().min(1, "Country is required"),
     birthday: z.string().min(1, "Birthday is required"),
-    identity_type: z.object({
+    identity: z.object({
         type: z.string().min(1, "ID Type is required"),
         number: z.string().min(1, "ID Number is required"),
         out_date: z.string().min(0, "Expiration Date is required"),

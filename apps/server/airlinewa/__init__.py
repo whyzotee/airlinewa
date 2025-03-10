@@ -45,6 +45,7 @@ class Airlinewa:
         flight_route_id: str,
         passengers_raw,
         contact_raw,
+        seat_type
     ) -> tuple[Booking, Payment]:
         user = self.find_user(user_id)
         
@@ -55,16 +56,17 @@ class Airlinewa:
         if flight == None:
             raise Exception("FLIGHT_NOT_FOUND")
 
-        seats = flight.aircraft.get_avaliable_seat()
+        seats = flight.aircraft.get_avaliable_seat(seat_type)
         if len(seats) <= 0 or len(seats) < len(passengers_raw):
             raise Exception("NO_SEAT_LEFT")
         
-        reserve_seat = flight.aircraft.reserve_seat(len(passengers_raw))
+        reserve_seat = flight.aircraft.reserve_seat(len(passengers_raw), seat_type)
         # print(reserve_seat[0].id)
         # print(reserve_seat[0].price)
         # print(reserve_seat[0].status)
-        
-        payment = Payment(f"PAY_{flight_route_id.replace(" ","_")}_{reserve_seat[0].id}", PaymentStatus.PENDING_PAYMENT)
+
+        all_seats = "_".join([seat.id for seat in reserve_seat])
+        payment = Payment(f"PAY_{flight_route_id.replace(" ","_")}_{all_seats}", PaymentStatus.PENDING_PAYMENT)
         passengers = self.create_passenger(passengers_raw)
         contact = self.create_contact(contact_raw)
 
@@ -72,6 +74,8 @@ class Airlinewa:
         booking = Booking(booking_id, user, flight.flight_route, payment, passengers, None, contact, reserve_seat)
 
         booking.booking_details()
+        # print(f"Available seat in flight {booking.flight_route.id}", [f"{seat.id} : {seat.status}" for seat in flight.aircraft.seats])
+
         user.add_booking(booking)
 
         self.__payment_list.append(payment)
@@ -87,8 +91,8 @@ class Airlinewa:
             return PaymentStatus.NO_ENOUGH_MONEY
         
         if number != "1"*16 and out_date != "11/11" and cvv != "111":
-            return PaymentStatus.NO_CARD_FOUND  
-        
+            return PaymentStatus.NO_CARD_FOUND
+
         user = self.find_user(user_id)
 
         if user == None:
@@ -102,6 +106,11 @@ class Airlinewa:
                     return PaymentStatus.ALREADY_PAY
                 elif payment.status == PaymentStatus.PENDING_PAYMENT:
                     booking.create_ticket()
+                    
+                    booked_seat = self.booked_seat(booking.flight_route.id, booking.seats)
+                    if not booked_seat:
+                        return PaymentStatus.UNKNOWN_SEAT_ID
+                    
                     payment.update_status(PaymentStatus.COMPLETE)
                     return booking
                 elif payment.status == PaymentStatus.TIMEOUT:
@@ -111,10 +120,17 @@ class Airlinewa:
                     
         return PaymentStatus.UNKNOWN
 
+    def booked_seat(self, flight_route_id, seats):
+        for flight in self.__fight_list:
+            if flight.flight_route.id == flight_route_id:
+                return flight.aircraft.booked_seat(seats)
+        
+        return False
+
     def create_passenger(self, passenger_data: list[PassengerModel]) -> list[Passenger]:
         passenger_list: list[Passenger] = []
         for passenger in passenger_data:
-            input_out_date = passenger.identity_type.out_date
+            input_out_date = passenger.identity.out_date
             out_date = None
 
             if input_out_date != '':
@@ -125,11 +141,11 @@ class Airlinewa:
                           passenger.name, 
                           passenger.lastname, 
                           datetime.fromisoformat(passenger.birthday), 
-                          passenger.identity_type.type, 
-                          passenger.identity_type.number,
+                          passenger.identity.type, 
+                          passenger.identity.number,
                           out_date
                           ))
-
+            print(passenger.gender, passenger.name, passenger.lastname, datetime.fromisoformat(passenger.birthday), passenger.identity.type, passenger.identity.number, out_date)
         return passenger_list
    
     def create_contact(self, data: PaymentContact) -> Contact:

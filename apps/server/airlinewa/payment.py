@@ -14,6 +14,7 @@ class PaymentStatus:
     CANCEL = "CANCEL"
     TIMEOUT = "TIMEOUT"
     UNKNOWN = "UNKNOWN"
+    UNKNOWN_SEAT_ID = "UNKNOWN_SEAT_ID"
     ALREADY_PAY = "ALREADY_PAY"
 
 class Payment:

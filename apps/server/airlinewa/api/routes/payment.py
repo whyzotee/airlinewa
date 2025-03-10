@@ -11,7 +11,7 @@ router = APIRouter(prefix="/payment", tags=["payment"])
 def payments(model: PaymentModel):
     try:
         booking, payment = airline.booking_flight_route(
-            model.user_id, model.flight_route_id, model.passengers, model.contact
+            model.user_id, model.flight_route_id, model.passengers, model.contact, model.seat_class
         )
 
     except Exception as err:

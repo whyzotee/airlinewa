@@ -53,11 +53,12 @@ class PassengerModel(BaseModel):
     gender: str
     country: str
     birthday: str
-    identity_type: PaymentIdentity
+    identity: PaymentIdentity
 
 
 class PaymentModel(BaseModel):
     user_id: str
+    seat_class: str
     flight_route_id: str
     passengers: list[PassengerModel]
     contact: PaymentContact

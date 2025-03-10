@@ -30,53 +30,55 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 
 type FlightSearch = {
+  tripeType: string;
+  seatClass: string;
   originCode: string;
   destinationCode: string;
   departureDate: string;
+  passenger: {
+    adult: number;
+    kid: number;
+    child: number;
+  };
 };
 
 export const Route = createFileRoute("/flight")({
   validateSearch: (search: Record<string, unknown>): FlightSearch => {
     // validate and parse the search params into a typed state
     return {
+      tripeType: String(search.tripeType),
+      seatClass: String(search.seatClass),
       originCode: String(search.originCode),
       destinationCode: String(search.destinationCode),
       departureDate: String(search.departureDate),
+      passenger: { ...Object(search.passenger) },
     };
-  },
-  loader: ({ location }) => {
-    return { flights: location.state.flights };
   },
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  // const { flights } = Route.useLoaderData();
   const navigate = Route.useNavigate();
   const dispatch = useDispatch();
-  const { originCode, destinationCode, departureDate } = Route.useSearch();
+  const query = Route.useSearch();
 
   const flightsQuery = useSuspenseQuery(
     flightSearchFlightOptions({
       query: {
-        origin: originCode,
-        destination: destinationCode,
-        date: departureDate,
+        tripe_type: query.tripeType,
+        seat_class: query.seatClass,
+        origin: query.originCode,
+        destination: query.destinationCode,
+        date: query.departureDate,
+        adult: query.passenger.adult,
+        child: query.passenger.child,
+        kid: query.passenger.kid,
       },
     })
   );
-  const flights = flightsQuery.data;
+  const flights = flightsQuery.data.sort((a, b) => a.price - b.price);
 
   const authStore = useAuthStore();
-  // const flighsQuery = useSuspenseQuery(
-  //   apiSearchFlightApiFlightGetOptions({
-  //     query: {
-  //       src: "BKK",
-  //       dest: "KOP",
-  //       date: "2025-03-11",
-  //     },
-  //   })
-  // );
 
   // const [flights, setFlights] = useState([]);
   const [selectedFlight, setSelectedFlight] = useState(null);
@@ -90,9 +92,6 @@ function RouteComponent() {
   //   setLoading(false);
   // };
 
-  // useEffect(() => {
-  //   fetchFlights("DMK", "KOP", "2025-03-11");
-  // }, []);
   const checkoutMutation = useMutation(paymentCheckoutMutation());
 
   const handleClick = useCallback(
@@ -121,6 +120,10 @@ function RouteComponent() {
           navigate({
             to: "/app/checkout",
             state: data,
+            search: {
+              seatClass: query.seatClass,
+              passenger: query.passenger,
+            },
           });
           return `Founded`;
         },
@@ -142,7 +145,7 @@ function RouteComponent() {
       //   }
       // }, 500);
     },
-    [authStore.auth, checkoutMutation, navigate]
+    [authStore.auth, checkoutMutation, navigate, dispatch]
   );
 
   const handleSelectFlight = useCallback(
@@ -157,10 +160,6 @@ function RouteComponent() {
   const handleToggleDetails = (flightId: string) => {
     //  Make Detaill Flight Expandable
     setExpandedFlight((prev) => (prev === flightId ? null : flightId));
-  };
-
-  const testConsole = () => {
-    console.log(flights);
   };
 
   return (
@@ -179,7 +178,7 @@ function RouteComponent() {
             </Typography>
           </Breadcrumbs>
         </div>
-        <BrowseFlightForm />
+        <BrowseFlightForm flights={Route.useSearch()} />
         <br />
         <Typography variant="h4">เที่ยวบินที่มีให้เลือก</Typography>
         <br />
