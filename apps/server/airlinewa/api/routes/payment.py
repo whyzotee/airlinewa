@@ -65,12 +65,11 @@ async def checkout(model: CheckoutModel):
 
 @router.post("/payment_gateway")
 def payment_gateway(model: PaymentGateway):
-    if model.number == "2"*16:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="CARD_DECLINED")
-    
-    if model.number == "3"*16:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="CARD_DECLINED")
-    
+    gateway = airline.call_gateway(model.payment_id, model.type, model.number, model.out_date, model.cvv, model.holder_name)
+
+    if gateway != "COMPLETE":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=gateway)
+
     return { 
         "res": model
     }

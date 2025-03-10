@@ -37,10 +37,6 @@ class Airlinewa:
             if flight_route.id == flight_route_id:
                 return flight_route
 
-    @staticmethod
-    def is_flight_route(flight_route) -> bool:
-        return isinstance(flight_route, FlightRoute)
-
     def booking_flight_route(
         self,
         user_id,
@@ -67,8 +63,32 @@ class Airlinewa:
         payment_method = Payment.method()
         payment_trasaction = Payment.create_payment(flight.flight_route.id)
         self.__payment_list.append(payment_trasaction)
-
+        # Booking("booking",)
         return flight.flight_route, payment_trasaction, payment_method
+   
+    def call_gateway(self, payment_id, type, number, out_date, cvv, holder_name):
+        if number == "2"*16:
+            return PaymentStatus.CARD_DECLINED
+        
+        if number == "3"*16:
+            return PaymentStatus.NO_ENOUGH_MONEY
+        
+        if number != "1"*16:
+            return PaymentStatus.NO_CARD_FOUND
+        
+        for payment in self.__payment_list:
+            if payment.id == payment_id:
+                if payment.status == PaymentStatus.ALREADY_PAY:
+                    return PaymentStatus.ALREADY_PAY
+                elif payment.status == PaymentStatus.PENDING_PAYMENT:
+                    payment.update_status(PaymentStatus.COMPLETE)
+                    return PaymentStatus.COMPLETE
+                elif payment.status == PaymentStatus.TIMEOUT:
+                    return PaymentStatus.TIMEOUT
+                else:
+                    return payment.status
+                    
+        return PaymentStatus.UNKNOWN
 
     def create_booking(
         self,
@@ -139,7 +159,11 @@ class Airlinewa:
     def airport_list(self) -> list[Airport]:
         return self.__airport_list
 
-    # ===================== Initialize ===================== #
+    # ===================== Static Method ===================== #
+    @staticmethod
+    def is_flight_route(flight_route) -> bool:
+        return isinstance(flight_route, FlightRoute)
+        
     @staticmethod
     def initialize():
         airline = Airlinewa()

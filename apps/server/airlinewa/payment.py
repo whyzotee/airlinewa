@@ -1,3 +1,4 @@
+from time import time
 from datetime import datetime
 
 class PaymentType:
@@ -6,9 +7,14 @@ class PaymentType:
 
 class PaymentStatus:
     PENDING_PAYMENT = "PENDING_PAYMENT"
+    CARD_DECLINED = "CARD_DECLINED"
+    NO_ENOUGH_MONEY = "NO_ENOUGH_MONEY"
+    NO_CARD_FOUND = "NO_CARD_FOUND"
     COMPLETE = "COMPLETE"
     CANCEL = "CANCEL"
     TIMEOUT = "TIMEOUT"
+    UNKNOWN = "UNKNOWN"
+    ALREADY_PAY = "ALREADY_PAY"
 
 class Payment:
     @staticmethod
@@ -18,6 +24,7 @@ class Payment:
     @staticmethod
     def create_payment(flight_route_id: str):
         pay = Payment(f"PAY_{flight_route_id.replace(" ","_")}", PaymentStatus.PENDING_PAYMENT)
+        print("create_payment() instance!")
         return pay
 
     def __init__(self, payment_id, status, type=None, payment_date: datetime | None = None):
@@ -25,6 +32,7 @@ class Payment:
         self.__type = type
         self.__payment_date = payment_date
         self.__status = status
+        self.__timeout = time()
 
     def update_type(self, type):
         self.__type = type
@@ -49,4 +57,9 @@ class Payment:
     
     @property
     def status(self):
+        if self.__status == PaymentStatus.COMPLETE:
+            return PaymentStatus.ALREADY_PAY
+        
+        if time() - self.__timeout >= 30:
+            self.__status = PaymentStatus.TIMEOUT
         return self.__status
