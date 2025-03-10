@@ -1,7 +1,6 @@
-import itertools
 import random
 from datetime import datetime, timedelta
-from .air import Airport, Aircraft
+from .air import *
 from .user import User, Account
 from .flight import Flight,FlightRoute, FlightSchedule
 # from .mock import *
@@ -175,11 +174,12 @@ class MockUp:
         #     Airport(mock_airport_name[i].strip('"'), mock_airport_address[i].strip('"'), mock_airport_code[i].strip('"'))
         #     for i in range(len(mock_airport_name))
         # ]
-    
-        return [
+        gen_list: list[Airport] = [
             Airport(list_airport_name[i], list_airport_addr[i], list_airport_code[i])
             for i in range(20)
         ]
+        
+        return gen_list
 
     @staticmethod
     def gen_flight_and_flight_route(airport_list:list[Airport], aircraft_list:list[Aircraft]):

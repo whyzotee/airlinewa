@@ -31,6 +31,7 @@ export const useAuthStore = create<AuthState>()(
 
 interface PaymentData {
   payment_id: string;
+  user_id: string;
   type: string;
   number: string;
   out_date: string;
@@ -47,6 +48,7 @@ interface PaymentStore {
 export const usePaymentStore = create<PaymentStore>((set) => ({
   payment: {
     payment_id: "",
+    user_id: "",
     type: "",
     number: "",
     out_date: "",
@@ -61,6 +63,7 @@ export const usePaymentStore = create<PaymentStore>((set) => ({
     set((state) => ({
       payment: {
         payment_id: state.payment.payment_id,
+        user_id: state.payment.user_id,
         type: "",
         number: "",
         out_date: "",

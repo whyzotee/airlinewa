@@ -9,7 +9,8 @@ export const zAirport = z.object({
 });
 
 export const zCheckoutModel = z.object({
-    id: z.string()
+    id: z.string(),
+    uid: z.string()
 });
 
 export const zFlightRoutSchedule = z.object({
@@ -39,7 +40,7 @@ export const zLoginModel = z.object({
     password: z.string()
 });
 
-export const zPassenger = z.object({
+export const zPassengerModel = z.object({
     name: z.string(),
     lastname: z.string(),
     gender: z.string(),
@@ -48,7 +49,10 @@ export const zPassenger = z.object({
     identity_type: z.object({
         type: z.string(),
         number: z.string(),
-        out_date: z.string()
+        out_date: z.union([
+            z.string(),
+            z.null()
+        ])
     })
 });
 
@@ -63,6 +67,7 @@ export const zPaymentContact = z.object({
 
 export const zPaymentGateway = z.object({
     payment_id: z.string(),
+    user_id: z.string(),
     type: z.string(),
     number: z.string(),
     out_date: z.string(),
@@ -73,13 +78,16 @@ export const zPaymentGateway = z.object({
 export const zPaymentIdentity = z.object({
     type: z.string(),
     number: z.string(),
-    out_date: z.string()
+    out_date: z.union([
+        z.string(),
+        z.null()
+    ])
 });
 
 export const zPaymentModel = z.object({
     user_id: z.string(),
     flight_route_id: z.string(),
-    passengers: z.array(zPassenger),
+    passengers: z.array(zPassengerModel),
     contact: zPaymentContact
 });
 

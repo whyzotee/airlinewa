@@ -36,7 +36,7 @@ def search_flight(origin: str, destination: str, date: str) -> list[FlightRoute]
             and flight_route.is_avaliable
         ):
             # flight_route_list.append({
-            #     "id": str(flight_route.get_id),
+            #     "id": str(flight_route.id),
             #     "origin": flight_route.get_origin,
             #     "destination": flight_route.get_destination,
             #     "schedule": {

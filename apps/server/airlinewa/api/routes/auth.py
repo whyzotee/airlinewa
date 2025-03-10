@@ -14,7 +14,7 @@ def login(model: LoginModel):
         response = user.get_accout.login(model.username, model.password)
 
         if response:
-            return {"id": user.get_id}
+            return {"id": user.id}
 
         break
 

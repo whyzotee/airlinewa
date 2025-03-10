@@ -24,7 +24,10 @@ import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 
+import { resetContactForm } from "@/components/checkout/slices/checkoutContact";
+import { resetUserForm } from "@/components/checkout/slices/checkoutUser";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
 
 type FlightSearch = {
   originCode: string;
@@ -50,6 +53,7 @@ export const Route = createFileRoute("/flight")({
 function RouteComponent() {
   // const { flights } = Route.useLoaderData();
   const navigate = Route.useNavigate();
+  const dispatch = useDispatch();
   const { originCode, destinationCode, departureDate } = Route.useSearch();
 
   const flightsQuery = useSuspenseQuery(
@@ -76,7 +80,7 @@ function RouteComponent() {
 
   // const [flights, setFlights] = useState([]);
   const [selectedFlight, setSelectedFlight] = useState(null);
-  const [expandedFlight, setExpandedFlight] = useState<string | null>(null);  //  Make Detaill Flight Expandable
+  const [expandedFlight, setExpandedFlight] = useState<string | null>(null); //  Make Detaill Flight Expandable
   // const [loading, setLoading] = useState(true);
 
   // const fetchFlights = async (src, dest, date) => {
@@ -105,11 +109,15 @@ function RouteComponent() {
 
       if (checkoutMutation.isPending) return;
 
-      const checkout = checkoutMutation.mutateAsync({ body: { id } });
+      const uid = authStore.auth.userId;
+      const checkout = checkoutMutation.mutateAsync({ body: { id, uid } });
 
       toast.promise(checkout, {
         loading: "Loading...",
         success: (data) => {
+          dispatch(resetUserForm());
+          dispatch(resetContactForm());
+
           navigate({
             to: "/app/checkout",
             state: data,
@@ -137,7 +145,6 @@ function RouteComponent() {
     [authStore.auth, checkoutMutation, navigate]
   );
 
-
   const handleSelectFlight = useCallback(
     (flight) => {
       setSelectedFlight(flight);
@@ -147,7 +154,8 @@ function RouteComponent() {
     [handleClick]
   );
 
-  const handleToggleDetails = (flightId: string) => {   //  Make Detaill Flight Expandable
+  const handleToggleDetails = (flightId: string) => {
+    //  Make Detaill Flight Expandable
     setExpandedFlight((prev) => (prev === flightId ? null : flightId));
   };
 
@@ -160,11 +168,15 @@ function RouteComponent() {
       <AppBar />
       <div className="max-w-7xl m-auto">
         <div className="my-4 flex justify-between text-sm">
-          <Breadcrumbs aria-label="bread
-          crumb">
+          <Breadcrumbs
+            aria-label="bread
+          crumb"
+          >
             <Link to="/">หน้าแรก</Link>
             <Typography>เลือกเที่ยวบิน</Typography>
-            <Typography sx={{ color: "text.primary" }}>รายละเอียดผู้โดยสาร</Typography>
+            <Typography sx={{ color: "text.primary" }}>
+              รายละเอียดผู้โดยสาร
+            </Typography>
           </Breadcrumbs>
         </div>
         <BrowseFlightForm />
@@ -203,18 +215,31 @@ function RouteComponent() {
 
                 {/* แสดงเส้นทางบิน */}
                 <div className="flex items-center justify-between mt-4">
-                  <Avatar alt="Airline Logo" src={LOGO_PATH} sx={{ width: 48, height: 48 }} className="mr-4" />
+                  <Avatar
+                    alt="Airline Logo"
+                    src={LOGO_PATH}
+                    sx={{ width: 48, height: 48 }}
+                    className="mr-4"
+                  />
 
                   <div className="text-center">
-                    <Typography variant="h5" className="font-bold">{flight.schedule.departure || "N/A"}</Typography>
-                    <Typography variant="body2">{flight["origin"][2] || "N/A"}</Typography>
+                    <Typography variant="h5" className="font-bold">
+                      {flight.schedule.departure || "N/A"}
+                    </Typography>
+                    <Typography variant="body2">
+                      {flight["origin"][2] || "N/A"}
+                    </Typography>
                   </div>
 
                   <div className="flex-grow mx-4 border-t-2 border-dotted border-gray-400"></div>
 
                   <div className="text-center">
-                    <Typography variant="h5" className="font-bold">{flight.schedule.arrival || "N/A"}</Typography>
-                    <Typography variant="body2">{flight["destination"][2] || "N/A"}</Typography>
+                    <Typography variant="h5" className="font-bold">
+                      {flight.schedule.arrival || "N/A"}
+                    </Typography>
+                    <Typography variant="body2">
+                      {flight["destination"][2] || "N/A"}
+                    </Typography>
                   </div>
                 </div>
 
@@ -232,7 +257,8 @@ function RouteComponent() {
 
                 <div className="flex justify-between items-center mt-4">
                   <Typography variant="h5" className="font-bold text-gray-800">
-                    THB {flight.price} <span className="text-gray-500 text-sm">/ 1 ท่าน*</span>
+                    THB {flight.price}{" "}
+                    <span className="text-gray-500 text-sm">/ 1 ท่าน*</span>
                   </Typography>
 
                   <div className="flex gap-2">
@@ -258,20 +284,29 @@ function RouteComponent() {
                       }}
                       onClick={() => handleToggleDetails(flight.id)}
                     >
-                      {expandedFlight === flight.id ? "ซ่อนรายละเอียด ▲" : "ดูรายละเอียด ▼"}
+                      {expandedFlight === flight.id
+                        ? "ซ่อนรายละเอียด ▲"
+                        : "ดูรายละเอียด ▼"}
                     </Button>
                   </div>
                 </div>
 
                 {expandedFlight === flight.id && (
-                  <div className="mt-4 p-4 border rounded-lg" style={{ backgroundColor: "#f5f5f5" }}>
+                  <div
+                    className="mt-4 p-4 border rounded-lg"
+                    style={{ backgroundColor: "#f5f5f5" }}
+                  >
                     <Typography variant="h6">รายละเอียดเที่ยวบิน</Typography>
 
                     <div className="flex items-start mt-2">
                       <FlightTakeoffIcon color="primary" className="mr-2" />
                       <div className="border-l-2 border-gray-400 pl-4">
-                        <Typography fontWeight="bold">{flight["origin"][0]}</Typography>
-                        <Typography variant="body2">{flight["origin"][1]}</Typography>
+                        <Typography fontWeight="bold">
+                          {flight["origin"][0]}
+                        </Typography>
+                        <Typography variant="body2">
+                          {flight["origin"][1]}
+                        </Typography>
                         <Typography variant="body2">
                           เวลาออกเดินทาง: {flight.schedule.departure}
                         </Typography>
@@ -287,20 +322,23 @@ function RouteComponent() {
                         src={LOGO_PATH}
                         sx={{ width: 30, height: 30 }}
                       />
-                      <div className="flex flex-col"> 
+                      <div className="flex flex-col">
                         <Typography>Airlinewa, {flight.id}</Typography>
                         <Typography variant="body2" className="text-gray-500">
                           ชั้นประหยัด
                         </Typography>
                       </div>
                     </div>
-                    
 
                     <div className="flex items-start mt-2">
                       <LocationOnIcon color="error" className="mr-2" />
                       <div className="border-l-2 border-gray-400 pl-4">
-                        <Typography fontWeight="bold">{flight["destination"][0]}</Typography>
-                        <Typography variant="body2">{flight["destination"][1]}</Typography>
+                        <Typography fontWeight="bold">
+                          {flight["destination"][0]}
+                        </Typography>
+                        <Typography variant="body2">
+                          {flight["destination"][1]}
+                        </Typography>
                         <Typography variant="body2">
                           เวลาถึงที่หมาย: {flight.schedule.arrival}
                         </Typography>

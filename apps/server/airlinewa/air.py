@@ -2,7 +2,7 @@ import random
 
 
 class SeatStatus:
-    AVALIABLE = "avaliable"
+    AVALIABLE = "AVALIABLE"
     PENDING_PAYMENT = "PENDING_PAYMENT"
     CANCEL = "CANCEL"
     SOLD = "SOLD"
@@ -62,7 +62,7 @@ class Aircraft:
 
     def gen_seat(self) -> list[Seat]:
         return [
-            Seat(f"seat_00{index}", SeatStatus.AVALIABLE, "$59.49")
+            Seat(f"SEAT_00{index}", SeatStatus.AVALIABLE, "$59.49")
             for index in range(random.randint(100, 400))
         ]
 
@@ -78,8 +78,8 @@ class Aircraft:
     def seats(self):
         return self.__seats
 
-    def get_avaliable_seat(self):
-        list_avaliable_seats = []
+    def get_avaliable_seat(self) -> list[Seat]:
+        list_avaliable_seats: list[Seat] = []
 
         for seat in self.__seats:
             if seat.status == SeatStatus.AVALIABLE:
@@ -87,8 +87,8 @@ class Aircraft:
 
         return list_avaliable_seats
 
-    def reserve_seat(self, passenger_count):
-        seat_id = []
+    def reserve_seat(self, passenger_count) -> list[Seat]:
+        seat_id: list[Seat] = []
 
         for seat in self.__seats:
             if len(seat_id) == passenger_count:

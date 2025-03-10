@@ -4,7 +4,7 @@ import AppBar from "@/components/appBar";
 import FlightDetail from "@/components/checkout/components/CheckoutFlightDetails";
 import PaymentCard from "@/components/payment/PaymentCard";
 import PaymentTabs from "@/components/payment/PaymentTabs";
-import { usePaymentStore } from "@/lib/zustand";
+import { useAuthStore, usePaymentStore } from "@/lib/zustand";
 import { Breadcrumbs, Typography } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
@@ -37,7 +37,6 @@ function RouteComponent() {
     if (payment.out_date.trim().length != 5) {
       return toast.error("Error: Enter your card out date");
     }
-    console.log(payment.cvv.trim().length);
 
     if (payment.cvv.trim().length != 3) {
       return toast.error("Error: Enter your card cvv");
@@ -59,12 +58,10 @@ function RouteComponent() {
       {
         loading: "Peding payment...",
         success: (value) => {
-          console.log("Payment sucess", value);
-
           navigate({
             to: "/app/success",
             search: {
-              payment_id: value.res.payment_id,
+              booking_id: value.booking_id,
             },
             // replace: true,
           });
@@ -77,11 +74,19 @@ function RouteComponent() {
       }
     );
   };
+  const authStore = useAuthStore();
+
+  if (!authStore.auth) {
+    return <h1>Login First</h1>;
+  }
+
+  const uid = authStore.auth.userId;
 
   useEffect(() => {
     setPayment({ ["type"]: "CREDIT_DEBIT" });
+    setPayment({ ["user_id"]: uid });
     setPayment({ ["payment_id"]: data.payment_id });
-  }, [setPayment, data.payment_id]);
+  }, [setPayment, data.payment_id, uid]);
 
   return (
     <main className="font-noto-thai">

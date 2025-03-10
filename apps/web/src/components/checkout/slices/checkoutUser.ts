@@ -52,13 +52,13 @@ const checkoutUserSlice = createSlice({
                 }
             }
         },
-        resetForm: (state) => {
+        resetUserForm: (state) => {
             state.formData = initialState.formData;
             state.isValid = false;
         },
     },
 });
 
-export const { setStep, updateFormData, resetForm } = checkoutUserSlice.actions;
+export const { setStep, updateFormData, resetUserForm } = checkoutUserSlice.actions;
 export default checkoutUserSlice.reducer;
 

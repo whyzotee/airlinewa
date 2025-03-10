@@ -22,10 +22,12 @@ class Passenger:
         identity_number: str,
         identity_out_date: datetime | None = None,
     ):
-        self.gender = GENDER.MALE
-        self.first_name = "Chatnarint"
-        self.last_name = "Boonsaeng"
-        self.birthday = datetime(2546, 10, 26)
-        self.identity_number = "1581878512"
-        self.identity_out_date = datetime(2570, 10, 26)
-        self.identity_type = IDENTITY_TYPE.CARD
+        self.gender = gender
+        self.first_name = name
+        self.last_name = lastname
+        self.birthday = birthday
+        self.identity_type = identity_type
+        self.identity_number = identity_number
+        self.identity_out_date = identity_out_date
+
+    

@@ -1,6 +1,8 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
-from .air import Aircraft, Airport
+if TYPE_CHECKING:
+    from .air import Aircraft, Airport
 
 class FlightSchedule:
     def __init__(
@@ -48,13 +50,13 @@ class FlightRoute:
 
     def __init__(
         self,
-        id,
-        origin: Airport,
-        destination: Airport,
-        status,
-        flight_schedule: FlightSchedule,
-        base_price,
-        date,
+        id: str,
+        origin: "Airport",
+        destination: "Airport",
+        status: str,
+        flight_schedule: "FlightSchedule",
+        base_price: int,
+        date: datetime,
     ):
         self.__id = id
         self.__schedule = flight_schedule
@@ -106,7 +108,7 @@ class FlightRoute:
 
 
 class Flight:
-    def __init__(self, flight_route: FlightRoute, aircraft: Aircraft):
+    def __init__(self, flight_route: "FlightRoute", aircraft: "Aircraft"):
         self.__flight_route = flight_route
         self.__aircraft = aircraft
 

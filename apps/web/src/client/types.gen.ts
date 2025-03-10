@@ -8,6 +8,7 @@ export type Airport = {
 
 export type CheckoutModel = {
     id: string;
+    uid: string;
 };
 
 export type FlightRoutSchedule = {
@@ -33,7 +34,7 @@ export type LoginModel = {
     password: string;
 };
 
-export type Passenger = {
+export type PassengerModel = {
     name: string;
     lastname: string;
     gender: string;
@@ -53,6 +54,7 @@ export type PaymentContact = {
 
 export type PaymentGateway = {
     payment_id: string;
+    user_id: string;
     type: string;
     number: string;
     out_date: string;
@@ -63,13 +65,13 @@ export type PaymentGateway = {
 export type PaymentIdentity = {
     type: string;
     number: string;
-    out_date: string;
+    out_date: string | null;
 };
 
 export type PaymentModel = {
     user_id: string;
     flight_route_id: string;
-    passengers: Array<Passenger>;
+    passengers: Array<PassengerModel>;
     contact: PaymentContact;
 };
 
@@ -224,6 +226,31 @@ export type PaymentPaymentGatewayErrors = {
 export type PaymentPaymentGatewayError = PaymentPaymentGatewayErrors[keyof PaymentPaymentGatewayErrors];
 
 export type PaymentPaymentGatewayResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type PaymentPaymentSuccessData = {
+    body?: never;
+    path?: never;
+    query: {
+        booking_id: string;
+    };
+    url: '/api/payment/success';
+};
+
+export type PaymentPaymentSuccessErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PaymentPaymentSuccessError = PaymentPaymentSuccessErrors[keyof PaymentPaymentSuccessErrors];
+
+export type PaymentPaymentSuccessResponses = {
     /**
      * Successful Response
      */

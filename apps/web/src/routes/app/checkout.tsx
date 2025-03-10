@@ -39,6 +39,7 @@ const PathAndTimeout = () => {
 function RouteComponent() {
   const { data } = Route.useLoaderData();
   const authStore = useAuthStore((state) => state.auth);
+
   return (
     <main className="font-noto-thai">
       <AppBar />

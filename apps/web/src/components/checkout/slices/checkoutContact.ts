@@ -34,12 +34,12 @@ const checkoutContactSlice = createSlice({
             state.isValid = checkoutContactForm.safeParse(state.contactData).success;
 
         },
-        resetForm: (state) => {
+        resetContactForm: (state) => {
             state.isValid = false;
-            return initialState;
+            state.contactData = initialState.contactData;
         },
     },
 });
 
-export const { updateFormData, resetForm } = checkoutContactSlice.actions;
+export const { updateFormData, resetContactForm } = checkoutContactSlice.actions;
 export default checkoutContactSlice.reducer;

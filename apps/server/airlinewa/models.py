@@ -29,12 +29,13 @@ class FlightRoute(BaseModel):
 
 class CheckoutModel(BaseModel):
     id: str
+    uid: str
 
 
 class PaymentIdentity(BaseModel):
     type: str
     number: str
-    out_date: str
+    out_date: str | None
 
 
 class PaymentContact(BaseModel):
@@ -46,7 +47,7 @@ class PaymentContact(BaseModel):
     phone_number: str
 
 
-class Passenger(BaseModel):
+class PassengerModel(BaseModel):
     name: str
     lastname: str
     gender: str
@@ -58,12 +59,13 @@ class Passenger(BaseModel):
 class PaymentModel(BaseModel):
     user_id: str
     flight_route_id: str
-    passengers: list[Passenger]
+    passengers: list[PassengerModel]
     contact: PaymentContact
 
 
 class PaymentGateway(BaseModel):
     payment_id: str
+    user_id: str
     type: str
     number: str
     out_date: str

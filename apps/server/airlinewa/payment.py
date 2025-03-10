@@ -21,11 +21,9 @@ class Payment:
     def method():
         return [PaymentType.CREDIT_DEBIT, PaymentType.WALLET]
 
-    @staticmethod
-    def create_payment(flight_route_id: str):
-        pay = Payment(f"PAY_{flight_route_id.replace(" ","_")}", PaymentStatus.PENDING_PAYMENT)
-        print("create_payment() instance!")
-        return pay
+    # @staticmethod
+    # def create_payment(payment_id: str):
+    #     return Payment(payment_id, PaymentStatus.PENDING_PAYMENT)
 
     def __init__(self, payment_id, status, type=None, payment_date: datetime | None = None):
         self.__payment_id = payment_id
@@ -56,10 +54,14 @@ class Payment:
         return self.__payment_date
     
     @property
+    def is_pending_payment(self):
+        return self.__status == PaymentStatus.PENDING_PAYMENT
+
+    @property
     def status(self):
         if self.__status == PaymentStatus.COMPLETE:
             return PaymentStatus.ALREADY_PAY
         
-        if time() - self.__timeout >= 30:
+        if time() - self.__timeout >= 300:
             self.__status = PaymentStatus.TIMEOUT
         return self.__status

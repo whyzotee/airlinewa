@@ -1,3 +1,8 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .booking import Booking 
+
 class Account:
     def __init__(self):
         self.__email = None
@@ -18,9 +23,10 @@ class User:
         self.__name = name
         self.__phone_num = phone
         self.__account = accout
+        self.__booking = []
 
     @property
-    def get_id(self):
+    def id(self) -> str:
         return self.__id
     
     @property
@@ -34,6 +40,13 @@ class User:
     @property
     def get_accout(self) -> Account:
         return self.__account
+    
+    @property
+    def booking(self) -> list["Booking"]:
+        return self.__booking
+    
+    def add_booking(self, booking: "Booking"):
+        self.__booking.append(booking)
 
 class Contact:
     def __init__(self, title, name, lastname, email, country_code, phone_number):
@@ -43,3 +56,7 @@ class Contact:
         self.__email = email
         self.__country_code = country_code
         self.__phone_nubmer = phone_number
+
+    @property
+    def email(self):
+        return self.__email
