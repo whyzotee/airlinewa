@@ -2,6 +2,7 @@
   "name": "server",
   "private": true,
   "scripts": {
-    "dev": "fastapi dev main.py"
+    "dev": "python -m uvicorn main:app --reload",
+    "test": "fastapi dev main.py"
   }
 }
