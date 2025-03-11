@@ -14,7 +14,6 @@ class Airlinewa:
     def __init__(self):
         self.__fight_list: list[Flight] = []
         self.__booking_list: list[Booking] = []
-        self.__payment_list: list[Payment]  = []
         self.__fight_route_list: list[FlightRoute] = []
         self.__user_list: list[User] = MockUp.gen_users()
         self.__airport_list: list[Airport] = MockUp.gen_airport()
@@ -38,6 +37,32 @@ class Airlinewa:
         for flight_route in self.__fight_route_list:
             if flight_route.id == flight_route_id:
                 return flight_route
+
+    def search_flight_route(self, origin, destination, date, seat_class, people_count) -> tuple[list[FlightRoute],list[str]]:
+        flight_route_list = []
+        schedule_list = []
+
+        for flight in self.__fight_list:
+            flight_route = flight.flight_route
+            src = flight_route.origin[-1] == origin
+            dest = flight_route.destination[-1] == destination
+            
+            date_format = flight_route.date.timetuple().tm_yday
+            input_date_format = datetime.fromisoformat(date).timetuple().tm_yday
+            depart_date = date_format == input_date_format
+
+            avaliable = flight_route.is_avaliable
+
+            seats = len(flight.aircraft.get_avaliable_seat(seat_class)) >= people_count
+
+            if (src and dest  and depart_date and seats and avaliable):
+                departure = flight_route.schedule.departure
+                arrival = flight_route.schedule.arrival
+
+                flight_route_list.append(flight_route)
+                schedule_list.append([departure, arrival])
+
+        return flight_route_list, schedule_list
 
     def booking_flight_route(
         self,
@@ -78,7 +103,6 @@ class Airlinewa:
 
         user.add_booking(booking)
 
-        self.__payment_list.append(payment)
         self.__booking_list.append(booking)
 
         return booking, payment
@@ -102,21 +126,16 @@ class Airlinewa:
         for booking in user.booking:
             payment = booking.payment
             if payment.id == payment_id:
-                if payment.status == PaymentStatus.ALREADY_PAY:
-                    return PaymentStatus.ALREADY_PAY
-                elif payment.status == PaymentStatus.PENDING_PAYMENT:
+                if payment.status == PaymentStatus.PENDING_PAYMENT:
                     booking.create_ticket()
-                    
                     booked_seat = self.booked_seat(booking.flight_route.id, booking.seats)
                     if not booked_seat:
                         return PaymentStatus.UNKNOWN_SEAT_ID
                     
                     payment.update_status(PaymentStatus.COMPLETE)
                     return booking
-                elif payment.status == PaymentStatus.TIMEOUT:
-                    return PaymentStatus.TIMEOUT
-                else:
-                    return payment.status
+                
+                return payment.status
                     
         return PaymentStatus.UNKNOWN
 
@@ -129,23 +148,26 @@ class Airlinewa:
 
     def create_passenger(self, passenger_data: list[PassengerModel]) -> list[Passenger]:
         passenger_list: list[Passenger] = []
+        
         for passenger in passenger_data:
             input_out_date = passenger.identity.out_date
+
             out_date = None
 
             if input_out_date != '':
                 out_date = datetime.fromisoformat(input_out_date) if isinstance(input_out_date, str) else input_out_date
 
-            passenger_list.append(
-                Passenger(passenger.gender, 
-                          passenger.name, 
-                          passenger.lastname, 
-                          datetime.fromisoformat(passenger.birthday), 
-                          passenger.identity.type, 
-                          passenger.identity.number,
-                          out_date
-                          ))
-            print(passenger.gender, passenger.name, passenger.lastname, datetime.fromisoformat(passenger.birthday), passenger.identity.type, passenger.identity.number, out_date)
+            gender = passenger.gender
+            name = passenger.name
+            lastname = passenger.lastname
+            date = datetime.fromisoformat(passenger.birthday)
+            identity_type = passenger.identity.type
+            identity_number =  passenger.identity.number
+
+            passenger_instance = Passenger(gender, name, lastname, date, identity_type, identity_number,out_date)
+            
+            passenger_list.append(passenger_instance)
+            # print(passenger.gender, passenger.name, passenger.lastname, datetime.fromisoformat(passenger.birthday), passenger.identity.type, passenger.identity.number, out_date)
         return passenger_list
    
     def create_contact(self, data: PaymentContact) -> Contact:
@@ -155,6 +177,7 @@ class Airlinewa:
         for booking in self.__booking_list:
             if booking.id == booking_id:
                 return booking
+            
     # Property Section
     @property
     def services(self) -> list[Service]:

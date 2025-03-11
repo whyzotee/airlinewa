@@ -26,6 +26,7 @@ def payments(model: PaymentModel):
 
     return {
         "id": booking.flight_route.id,
+        "booking_id": booking.id,
         "info": {
             "origin": booking.flight_route.origin,
             "destination": booking.flight_route.destination,
