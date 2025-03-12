@@ -21,6 +21,7 @@ import { Route as AppTicketImport } from './routes/app/ticket'
 import { Route as AppSuccessImport } from './routes/app/success'
 import { Route as AppPaymentImport } from './routes/app/payment'
 import { Route as AppCheckoutImport } from './routes/app/checkout'
+import { Route as AppBookingIndexImport } from './routes/app/booking/index'
 
 // Create Virtual Routes
 
@@ -86,6 +87,12 @@ const AppPaymentRoute = AppPaymentImport.update({
 const AppCheckoutRoute = AppCheckoutImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppBookingIndexRoute = AppBookingIndexImport.update({
+  id: '/booking/',
+  path: '/booking/',
   getParentRoute: () => AppRouteRoute,
 } as any)
 
@@ -163,6 +170,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRegisterLazyImport
       parentRoute: typeof AuthRouteImport
     }
+    '/app/booking/': {
+      id: '/app/booking/'
+      path: '/booking'
+      fullPath: '/app/booking'
+      preLoaderRoute: typeof AppBookingIndexImport
+      parentRoute: typeof AppRouteImport
+    }
   }
 }
 
@@ -173,6 +187,7 @@ interface AppRouteRouteChildren {
   AppPaymentRoute: typeof AppPaymentRoute
   AppSuccessRoute: typeof AppSuccessRoute
   AppTicketRoute: typeof AppTicketRoute
+  AppBookingIndexRoute: typeof AppBookingIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
@@ -180,6 +195,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppPaymentRoute: AppPaymentRoute,
   AppSuccessRoute: AppSuccessRoute,
   AppTicketRoute: AppTicketRoute,
+  AppBookingIndexRoute: AppBookingIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
@@ -211,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/app/ticket': typeof AppTicketRoute
   '/auth/login': typeof AuthLoginLazyRoute
   '/auth/register': typeof AuthRegisterLazyRoute
+  '/app/booking': typeof AppBookingIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -224,6 +241,7 @@ export interface FileRoutesByTo {
   '/app/ticket': typeof AppTicketRoute
   '/auth/login': typeof AuthLoginLazyRoute
   '/auth/register': typeof AuthRegisterLazyRoute
+  '/app/booking': typeof AppBookingIndexRoute
 }
 
 export interface FileRoutesById {
@@ -238,6 +256,7 @@ export interface FileRoutesById {
   '/app/ticket': typeof AppTicketRoute
   '/auth/login': typeof AuthLoginLazyRoute
   '/auth/register': typeof AuthRegisterLazyRoute
+  '/app/booking/': typeof AppBookingIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -253,6 +272,7 @@ export interface FileRouteTypes {
     | '/app/ticket'
     | '/auth/login'
     | '/auth/register'
+    | '/app/booking'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -265,6 +285,7 @@ export interface FileRouteTypes {
     | '/app/ticket'
     | '/auth/login'
     | '/auth/register'
+    | '/app/booking'
   id:
     | '__root__'
     | '/'
@@ -277,6 +298,7 @@ export interface FileRouteTypes {
     | '/app/ticket'
     | '/auth/login'
     | '/auth/register'
+    | '/app/booking/'
   fileRoutesById: FileRoutesById
 }
 
@@ -319,7 +341,8 @@ export const routeTree = rootRoute
         "/app/checkout",
         "/app/payment",
         "/app/success",
-        "/app/ticket"
+        "/app/ticket",
+        "/app/booking/"
       ]
     },
     "/auth": {
@@ -355,6 +378,10 @@ export const routeTree = rootRoute
     "/auth/register": {
       "filePath": "auth/register.lazy.tsx",
       "parent": "/auth"
+    },
+    "/app/booking/": {
+      "filePath": "app/booking/index.tsx",
+      "parent": "/app"
     }
   }
 }
