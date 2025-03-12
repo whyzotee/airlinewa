@@ -134,7 +134,7 @@ class Airlinewa:
             print("User Not Found")
             return PaymentStatus.UNKNOWN
 
-        for booking in user.booking:
+        for booking in user.bookings:
             payment = booking.payment
             if payment.id == payment_id:
                 if payment.status == PaymentStatus.PENDING_PAYMENT:

@@ -191,7 +191,7 @@ const BrowseFlightForm = ({
       const passenger = flights.passenger;
       setAllPassengerCount(passenger.adult + passenger.kid + passenger.child);
     }
-  }, [flights]);
+  }, [flights, isNullQuery]);
 
   useEffect(() => {
     form.store.subscribe(() => {

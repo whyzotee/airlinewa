@@ -73,11 +73,8 @@ class PaymentGateway(BaseModel):
     cvv: str
     holder_name: str
     
-
-class LoginModel(BaseModel):
-    username: str
-    password: str
-
+    
 class CancelModel(BaseModel):
     flight_route_id: str
     booking_id: str
+

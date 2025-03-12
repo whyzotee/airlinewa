@@ -1,7 +1,21 @@
 import { QueryClient } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
-import { Fragment } from "react";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import { lazy, Suspense } from "react";
+
+const loadDevtools = () =>
+  Promise.all([
+    import("@tanstack/router-devtools"),
+    import("@tanstack/react-query-devtools"),
+  ]).then(([{ TanStackRouterDevtools }, { ReactQueryDevtools }]) => {
+    return {
+      default: () => (
+        <>
+          <TanStackRouterDevtools />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </>
+      ),
+    };
+  });
 
 type Context = {
   queryClient: QueryClient;
@@ -11,16 +25,36 @@ type Context = {
   } | null;
 };
 
+const Navbar = lazy(() => import("@/components/Navbar"));
+
 export const Route = createRootRouteWithContext<Context>()({
   component: RootComponent,
 });
 
 function RootComponent() {
-  return (
-    <Fragment>
-      <Outlet />
+  const TanStackDevtools = import.meta.env.PROD
+    ? () => null
+    : lazy(loadDevtools);
 
-      <ReactQueryDevtools initialIsOpen={false} />
-    </Fragment>
+  return (
+    <main className="font-noto-thai">
+      <Navbar />
+      <div className="container mx-auto my-8">
+        {/* <div className="flex justify-between text-sm">
+            <Breadcrumbs aria-label="breadcrumb">
+              <Link to="/">หน้าแรก</Link>
+              <Typography>เลือกเที่ยวบิน</Typography>
+              <Typography>รายละเอียดผู้โดยสาร</Typography>
+              <Typography sx={{ color: "text.primary" }}>ชำระเงิน</Typography>
+            </Breadcrumbs>
+          </div> */}
+
+        <Outlet />
+
+        <Suspense>
+          <TanStackDevtools />
+        </Suspense>
+      </div>
+    </main>
   );
 }
