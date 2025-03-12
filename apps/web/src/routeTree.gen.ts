@@ -22,6 +22,7 @@ import { Route as FlightCheckoutImport } from './routes/flight/checkout'
 import { Route as AppTicketImport } from './routes/app/ticket'
 import { Route as AppSuccessImport } from './routes/app/success'
 import { Route as AppPaymentImport } from './routes/app/payment'
+import { Route as AppCheckoutImport } from './routes/app/checkout'
 import { Route as AppBookingIndexImport } from './routes/app/booking/index'
 
 // Create Virtual Routes
@@ -97,6 +98,12 @@ const AppPaymentRoute = AppPaymentImport.update({
   getParentRoute: () => AppRouteRoute,
 } as any)
 
+const AppCheckoutRoute = AppCheckoutImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
 const AppBookingIndexRoute = AppBookingIndexImport.update({
   id: '/booking/',
   path: '/booking/',
@@ -134,6 +141,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/flight'
       preLoaderRoute: typeof FlightRouteImport
       parentRoute: typeof rootRoute
+    }
+    '/app/checkout': {
+      id: '/app/checkout'
+      path: '/checkout'
+      fullPath: '/app/checkout'
+      preLoaderRoute: typeof AppCheckoutImport
+      parentRoute: typeof AppRouteImport
     }
     '/app/payment': {
       id: '/app/payment'
@@ -197,6 +211,7 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AppRouteRouteChildren {
+  AppCheckoutRoute: typeof AppCheckoutRoute
   AppPaymentRoute: typeof AppPaymentRoute
   AppSuccessRoute: typeof AppSuccessRoute
   AppTicketRoute: typeof AppTicketRoute
@@ -204,6 +219,7 @@ interface AppRouteRouteChildren {
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppCheckoutRoute: AppCheckoutRoute,
   AppPaymentRoute: AppPaymentRoute,
   AppSuccessRoute: AppSuccessRoute,
   AppTicketRoute: AppTicketRoute,
@@ -247,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
   '/flight': typeof FlightRouteRouteWithChildren
+  '/app/checkout': typeof AppCheckoutRoute
   '/app/payment': typeof AppPaymentRoute
   '/app/success': typeof AppSuccessRoute
   '/app/ticket': typeof AppTicketRoute
@@ -261,6 +278,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
+  '/app/checkout': typeof AppCheckoutRoute
   '/app/payment': typeof AppPaymentRoute
   '/app/success': typeof AppSuccessRoute
   '/app/ticket': typeof AppTicketRoute
@@ -277,6 +295,7 @@ export interface FileRoutesById {
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
   '/flight': typeof FlightRouteRouteWithChildren
+  '/app/checkout': typeof AppCheckoutRoute
   '/app/payment': typeof AppPaymentRoute
   '/app/success': typeof AppSuccessRoute
   '/app/ticket': typeof AppTicketRoute
@@ -294,6 +313,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/auth'
     | '/flight'
+    | '/app/checkout'
     | '/app/payment'
     | '/app/success'
     | '/app/ticket'
@@ -307,6 +327,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
+    | '/app/checkout'
     | '/app/payment'
     | '/app/success'
     | '/app/ticket'
@@ -321,6 +342,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/auth'
     | '/flight'
+    | '/app/checkout'
     | '/app/payment'
     | '/app/success'
     | '/app/ticket'
@@ -368,6 +390,7 @@ export const routeTree = rootRoute
     "/app": {
       "filePath": "app/route.tsx",
       "children": [
+        "/app/checkout",
         "/app/payment",
         "/app/success",
         "/app/ticket",
@@ -387,6 +410,10 @@ export const routeTree = rootRoute
         "/flight/checkout",
         "/flight/"
       ]
+    },
+    "/app/checkout": {
+      "filePath": "app/checkout.tsx",
+      "parent": "/app"
     },
     "/app/payment": {
       "filePath": "app/payment.tsx",
