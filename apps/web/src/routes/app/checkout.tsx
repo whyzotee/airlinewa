@@ -41,10 +41,23 @@ const PathAndTimeout = () => {
 function RouteComponent() {
   const { data } = Route.useLoaderData();
   const authStore = useAuthStore((state) => state.auth);
-  const people_cnt = 2;
   const queryData = useSearch({ from: "/app/checkout" });
 
-  const totalPassengers = queryData.passenger.adult + queryData.passenger.kid + queryData.passenger.child;
+
+  const totalPassengers =
+    (queryData.passenger?.adult || 0) +
+    (queryData.passenger?.kid || 0) +
+    (queryData.passenger?.child || 0);
+
+  let adultCount = 1;
+  let kidCount = 1;
+  let childCount = 1;
+
+  const passengerTypes = [
+    ...Array(queryData.passenger?.adult || 0).fill(null).map(() => `ผู้ใหญ่ ${adultCount++}`),
+    ...Array(queryData.passenger?.kid || 0).fill(null).map(() => `เด็ก ${kidCount++}`),
+    ...Array(queryData.passenger?.child || 0).fill(null).map(() => `ทารก ${childCount++}`),
+  ];
 
   const [userDetails, setUserDetails] = useState(
     Array.from({ length: totalPassengers }).map(() => ({
@@ -80,6 +93,7 @@ function RouteComponent() {
             <UserDetail
               key={i}
               userNumber={i + 1}
+              userType={passengerTypes[i]}
               userData={user}
               updateUserDetails={updateUserDetails} // ✅ ส่งฟังก์ชันให้ Component
             />

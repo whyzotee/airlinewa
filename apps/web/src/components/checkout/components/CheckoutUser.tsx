@@ -21,11 +21,12 @@ const options = [{ label: "Thailand" }, { label: "Singapore" }];
 
 interface Props {
   userNumber: number;
+  userType: string;
   userData: any;
   updateUserDetails: (index: number, field: string, value: any) => void;
 }
 
-const UserDetail: React.FC<Props> = ({ userNumber, userData, updateUserDetails }) => {
+const UserDetail: React.FC<Props> = ({ userNumber, userType, userData, updateUserDetails }) => {
   const isFormValid = () => {
     return (
       userData.gender &&
@@ -56,7 +57,7 @@ const UserDetail: React.FC<Props> = ({ userNumber, userData, updateUserDetails }
         <div className="w-full flex justify-between items-center">
           <div className="flex gap-4">
             <AccessibilityIcon />
-            <h1>ผู้โดยสาร {userNumber}</h1>
+            <h1>{userType}</h1>
           </div>
           {/* ✅ แสดงสถานะว่ากรอกครบหรือยัง */}
           <div
