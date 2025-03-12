@@ -1,7 +1,21 @@
 import { QueryClient } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
-import { Fragment } from "react";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import { Fragment, lazy, Suspense } from "react";
+
+const loadDevtools = () =>
+  Promise.all([
+    import("@tanstack/router-devtools"),
+    import("@tanstack/react-query-devtools"),
+  ]).then(([{ TanStackRouterDevtools }, { ReactQueryDevtools }]) => {
+    return {
+      default: () => (
+        <>
+          <TanStackRouterDevtools />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </>
+      ),
+    };
+  });
 
 type Context = {
   queryClient: QueryClient;
@@ -16,11 +30,17 @@ export const Route = createRootRouteWithContext<Context>()({
 });
 
 function RootComponent() {
+  const TanStackDevtools = import.meta.env.PROD
+    ? () => null
+    : lazy(loadDevtools);
+
   return (
     <Fragment>
       <Outlet />
 
-      <ReactQueryDevtools initialIsOpen={false} />
+      <Suspense>
+        <TanStackDevtools />
+      </Suspense>
     </Fragment>
   );
 }
