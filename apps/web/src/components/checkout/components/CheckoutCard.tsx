@@ -12,26 +12,41 @@ interface GetPayment {
   user_id: string | undefined;
   flight_route_id: string;
   price: number[];
+  userDetails: any[];
 }
 
-const CheckoutCard = ({ user_id, flight_route_id, price }: GetPayment) => {
+const CheckoutCard = ({ user_id, flight_route_id, price, userDetails }: GetPayment) => {
   const navigate = useNavigate();
 
   const dataUser = useSelector((state: RootState) => state.checkoutUser);
   const dataContact = useSelector((state: RootState) => state.checkoutContact);
   const queryData = useSearch({ from: "/app/checkout" });
   const paymentMutation = useMutation(paymentPaymentsMutation());
-
+  
   const callAPI = async () => {
     if (paymentMutation.isPending) return;
 
     if (!user_id) throw new Error("Please login first");
 
-    if (!dataUser.isValid) throw new Error("Please fill all the user form");
+    const isValid = userDetails.every(user => 
+      user.gender &&
+      user.name &&
+      user.lastname &&
+      user.country &&
+      user.birthday &&
+      user.identity.type &&
+      user.identity.number &&
+      (user.identity.type !== "passport" || user.identity.out_date)
+    );
+
+    if(!isValid) throw new Error("Please fill all the user form");
+
+    // if (!dataUser.isValid) throw new Error("Please fill all the user form");
 
     if (!dataContact.isValid)
       throw new Error("Please fill all the contact form");
-
+    
+    console.log(userDetails)
     await delay(1000);
 
     const payment = paymentMutation.mutateAsync({
@@ -39,10 +54,12 @@ const CheckoutCard = ({ user_id, flight_route_id, price }: GetPayment) => {
         seat_class: queryData.seatClass,
         user_id: user_id,
         flight_route_id: flight_route_id,
-        passengers: [dataUser.formData],
+        // passengers: [dataUser.formData],
+        passengers: userDetails,
         contact: dataContact.contactData,
       },
-    });
+    }
+  );
     // const response = await axios.post("http://127.0.0.1:8000/api/payment", {
     //   user_id: user_id,
     //   flight_route_id: flight_route_id,

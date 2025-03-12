@@ -6,7 +6,9 @@ import CheckoutServiceBag from "@/components/checkout/components/CheckoutService
 import UserDetail from "@/components/checkout/components/CheckoutUser";
 import { useAuthStore } from "@/lib/zustand";
 import { Breadcrumbs, Typography } from "@mui/material";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
+import { useState } from "react";
+
 
 export const Route = createFileRoute("/app/checkout")({
   loader: ({ location }) => {
@@ -39,6 +41,32 @@ const PathAndTimeout = () => {
 function RouteComponent() {
   const { data } = Route.useLoaderData();
   const authStore = useAuthStore((state) => state.auth);
+  const people_cnt = 2;
+  const queryData = useSearch({ from: "/app/checkout" });
+
+  const totalPassengers = queryData.passenger.adult + queryData.passenger.kid + queryData.passenger.child;
+
+  const [userDetails, setUserDetails] = useState(
+    Array.from({ length: totalPassengers }).map(() => ({
+      gender: "",
+      name: "",
+      lastname: "",
+      country: "",
+      birthday: "",
+      identity: { type: "", number: "", out_date: "" },
+    }))
+  );
+
+  const updateUserDetails = (index, field, value) => {
+    setUserDetails((prev) => {
+      const newDetails = [...prev];
+      newDetails[index] = {
+        ...newDetails[index],
+        [field]: value,
+      };
+      return newDetails;
+    });
+  };
 
   return (
     <main className="font-noto-thai">
@@ -47,7 +75,16 @@ function RouteComponent() {
         <div className="flex flex-col gap-4 w-full xl:w-[70%]">
           <PathAndTimeout />
           <FlightDetail id={data.id} info={data.info} />
-          <UserDetail />
+
+          {userDetails.map((user, i) => (
+            <UserDetail
+              key={i}
+              userNumber={i + 1}
+              userData={user}
+              updateUserDetails={updateUserDetails} // ✅ ส่งฟังก์ชันให้ Component
+            />
+          ))}         
+          
           <CheckoutContact />
           <h1 className="text-xl">Service</h1>
           <CheckoutServiceBag user={["Adult 1"]} />
@@ -57,6 +94,7 @@ function RouteComponent() {
           user_id={authStore?.userId}
           flight_route_id={data.id}
           price={data.price}
+          userDetails={userDetails}
         />
       </div>
     </main>

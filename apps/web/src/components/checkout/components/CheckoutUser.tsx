@@ -1,6 +1,5 @@
 import AccessibilityIcon from "@mui/icons-material/Accessibility";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
 import {
   Accordion,
   AccordionDetails,
@@ -17,17 +16,28 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import dayjs from "dayjs";
 import { NumericFormat } from "react-number-format";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../app/store";
-import { updateFormData } from "../slices/checkoutUser";
 
 const options = [{ label: "Thailand" }, { label: "Singapore" }];
 
-const UserDetail = () => {
-  const dispatch = useDispatch();
-  const { formData, isValid } = useSelector(
-    (state: RootState) => state.checkoutUser
-  );
+interface Props {
+  userNumber: number;
+  userData: any;
+  updateUserDetails: (index: number, field: string, value: any) => void;
+}
+
+const UserDetail: React.FC<Props> = ({ userNumber, userData, updateUserDetails }) => {
+  const isFormValid = () => {
+    return (
+      userData.gender &&
+      userData.name &&
+      userData.lastname &&
+      userData.country &&
+      userData.birthday &&
+      userData.identity.type &&
+      userData.identity.number &&
+      (userData.identity.type !== "passport" || userData.identity.out_date)
+    );
+  };
 
   return (
     <Accordion
@@ -46,15 +56,16 @@ const UserDetail = () => {
         <div className="w-full flex justify-between items-center">
           <div className="flex gap-4">
             <AccessibilityIcon />
-            <h1>ผู้ใหญ่ 1</h1>
+            <h1>ผู้โดยสาร {userNumber}</h1>
           </div>
+          {/* ✅ แสดงสถานะว่ากรอกครบหรือยัง */}
           <div
             className={`text-sm text-white rounded-lg px-2 mr-4 ${
-              isValid ? "bg-green-200" : "bg-red-200"
+              isFormValid() ? "bg-green-200" : "bg-red-200"
             }`}
           >
-            <p className={isValid ? "text-green-500" : "text-red-500"}>
-              {isValid ? "เสร็จสิ้น" : "ยังไม่เสร็จ"}
+            <p className={isFormValid() ? "text-green-500" : "text-red-500"}>
+              {isFormValid() ? "เสร็จสิ้น" : "ยังไม่เสร็จ"}
             </p>
           </div>
         </div>
@@ -68,9 +79,9 @@ const UserDetail = () => {
           <ToggleButtonGroup
             exclusive
             color="primary"
-            value={formData.gender}
-            onChange={(_, v) => dispatch(updateFormData({ gender: v }))}
-            aria-label="Platform"
+            value={userData.gender}
+            onChange={(_, v) => updateUserDetails(userNumber - 1, "gender", v)}
+            aria-label="Gender"
           >
             <ToggleButton value="man">ชาย</ToggleButton>
             <ToggleButton value="woman">หญิง</ToggleButton>
@@ -78,49 +89,34 @@ const UserDetail = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <TextField
-              id="name"
               label="Name"
               variant="outlined"
-              value={formData.name}
-              onChange={(e) =>
-                dispatch(updateFormData({ name: e.target.value }))
-              }
+              value={userData.name}
+              onChange={(e) => updateUserDetails(userNumber - 1, "name", e.target.value)}
             />
             <TextField
-              id="lastname"
               label="Lastname"
               variant="outlined"
-              value={formData.lastname}
-              onChange={(e) =>
-                dispatch(updateFormData({ lastname: e.target.value }))
-              }
+              value={userData.lastname}
+              onChange={(e) => updateUserDetails(userNumber - 1, "lastname", e.target.value)}
             />
+
             <Autocomplete
-              className="pt-2"
               disablePortal
               options={options}
-              value={{ label: formData.country }}
-              onChange={(_, v) =>
-                dispatch(updateFormData({ country: v?.label ?? "" }))
-              }
-              renderInput={(params) => (
-                <TextField {...params} label="Country" />
-              )}
+              getOptionLabel={(option) => option.label}
+              value={options.find((option) => option.label === userData.country) || null}
+              onChange={(_, v) => updateUserDetails(userNumber - 1, "country", v ? v.label : "")}
+              renderInput={(params) => <TextField {...params} label="Country" />}
             />
-            <DemoContainer
-              components={["DatePicker", "DatePicker", "DatePicker"]}
-            >
+
+            <DemoContainer components={["DatePicker"]}>
               <DatePicker
-                // maxDate={dayjs("2025/12/31")}
-                label="Brithday"
+                label="Birthday"
                 format="DD/MM/YYYY"
                 views={["day", "month", "year"]}
-                value={
-                  formData.birthday != "" ? dayjs(formData.birthday) : null
-                }
-                onChange={(value) =>
-                  dispatch(updateFormData({ birthday: value?.toISOString() }))
-                }
+                value={userData.birthday ? dayjs(userData.birthday) : null}
+                onChange={(value) => updateUserDetails(userNumber - 1, "birthday", value?.toISOString() || "")}
               />
             </DemoContainer>
           </div>
@@ -128,63 +124,50 @@ const UserDetail = () => {
           <p className="text-sm font-bold">ประเภทเอกสารการเดินทาง</p>
 
           <div className="grid grid-cols-3 gap-4">
+            {/* เลือกประเภทเอกสาร */}
             <Select
               displayEmpty
-              value={formData.identity.type}
+              value={userData.identity?.type || ""} // ✅ ป้องกัน undefined
               onChange={(e) =>
-                dispatch(
-                  updateFormData({
-                    identity: {
-                      ...formData.identity,
-                      type: e.target.value,
-                    },
-                  })
-                )
+                updateUserDetails(userNumber - 1, "identity", {
+                  ...userData.identity,
+                  type: e.target.value,
+                })
               }
             >
               <MenuItem value="id_card">Identity Card</MenuItem>
               <MenuItem value="passport">Passport</MenuItem>
             </Select>
 
+            {/* กรอกหมายเลขเอกสาร */}
             <NumericFormat
-              id="number"
               label="Number"
               variant="outlined"
               customInput={TextField}
-              value={formData.identity.number}
-              className={
-                formData.identity.type == "passport" ? "" : "col-span-2"
-              }
+              value={userData.identity?.number || ""}
+              className={userData.identity?.type === "passport" ? "" : "col-span-2"} // ✅ ให้ขยายเต็มเมื่อไม่ใช่ passport
               onChange={(e) =>
-                dispatch(
-                  updateFormData({
-                    identity: {
-                      ...formData.identity,
-                      number: e.target.value,
-                    },
-                  })
-                )
+                updateUserDetails(userNumber - 1, "identity", {
+                  ...userData.identity,
+                  number: e.target.value,
+                })
               }
             />
 
-            {formData.identity.type === "passport" ? (
+            {/* กรอกวันหมดอายุเอกสาร (แสดงเฉพาะ passport) */}
+            {userData.identity?.type === "passport" && (
               <TextField
-                id="outdate"
                 label="Out Date"
                 variant="outlined"
-                value={formData.identity.out_date}
+                value={userData.identity?.out_date || ""}
                 onChange={(e) =>
-                  dispatch(
-                    updateFormData({
-                      identity: {
-                        ...formData.identity,
-                        out_date: e.target.value,
-                      },
-                    })
-                  )
+                  updateUserDetails(userNumber - 1, "identity", {
+                    ...userData.identity,
+                    out_date: e.target.value,
+                  })
                 }
               />
-            ) : null}
+            )}
           </div>
         </div>
       </AccordionDetails>
