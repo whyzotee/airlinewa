@@ -6,6 +6,16 @@ export type Airport = {
     code: string;
 };
 
+export type BookingModel = {
+    id: string;
+    user_id: string;
+    date: string;
+    departure: string;
+    origin: string;
+    destination: string;
+    status: string;
+};
+
 export type CheckoutModel = {
     id: string;
     uid: string;
@@ -168,6 +178,22 @@ export type FlightSearchFlightResponses = {
 };
 
 export type FlightSearchFlightResponse = FlightSearchFlightResponses[keyof FlightSearchFlightResponses];
+
+export type BookingBookingsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/booking/';
+};
+
+export type BookingBookingsResponses = {
+    /**
+     * Successful Response
+     */
+    200: Array<BookingModel>;
+};
+
+export type BookingBookingsResponse = BookingBookingsResponses[keyof BookingBookingsResponses];
 
 export type PaymentPaymentsData = {
     body: PaymentModel;

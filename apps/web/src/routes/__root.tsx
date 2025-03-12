@@ -1,4 +1,5 @@
 import { QueryClient } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { Fragment } from "react";
 
@@ -18,6 +19,8 @@ function RootComponent() {
   return (
     <Fragment>
       <Outlet />
+
+      <ReactQueryDevtools initialIsOpen={false} />
     </Fragment>
   );
 }

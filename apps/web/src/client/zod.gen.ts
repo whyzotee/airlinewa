@@ -8,6 +8,16 @@ export const zAirport = z.object({
     code: z.string()
 });
 
+export const zBookingModel = z.object({
+    id: z.string(),
+    user_id: z.string(),
+    date: z.string().datetime(),
+    departure: z.string().datetime(),
+    origin: z.string(),
+    destination: z.string(),
+    status: z.string()
+});
+
 export const zCheckoutModel = z.object({
     id: z.string(),
     uid: z.string()
@@ -101,5 +111,7 @@ export const zValidationError = z.object({
 export const zAirportGetAirportsResponse = z.array(zAirport);
 
 export const zFlightSearchFlightResponse = z.array(zFlightRoute);
+
+export const zBookingBookingsResponse = z.array(zBookingModel);
 
 export const zUtilsHealthCheckResponse = z.boolean();
