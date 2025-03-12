@@ -1,11 +1,13 @@
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from .air import *
 from .user import User, Account
 from .flight import Flight,FlightRoute, FlightSchedule
 # from .mock import *
+today = datetime.today()
 
 class MockUp:
+
     @staticmethod
     def gen_users() -> list[User]:
         gen_id = [
@@ -170,10 +172,7 @@ class MockUp:
             "KOP",
             "HGN",
         ]
-        # return [
-        #     Airport(mock_airport_name[i].strip('"'), mock_airport_address[i].strip('"'), mock_airport_code[i].strip('"'))
-        #     for i in range(len(mock_airport_name))
-        # ]
+
         gen_list: list[Airport] = [
             Airport(list_airport_name[i], list_airport_addr[i], list_airport_code[i])
             for i in range(20)
@@ -182,34 +181,61 @@ class MockUp:
         return gen_list
 
     @staticmethod
-    def gen_flight_route(id, airport_a, airport_b, schedule, date, go=True):
-        origin = airport_a if go else airport_b
-        dest = airport_b if go else airport_a
+    def gen_flight_route_go(id, airport_a, airport_b, schedule, date):
+        status = FlightRoute.STATUS_AVALIABLE
+        price = random.randint(1000, 5000)
+        gen_flight = FlightRoute(f"AW {id:05d}", airport_a, airport_b, status, schedule, price, date)
+        
+        return gen_flight
+
+    @staticmethod
+    def gen_flight_route_back(id, airport_a, airport_b, schedule, date):
         status = FlightRoute.STATUS_AVALIABLE
         price = random.randint(1000, 5000)
 
-        gen_flight = FlightRoute(f"AW {id:05d}", origin, dest, status, schedule, price, date)
+        gen_flight = FlightRoute(f"AW {id:05d}", airport_b, airport_a, status, schedule, price, date)
         
         return gen_flight
-                    
+
+    @staticmethod
+    def gen_flight_schedule():
+        schedule_id = f"SCHE_{random.randint(100, 999)}"
+        day_of_week = random.sample([0, 1, 2, 3, 4, 5, 6], 3)
+
+        departure_min = random.randint(0, 1439)
+        duration = random.randint(30, 180)
+        arrive_min = departure_min + duration
+
+        departure_hour, departure_minute = divmod(departure_min, 60)
+        arrive_hour, arrive_minute = divmod(arrive_min, 60)
+
+        arrive_hour %= 24
+
+        departure = f"{departure_hour:02d}:{departure_minute:02d}"
+        arrive = f"{arrive_hour:02d}:{arrive_minute:02d}"
+ 
+        return FlightSchedule(schedule_id, day_of_week, departure, arrive, duration)
+
     @staticmethod
     def gen_flight(airport_list:list[Airport], aircraft_list:list[Aircraft]):
-        gen_flights = []
-
-        sche_001 = FlightSchedule("SCHE_001", [1, 2, 3], "18:00", "19:40", 100)
+        gen_flights: list[Flight] = []
 
         id = 1
 
-        for l in range(-1, 10):  
+        for l in range(-1, 30):
             for i in range(len(airport_list)):  
                 for j in range(i + 1, len(airport_list)):
-                    random_date = datetime.today() + timedelta(days=l)
-                    flight_go = MockUp.gen_flight_route(id, airport_list[i], airport_list[j], sche_001, random_date)
-                    gen_flights.append(Flight(flight_go, random.choice(aircraft_list)))
-                    id += 1
+                    random_date = today + timedelta(days=l)
 
-                    flight_back = MockUp.gen_flight_route(id, airport_list[i], airport_list[j], sche_001, random_date, False)
-                    gen_flights.append(Flight(flight_back, random.choice(aircraft_list)))
-                    id += 1
+                    for _ in range(5):
+                        schedule_go =  MockUp.gen_flight_schedule()
+                        flight_go = MockUp.gen_flight_route_go(id, airport_list[i], airport_list[j], schedule_go, random_date)
+                        gen_flights.append(Flight(flight_go, random.choice(aircraft_list)))
+                        id += 1
+                        
+                        schedule_back =  MockUp.gen_flight_schedule()
+                        flight_back = MockUp.gen_flight_route_back(id, airport_list[i], airport_list[j], schedule_back, random_date)
+                        gen_flights.append(Flight(flight_back, random.choice(aircraft_list)))
+                        id += 1
 
         return gen_flights

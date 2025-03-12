@@ -58,9 +58,10 @@ class Airlinewa:
             if src and dest and depart_date and seats and avaliable:
                 departure = flight.route.schedule.departure
                 arrival = flight.route.schedule.arrival
+                duration = flight.route.schedule.duration
 
                 flight_route_list.append(flight.route)
-                schedule_list.append([departure, arrival])
+                schedule_list.append([departure, arrival, str(duration)])
 
         return flight_route_list, schedule_list
 

@@ -35,6 +35,7 @@ export type CheckoutModel = {
 export type FlightRoutSchedule = {
     departure: string;
     arrival: string;
+    duration: number;
 };
 
 export type FlightRoute = {

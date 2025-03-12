@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 
 class FlightSchedule:
     def __init__(
-        self, id: str, day_of_week, departure_time: str, arrive_time: str, duration
+        self, id: str, day_of_week: list[int], departure_time: str, arrive_time: str, duration: int
     ):
         self.__id = id
         self.__day_of_week = day_of_week
@@ -31,6 +31,10 @@ class FlightSchedule:
     @property
     def arrival(self):
         return self.__arrive_time
+    
+    @property
+    def duration(self):
+        return self.__duration
 
     # def gen_aircraft(self)-> Aircraft:
     #     model_aircrafts = ["FMS P-51D Mustang", "E-flite F-16 Thunderbirds", "HobbyZone Carbon Cub S2", "Freewing A-10 Thunderbolt II", "Dynam Spitfire Mk IX", "E-flite Extra 300 3D", "VolantexRC Trainstar Ascent", "Freewing F-22 Raptor", "Dancing Wings Piper J-3 Cub", "Skywalker X8"]

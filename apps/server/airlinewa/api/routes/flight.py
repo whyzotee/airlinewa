@@ -40,7 +40,10 @@ def search_flight(
 
     for index in range(len(result)):
         flight_route = result[index]
-        schedule = FlightRoutSchedule(departure=schedule_list[index][0], arrival=schedule_list[index][0])
+        sche = schedule_list[index]
+
+        schedule = FlightRoutSchedule(departure=sche[0],arrival=sche[1],duration=int(sche[2]))
+
         format_flight = FlightRoute(
             id=flight_route.id,
             origin=flight_route.origin,

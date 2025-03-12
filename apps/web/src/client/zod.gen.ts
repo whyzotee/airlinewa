@@ -19,7 +19,6 @@ export const zBookingModel = z.object({
     status: z.string()
 });
 
-
 export const zBookingPaymentResponse = z.object({
     payment_id: z.string(),
     email: z.string()
@@ -37,7 +36,8 @@ export const zCheckoutModel = z.object({
 
 export const zFlightRoutSchedule = z.object({
     departure: z.string(),
-    arrival: z.string()
+    arrival: z.string(),
+    duration: z.number().int()
 });
 
 export const zFlightRoute = z.object({

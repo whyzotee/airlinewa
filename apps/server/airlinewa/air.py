@@ -95,22 +95,22 @@ class Aircraft:
 
     def gen_seat(self) -> list[FirstClass | BusinessClass | PremuimEconomyClass | EconomyClass]:
         eco = [
-            EconomyClass(f"SEAT_ECONOMY_{index:3d}", SeatStatus.AVALIABLE, "$59.49")
+            EconomyClass(f"SEAT_ECONOMY_{index:03d}", SeatStatus.AVALIABLE, "$59.49")
             for index in range(random.randint(200, 350))  
         ]
 
         eco_premium = [
-            PremuimEconomyClass(f"SEAT_ECONOMY_PREMIUM_{index:3d}", SeatStatus.AVALIABLE, "$79.49")  
+            PremuimEconomyClass(f"SEAT_ECONOMY_PREMIUM_{index:03d}", SeatStatus.AVALIABLE, "$79.49")  
             for index in range(random.randint(50, 150))
         ]
 
         business = [
-            BusinessClass(f"SEAT_BUSINESSCLASS_{index:3d}", SeatStatus.AVALIABLE, "$199.49")
+            BusinessClass(f"SEAT_BUSINESSCLASS_{index:03d}", SeatStatus.AVALIABLE, "$199.49")
             for index in range(random.randint(30, 70))
         ]
 
         first = [
-            FirstClass(f"SEAT_FIRSTCLASS_{index:3d}", SeatStatus.AVALIABLE, "$499.49")
+            FirstClass(f"SEAT_FIRSTCLASS_{index:03d}", SeatStatus.AVALIABLE, "$499.49")
             for index in range(random.randint(10, 30))
         ]
 

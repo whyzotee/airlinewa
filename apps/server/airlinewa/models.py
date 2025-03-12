@@ -16,6 +16,7 @@ class Airport(BaseModel):
 class FlightRoutSchedule(BaseModel):
     departure: str
     arrival: str
+    duration: int
 
 
 class FlightRoute(BaseModel):

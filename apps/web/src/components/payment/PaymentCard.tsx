@@ -42,22 +42,24 @@ const PaymentCard = ({
         </div>
       </Card>
       <br />
-      <Button
-        onClick={onClick}
-        className="w-full"
-        variant="outlined"
-        color="warning"
-      >
-        ชำระเงิน
-      </Button>
-      <Button
-        onClick={onCancelClick}
-        className="w-full"
-        variant="outlined"
-        color="error"
-      >
-        ยกเลิก
-      </Button>
+      <div className="flex flex-col gap-4">
+        <Button
+          onClick={onClick}
+          className="w-full"
+          variant="outlined"
+          color="warning"
+        >
+          ชำระเงิน
+        </Button>
+        <Button
+          onClick={onCancelClick}
+          className="w-full"
+          variant="outlined"
+          color="error"
+        >
+          ยกเลิก
+        </Button>
+      </div>
     </div>
   );
 };

@@ -2,7 +2,7 @@
 
 import { type Options, airportGetAirports, userUsers, authLogin, flightSearchFlight, bookingBookings, paymentPayments, paymentCheckout, paymentPaymentCancel, paymentPaymentGateway, paymentPaymentSuccess, utilsTestEmail, utilsHealthCheck } from '../sdk.gen';
 import { queryOptions, type UseMutationOptions } from '@tanstack/react-query';
-import type { AirportGetAirportsData, UserUsersData, AuthLoginData, AuthLoginError, AuthLoginResponse, FlightSearchFlightData, BookingBookingsData, PaymentPaymentsData, PaymentPaymentsError, PaymentCheckoutData, PaymentCheckoutError, PaymentPaymentGatewayData, PaymentPaymentGatewayError, PaymentPaymentSuccessData, UtilsTestEmailData, UtilsTestEmailError, UtilsHealthCheckData } from '../types.gen';
+import type { AirportGetAirportsData, UserUsersData, AuthLoginData, AuthLoginError, AuthLoginResponse, FlightSearchFlightData, BookingBookingsData, PaymentPaymentsData, PaymentPaymentsError, PaymentCheckoutData, PaymentCheckoutError, PaymentPaymentCancelData, PaymentPaymentCancelError, PaymentPaymentGatewayData, PaymentPaymentGatewayError, PaymentPaymentSuccessData, UtilsTestEmailData, UtilsTestEmailError, UtilsHealthCheckData } from '../types.gen';
 import type { AxiosError } from 'axios';
 import { client as _heyApiClient } from '../client.gen';
 
