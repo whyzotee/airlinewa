@@ -78,6 +78,15 @@ function RouteComponent() {
   );
   const flights = flightsQuery.data.sort((a, b) => a.price - b.price);
 
+  const seatClassMap: Record<string, string> = {
+    economy: "ชั้นประหยัด",
+    business: "ชั้นธุรกิจ",
+    "eco-premium": "ชั้นประหยัดพรีเมี่ยม",
+    "first-class": "ชั้นหนึ่ง",
+  };
+
+  const seatClassThai = seatClassMap[query.seatClass] || "ไม่ระบุ";
+
   const authStore = useAuthStore();
 
   // const [flights, setFlights] = useState([]);
@@ -204,7 +213,7 @@ function RouteComponent() {
               <CardContent>
                 {/* ชั้นโดยสาร */}
                 <div className="bg-blue-200 text-blue-800 px-3 py-1 rounded-md w-fit text-sm font-bold">
-                  ชั้นประหยัด
+                  {seatClassThai}
                 </div>
 
                 {/* สายการบิน */}
