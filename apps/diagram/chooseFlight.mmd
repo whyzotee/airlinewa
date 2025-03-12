@@ -1,0 +1,69 @@
+---
+config:
+  theme: base
+---
+sequenceDiagram
+    actor customer as : Customer
+    participant ui as : Website
+    participant api as : API
+    participant airlinewa as : Airlinewa (Controller)
+    participant flight as : Flight
+    participant f_route as : FlightRoute
+    participant air as : Aircraft
+    participant seat as : Seat
+    participant f_sche as : FlightSchedule
+
+    customer ->>+ ui: go_choose_flight_page
+    ui ->>+ api: get_flight(tripe_type, seat_class, origin, <br/>destination, date, adult, child, kid)
+    activate api
+    alt origin is None
+        api -->> ui: HTTPException(404, ORIGIN_INVALID) 
+        activate ui
+        ui -->> customer: display error
+        deactivate ui
+    else destination is None
+        api -->> ui: HTTPException(404, DESTINATION_INVALID)
+        activate ui
+        ui -->> customer: display error
+        deactivate ui
+    else date is None
+        api -->> ui: HTTPException(404, DATE_INVALID)
+        deactivate api
+        activate ui
+        ui -->> customer: display error
+        deactivate ui
+    end
+
+    api ->>+ airlinewa: search_flight_route(origin, destination, <br/> date, seat_class, people_count)
+    loop search_flight_route
+    airlinewa ->>+ flight: get_flight_route
+    flight ->>+ f_route: flight_route()
+    f_route -->>- flight: return flight_route
+    flight -->>- airlinewa: return flight_route
+    airlinewa ->>+ f_route: origin()
+    f_route -->>- airlinewa: return origin
+    airlinewa ->>+ f_route: destination()
+    f_route -->>- airlinewa: return destination
+    airlinewa ->>+ f_route: date()
+    f_route -->>- airlinewa: return date
+    airlinewa ->>+ f_route: is_avaliable()
+    f_route -->>- airlinewa: return is_avaliable
+    airlinewa ->>+ flight: get_avaliable_seat
+    flight ->>+ air: get_avaliable_seat(seat_class) 
+    loop get_avaliable_seat
+        air ->> air: seats_class(seat_class)
+        air ->>+ seat: status()
+        seat -->>- air: return status
+    end
+    air -->>- flight: return list_avaliable_seats
+    flight -->>- airlinewa: return list_avaliable_seats
+    
+    airlinewa ->>+ f_route: schedule()
+    f_route ->>+ f_sche: departure()
+    f_sche -->>- f_route: return departure
+    f_route -->>- airlinewa: return departure
+    end
+
+    airlinewa -->>- api: return flight_route_list, schedule_list
+    api -->>- ui: return flight_route_list
+    ui -->>- customer: display flight route list

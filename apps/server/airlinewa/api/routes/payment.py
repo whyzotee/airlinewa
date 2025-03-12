@@ -1,4 +1,4 @@
-from airlinewa.models import CheckoutModel, PaymentGateway, PaymentModel
+from airlinewa.models import CancelModel, CheckoutModel, PaymentGateway, PaymentModel
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
 
@@ -49,7 +49,7 @@ def payments(model: PaymentModel):
 
 @router.post("/checkout")
 async def checkout(model: CheckoutModel):
-    flight_route = airline.get_flight_route(model.id)
+    flight = airline.find_flight(model.id)
     user = airline.find_user(model.uid)
 
     if user == None:
@@ -60,25 +60,33 @@ async def checkout(model: CheckoutModel):
     # for booking in user.booking:
     #     if booking.payment.is_pending_payment:
 
-    if flight_route == None:
+    if flight == None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="NO_FLIGHT_ROUTE_ID_FOUND"
+            status_code=status.HTTP_404_NOT_FOUND, detail="NO_FLIGHT_FOUND"
         )
 
     services = airline.services
 
     return {
-        "id": flight_route.id,
+        "id": flight.route.id,
         "info": {
-            "origin": flight_route.origin,
-            "destination": flight_route.destination,
-            "schedule": flight_route.schedule.info,
-            "date": flight_route.date,
+            "origin": flight.route.origin,
+            "destination": flight.route.destination,
+            "schedule": flight.route.schedule.info,
+            "date": flight.route.date,
         },
-        "price": [flight_route.price, flight_route.tax],
+        "price": [flight.route.price, flight.route.tax],
         "services": services,
     }
 
+@router.post("/cancel")
+def payment_cancel(model: CancelModel):
+    result = airline.cancel_payment(model.flight_route_id, model.booking_id)
+
+    if isinstance(result, str):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result)
+
+    return result
 
 @router.post("/payment_gateway")
 def payment_gateway(model: PaymentGateway):

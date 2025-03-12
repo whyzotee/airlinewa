@@ -22,6 +22,11 @@ export type BookingPaymentResponse = {
     email: string;
 };
 
+export type CancelModel = {
+    flight_route_id: string;
+    booking_id: string;
+};
+
 export type CheckoutModel = {
     id: string;
     uid: string;
@@ -247,6 +252,29 @@ export type PaymentCheckoutErrors = {
 export type PaymentCheckoutError = PaymentCheckoutErrors[keyof PaymentCheckoutErrors];
 
 export type PaymentCheckoutResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type PaymentPaymentCancelData = {
+    body: CancelModel;
+    path?: never;
+    query?: never;
+    url: '/api/payment/cancel';
+};
+
+export type PaymentPaymentCancelErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PaymentPaymentCancelError = PaymentPaymentCancelErrors[keyof PaymentPaymentCancelErrors];
+
+export type PaymentPaymentCancelResponses = {
     /**
      * Successful Response
      */

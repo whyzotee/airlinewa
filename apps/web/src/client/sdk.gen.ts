@@ -102,6 +102,20 @@ export const paymentCheckout = <ThrowOnError extends boolean = false>(options: O
 };
 
 /**
+ * Payment Cancel
+ */
+export const paymentPaymentCancel = <ThrowOnError extends boolean = false>(options: Options<PaymentPaymentCancelData, ThrowOnError>) => {
+    return (options.client ?? _heyApiClient).post<unknown, PaymentPaymentCancelError, ThrowOnError>({
+        url: '/api/payment/cancel',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options?.headers
+        }
+    });
+};
+
+/**
  * Payment Gateway
  */
 export const paymentPaymentGateway = <ThrowOnError extends boolean = false>(options: Options<PaymentPaymentGatewayData, ThrowOnError>) => {

@@ -113,7 +113,7 @@ class Flight:
         self.__aircraft = aircraft
 
     @property
-    def flight_route(self):
+    def route(self):
         return self.__flight_route
 
     @property

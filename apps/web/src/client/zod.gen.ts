@@ -19,9 +19,15 @@ export const zBookingModel = z.object({
     status: z.string()
 });
 
+
 export const zBookingPaymentResponse = z.object({
     payment_id: z.string(),
     email: z.string()
+});
+
+export const zCancelModel = z.object({
+    flight_route_id: z.string(),
+    booking_id: z.string()
 });
 
 export const zCheckoutModel = z.object({

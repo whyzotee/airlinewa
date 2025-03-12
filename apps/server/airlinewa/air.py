@@ -4,11 +4,11 @@ class SeatStatus:
     AVALIABLE = "AVALIABLE"
     PENDING_PAYMENT = "PENDING_PAYMENT"
     BOOKED = "BOOKED"
-    CANCEL = "CANCEL"
-    SOLD = "SOLD"
+    # CANCEL = "CANCEL"
+    # SOLD = "SOLD"
 
 class Seat:
-    def __init__(self, id, status, price):
+    def __init__(self, id: str, status, price):
         self.__id = id
         self.__status = status
         self.__price = price
@@ -21,6 +21,10 @@ class Seat:
     def price(self):
         return self.__price
 
+    @property
+    def class_str(self) -> str:
+        return "seat"
+    
     def __get_status(self):
         return self.__status
 
@@ -33,17 +37,33 @@ class EconomyClass(Seat):
     def __init__(self, id, status, price):
         super().__init__(id, status, price)
 
+    @property
+    def class_str(self):
+        return "economy"
+
 class PremuimEconomyClass(Seat):
     def __init__(self, id, status, price):
         super().__init__(id, status, price)
+    
+    @property
+    def class_str(self):
+        return "eco-premium"
 
 class BusinessClass(Seat):
     def __init__(self, id, status, price):
         super().__init__(id, status, price)
+    
+    @property
+    def class_str(self):
+        return "business"
 
 class FirstClass(Seat):
     def __init__(self, id, status, price):
         super().__init__(id, status, price)
+    
+    @property
+    def class_str(self):
+        return "first"
 
 class Airport:
     def __init__(self, name, address, code):
@@ -75,22 +95,22 @@ class Aircraft:
 
     def gen_seat(self) -> list[FirstClass | BusinessClass | PremuimEconomyClass | EconomyClass]:
         eco = [
-            EconomyClass(f"SEAT_ECONOMY_00{index}", SeatStatus.AVALIABLE, "$59.49")
+            EconomyClass(f"SEAT_ECONOMY_{index:3d}", SeatStatus.AVALIABLE, "$59.49")
             for index in range(random.randint(200, 350))  
         ]
 
         eco_premium = [
-            PremuimEconomyClass(f"SEAT_ECONOMY_PREMIUM_00{index}", SeatStatus.AVALIABLE, "$79.49")  
+            PremuimEconomyClass(f"SEAT_ECONOMY_PREMIUM_{index:3d}", SeatStatus.AVALIABLE, "$79.49")  
             for index in range(random.randint(50, 150))
         ]
 
         business = [
-            BusinessClass(f"SEAT_BUSINESSCLASS_00{index}", SeatStatus.AVALIABLE, "$199.49")
+            BusinessClass(f"SEAT_BUSINESSCLASS_{index:3d}", SeatStatus.AVALIABLE, "$199.49")
             for index in range(random.randint(30, 70))
         ]
 
         first = [
-            FirstClass(f"SEAT_FIRSTCLASS_00{index}", SeatStatus.AVALIABLE, "$499.49")
+            FirstClass(f"SEAT_FIRSTCLASS_{index:3d}", SeatStatus.AVALIABLE, "$499.49")
             for index in range(random.randint(10, 30))
         ]
 
@@ -146,6 +166,15 @@ class Aircraft:
 
         return list_avaliable_seats
 
+    def get_pending_payment_seat(self, seat_class) -> list[Seat]:
+        list_pending_payment_seat: list[Seat] = []
+
+        for seat in self.seats_class(seat_class):
+            if seat.status == SeatStatus.PENDING_PAYMENT:
+                list_pending_payment_seat.append(seat)
+
+        return list_pending_payment_seat
+
     def reserve_seat(self, passenger_count, seat_class) -> list[Seat]:
         seat_id: list[Seat] = []
 
@@ -160,9 +189,37 @@ class Aircraft:
         return seat_id
     
     def booked_seat(self, seats: list[Seat]):
+        booked_count = 0
+
         for seat in self.__seats:
             for book_seat in seats:
                if seat.id ==  book_seat.id:
                     seat.status = SeatStatus.BOOKED
-                    return True
-        return False
+                    booked_count += 1
+        
+        return booked_count == len(seats)
+    
+    def cancel_seat(self, seats: list[Seat]):
+        cancel_count = 0
+
+        for seat in self.__seats:
+            for book_seat in seats:
+               if seat.id ==  book_seat.id:
+                    seat.status = SeatStatus.AVALIABLE
+                    cancel_count += 1
+                    
+        return cancel_count == len(seats)
+
+    # def check_type_seat_class(self, seat_class):
+    #     if seat_class == "economy":
+    #         return EconomyClass
+        
+    #     if seat_class == "eco-premium":
+    #         return PremuimEconomyClass
+        
+    #     if seat_class == "business":
+    #         return BusinessClass
+        
+    #     if seat_class == "first-class":
+    #         return FirstClass
+        

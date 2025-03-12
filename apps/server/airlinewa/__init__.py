@@ -8,12 +8,10 @@ from .payment import *
 from .service import *
 from .user import *
 
-
 class Airlinewa:
     def __init__(self):
         self.__fight_list: list[Flight] = []
         self.__booking_list: list[Booking] = []
-        self.__fight_route_list: list[FlightRoute] = []
         self.__user_list: list[User] = MockUp.gen_users()
         self.__airport_list: list[Airport] = MockUp.gen_airport()
         self.__aircraft_list: list[Aircraft] = MockUp.gen_aircraft()
@@ -21,22 +19,24 @@ class Airlinewa:
     def set_flight(self, list_flight: list[Flight]):
         self.__fight_list = list_flight
 
-    def set_flight_route(self, list_flight_route: list[FlightRoute]):
-        self.__fight_route_list = list_flight_route
-
     # ============================ Medthod ============================ #
 
     # Function Section
-    def get_flight(self, flight_id) -> Flight | None:
+    def find_flight(self, flight_route_id) -> Flight | None:
         for flight in self.__fight_list:
-            if flight.flight_route.id == flight_id:
+            if flight.route.id == flight_route_id:
                 return flight
 
-    def get_flight_route(self, flight_route_id) -> FlightRoute | None:
-        for flight_route in self.__fight_route_list:
-            if flight_route.id == flight_route_id:
-                return flight_route
-
+    def find_booking(self, booking_id: str) -> Booking | None:
+        for booking in self.__booking_list:
+            if booking.id == booking_id:
+                return booking
+    
+    def find_user(self, user_id) -> User | None:
+        for user in self.__user_list:
+            if user.id == user_id:
+                return user
+            
     def search_flight_route(
         self, origin, destination, date, seat_class, people_count
     ) -> tuple[list[FlightRoute], list[str]]:
@@ -44,23 +44,22 @@ class Airlinewa:
         schedule_list = []
 
         for flight in self.__fight_list:
-            flight_route = flight.flight_route
-            src = flight_route.origin[-1] == origin
-            dest = flight_route.destination[-1] == destination
+            src = flight.route.origin[-1] == origin
+            dest = flight.route.destination[-1] == destination
 
-            date_format = flight_route.date.timetuple().tm_yday
+            date_format = flight.route.date.timetuple().tm_yday
             input_date_format = datetime.fromisoformat(date).timetuple().tm_yday
             depart_date = date_format == input_date_format
 
-            avaliable = flight_route.is_avaliable
+            avaliable = flight.route.is_avaliable
 
             seats = len(flight.aircraft.get_avaliable_seat(seat_class)) >= people_count
 
             if src and dest and depart_date and seats and avaliable:
-                departure = flight_route.schedule.departure
-                arrival = flight_route.schedule.arrival
+                departure = flight.route.schedule.departure
+                arrival = flight.route.schedule.arrival
 
-                flight_route_list.append(flight_route)
+                flight_route_list.append(flight.route)
                 schedule_list.append([departure, arrival])
 
         return flight_route_list, schedule_list
@@ -73,7 +72,7 @@ class Airlinewa:
         if not user or not passengers_raw:
             raise Exception("USER_NOT_FOUND")
 
-        flight = self.get_flight(flight_route_id)
+        flight = self.find_flight(flight_route_id)
         if flight == None:
             raise Exception("FLIGHT_NOT_FOUND")
 
@@ -85,12 +84,14 @@ class Airlinewa:
         # print(reserve_seat[0].id)
         # print(reserve_seat[0].price)
         # print(reserve_seat[0].status)
+        
+        all_seats = str(seat_type).upper() + "".join([seat.id.split("_")[-1] for seat in reserve_seat])
 
-        all_seats = "_".join([seat.id for seat in reserve_seat])
         payment = Payment(
             f"PAY_{flight_route_id.replace(" ","_")}_{all_seats}",
             PaymentStatus.PENDING_PAYMENT,
         )
+
         passengers = self.create_passenger(passengers_raw)
         contact = self.create_contact(contact_raw)
 
@@ -98,7 +99,7 @@ class Airlinewa:
         booking = Booking(
             booking_id,
             user,
-            flight.flight_route,
+            flight.route,
             payment,
             passengers,
             None,
@@ -153,7 +154,7 @@ class Airlinewa:
 
     def booked_seat(self, flight_route_id, seats):
         for flight in self.__fight_list:
-            if flight.flight_route.id == flight_route_id:
+            if flight.route.id == flight_route_id:
                 return flight.aircraft.booked_seat(seats)
 
         return False
@@ -187,6 +188,22 @@ class Airlinewa:
             passenger_list.append(passenger_instance)
             # print(passenger.gender, passenger.name, passenger.lastname, datetime.fromisoformat(passenger.birthday), passenger.identity.type, passenger.identity.number, out_date)
         return passenger_list
+    
+    def cancel_payment(self, flight_route_id, booking_id):
+        flight = self.find_flight(flight_route_id)
+        booking = self.find_booking(booking_id)
+
+        if booking is None or flight is None:
+            return "NO_BOOKING_OR_FLIGHT_ID"
+        
+        result = flight.aircraft.get_pending_payment_seat(booking.seats)
+        
+        if not result:
+            return "CANNOT_CANCEL"
+
+        self.__booking_list.remove(booking)
+
+        return result
 
     def create_contact(self, data: PaymentContact) -> Contact:
         return Contact(
@@ -198,40 +215,19 @@ class Airlinewa:
             data.phone_number,
         )
 
-    @property
-    def bookings(self) -> list[Booking]:
-        return self.__booking_list
-
-    def find_booking(self, booking_id: str) -> Booking | None:
-        for booking in self.__booking_list:
-            if booking.id == booking_id:
-                return booking
+    def login(self, username, password):
+        for user in self.__user_list:
+            response = user.get_accout.login(username, password)
+            
+            if response:
+                return {"id": user.id}
+        
+        return "CREDENTIAL_INVALID"
 
     # Property Section
     @property
     def services(self) -> list[Service]:
         return Service.get_services()
-
-    @property
-    def users(self) -> list[User]:
-        return self.__user_list
-
-    # @property
-    # def get_booking_list(self) -> list[Booking]:
-    #     return self.__booking_list
-
-    def find_user(self, user_id) -> User | None:
-        for user in self.__user_list:
-            if user.id == user_id:
-                return user
-
-    @property
-    def flight_list(self) -> list[Flight]:
-        return self.__fight_list
-
-    @property
-    def flight_route_list(self) -> list[FlightRoute]:
-        return self.__fight_route_list
 
     @property
     def aircraft_list(self) -> list[Aircraft]:
@@ -246,12 +242,11 @@ class Airlinewa:
     def initialize():
         airline = Airlinewa()
 
-        gen_flights, gen_flight_route = MockUp.gen_flight_and_flight_route(
+        gen_flights = MockUp.gen_flight(
             airline.airport_list, airline.aircraft_list
         )
 
         airline.set_flight(gen_flights)
-        airline.set_flight_route(gen_flight_route)
 
         return airline
 

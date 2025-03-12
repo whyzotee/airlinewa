@@ -1,12 +1,20 @@
 import { delay } from "@/app/function";
-import { paymentPaymentGatewayMutation } from "@/client/@tanstack/react-query.gen";
+import {
+  paymentPaymentCancelMutation,
+  paymentPaymentGatewayMutation,
+} from "@/client/@tanstack/react-query.gen";
 import FlightDetail from "@/components/checkout/components/CheckoutFlightDetails";
 import PaymentCard from "@/components/payment/PaymentCard";
 import PaymentTabs from "@/components/payment/PaymentTabs";
 import { useAuthStore, usePaymentStore } from "@/lib/zustand";
 import { Breadcrumbs, Typography } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 
@@ -20,8 +28,8 @@ export const Route = createFileRoute("/app/payment")({
 });
 
 function RouteComponent() {
+  const router = useRouter();
   const navigate = useNavigate();
-
   const { data } = Route.useLoaderData();
   const { payment, setPayment } = usePaymentStore();
   const paymentMutation = useMutation(paymentPaymentGatewayMutation());
@@ -73,6 +81,42 @@ function RouteComponent() {
       }
     );
   };
+
+  const cencelMutation = useMutation(paymentPaymentCancelMutation());
+
+  const onCancelClick = () => {
+    if (cencelMutation.isPending) return;
+
+    const cancel = cencelMutation.mutateAsync({
+      body: {
+        flight_route_id: data.id,
+        booking_id: data.booking_id,
+      },
+    });
+
+    toast.promise(
+      async () => {
+        await delay(1000);
+        return await cancel;
+      },
+      {
+        loading: "Cancel payment...",
+        success: (value) => {
+          if (value) {
+            router.history.back();
+            router.history.back();
+          }
+
+          return "Success";
+        },
+        error: (error) => {
+          console.error(error);
+          return error.response.data.detail;
+        },
+      }
+    );
+  };
+
   const authStore = useAuthStore();
   const uid = authStore.auth?.userId;
 
@@ -99,9 +143,16 @@ function RouteComponent() {
             <Typography sx={{ color: "text.primary" }}>ชำระเงิน</Typography>
           </Breadcrumbs>
         </div>
+        
         <h1 className="text-2xl">ระบบการชำระเงินด้วยความปลอดภัย</h1>
         <FlightDetail id={data.id} info={data.info} />
         <PaymentTabs />
+
+        <PaymentCard
+          onClick={payBTNClick}
+          price={data.price}
+          onCancelClick={onCancelClick}
+        />
       </div>
 
       <PaymentCard onClick={payBTNClick} price={data.price} />
