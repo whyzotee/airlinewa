@@ -1,26 +1,47 @@
+import SuccesAnimation from "@/assets/success.json";
 import { paymentPaymentSuccessOptions } from "@/client/@tanstack/react-query.gen";
 import { Button } from "@mui/material";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import Lottie from "lottie-react";
-import SuccesAnimation from "/public/success.json";
 
 export const Route = createFileRoute("/app/success")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      booking_id: search.booking_id,
+    };
+  },
+  loader: async ({ context, location }) => {
+    const { booking_id } = location.search as { booking_id: string };
+
+    try {
+      const bookingPaymentQuery = await context.queryClient.ensureQueryData(
+        paymentPaymentSuccessOptions({ query: { booking_id } })
+      );
+
+      console.debug(bookingPaymentQuery);
+    } catch (err) {
+      console.error(err);
+
+      throw notFound();
+    }
+  },
   component: RouteComponent,
+  notFoundComponent: () => <p>Booking payment not found!</p>,
 });
 
 function RouteComponent() {
   const { booking_id } = Route.useSearch();
 
-  const successMutation = useSuspenseQuery(
+  const bookingPaymentQuery = useSuspenseQuery(
     paymentPaymentSuccessOptions({
       query: {
-        booking_id: booking_id,
+        booking_id: String(booking_id),
       },
     })
   );
 
-  const response = successMutation.data;
+  const bookingPayment = bookingPaymentQuery.data;
 
   return (
     <main className="font-noto-thai">
@@ -29,11 +50,11 @@ function RouteComponent() {
           <Lottie animationData={SuccesAnimation} loop={true} />
         </div>
         <h1 className="text-gray-800 text-3xl">
-          คำสั่งซื้อสำเร็จ #{response.payment_id}
+          คำสั่งซื้อสำเร็จ #{bookingPayment.payment_id}
         </h1>
         <p>
           ตั๋วและใบเสร็จของคุณจะถูกส่งไปยัง E-mail ที่คุณกรอกไว้:{" "}
-          {response.email}
+          {bookingPayment.email}
         </p>
         <p>ขอบคุณที่ไว้ใจ และใช้บริการของ Airlinewa</p>
 

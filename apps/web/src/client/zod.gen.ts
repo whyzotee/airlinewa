@@ -15,7 +15,13 @@ export const zBookingModel = z.object({
     departure: z.string().datetime(),
     origin: z.string(),
     destination: z.string(),
+    arrive: z.string().datetime(),
     status: z.string()
+});
+
+export const zBookingPaymentResponse = z.object({
+    payment_id: z.string(),
+    email: z.string()
 });
 
 export const zCheckoutModel = z.object({
@@ -45,9 +51,13 @@ export const zHttpValidationError = z.object({
     })).optional()
 });
 
-export const zLoginModel = z.object({
-    username: z.string(),
+export const zLoginRequest = z.object({
+    email: z.string(),
     password: z.string()
+});
+
+export const zLoginResponse = z.object({
+    id: z.string()
 });
 
 export const zPassengerModel = z.object({
@@ -110,8 +120,12 @@ export const zValidationError = z.object({
 
 export const zAirportGetAirportsResponse = z.array(zAirport);
 
+export const zAuthLoginResponse = zLoginResponse;
+
 export const zFlightSearchFlightResponse = z.array(zFlightRoute);
 
 export const zBookingBookingsResponse = z.array(zBookingModel);
+
+export const zPaymentPaymentSuccessResponse = zBookingPaymentResponse;
 
 export const zUtilsHealthCheckResponse = z.boolean();

@@ -13,7 +13,13 @@ export type BookingModel = {
     departure: string;
     origin: string;
     destination: string;
+    arrive: string;
     status: string;
+};
+
+export type BookingPaymentResponse = {
+    payment_id: string;
+    email: string;
 };
 
 export type CheckoutModel = {
@@ -39,9 +45,13 @@ export type HttpValidationError = {
     detail?: Array<ValidationError>;
 };
 
-export type LoginModel = {
-    username: string;
+export type LoginRequest = {
+    email: string;
     password: string;
+};
+
+export type LoginResponse = {
+    id: string;
 };
 
 export type PassengerModel = {
@@ -123,7 +133,7 @@ export type UserUsersResponses = {
 };
 
 export type AuthLoginData = {
-    body: LoginModel;
+    body: LoginRequest;
     path?: never;
     query?: never;
     url: '/api/auth/login';
@@ -142,8 +152,10 @@ export type AuthLoginResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: LoginResponse;
 };
+
+export type AuthLoginResponse = AuthLoginResponses[keyof AuthLoginResponses];
 
 export type FlightSearchFlightData = {
     body?: never;
@@ -286,8 +298,10 @@ export type PaymentPaymentSuccessResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: BookingPaymentResponse;
 };
+
+export type PaymentPaymentSuccessResponse = PaymentPaymentSuccessResponses[keyof PaymentPaymentSuccessResponses];
 
 export type UtilsTestEmailData = {
     body?: never;

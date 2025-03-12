@@ -73,7 +73,3 @@ class PaymentGateway(BaseModel):
     cvv: str
     holder_name: str
     
-
-class LoginModel(BaseModel):
-    username: str
-    password: str

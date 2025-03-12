@@ -19,23 +19,23 @@ function RouteComponent() {
 
   const form = useForm({
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
     validators: {
       onChange: z.object({
-        username: z.string(),
+        email: z.string().email(),
         password: z.string(),
       }),
     },
     onSubmit: ({ value }) => {
       if (loginMutation.isPending) return;
 
-      const { username, password } = value;
+      const { email, password } = value;
 
       const login = loginMutation.mutateAsync({
         body: {
-          username,
+          email,
           password,
         },
       });
@@ -85,13 +85,14 @@ function RouteComponent() {
         }}
       >
         <form.Field
-          name="username"
+          name="email"
           children={(field) => (
             <TextField
               id={field.name}
               name={field.name}
-              label="Username"
+              label="Email"
               variant="outlined"
+              type="email"
               fullWidth
               size="small"
               disabled={loginMutation.isPending}

@@ -7,11 +7,20 @@ from airlinewa import airline
 router = APIRouter(prefix="/payment", tags=["payment"])
 
 
+class BookingPaymentResponse(BaseModel):
+    payment_id: str
+    email: str
+
+
 @router.post("/")
 def payments(model: PaymentModel):
     try:
         booking, payment = airline.booking_flight_route(
-            model.user_id, model.flight_route_id, model.passengers, model.contact, model.seat_class
+            model.user_id,
+            model.flight_route_id,
+            model.passengers,
+            model.contact,
+            model.seat_class,
         )
 
     except Exception as err:
@@ -42,12 +51,12 @@ def payments(model: PaymentModel):
 async def checkout(model: CheckoutModel):
     flight_route = airline.get_flight_route(model.id)
     user = airline.find_user(model.uid)
-    
+
     if user == None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="USER_NOT_FOUND"
         )
-    
+
     # for booking in user.booking:
     #     if booking.payment.is_pending_payment:
 
@@ -73,21 +82,32 @@ async def checkout(model: CheckoutModel):
 
 @router.post("/payment_gateway")
 def payment_gateway(model: PaymentGateway):
-    gateway = airline.call_gateway(model.payment_id, model.user_id, model.type, model.number, model.out_date, model.cvv, model.holder_name)
+    gateway = airline.call_gateway(
+        model.payment_id,
+        model.user_id,
+        model.type,
+        model.number,
+        model.out_date,
+        model.cvv,
+        model.holder_name,
+    )
 
     if isinstance(gateway, str):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=gateway)
 
-    return { "booking_id": gateway.id }
+    return {"booking_id": gateway.id}
+
 
 @router.get("/success")
-def payment_success(booking_id: str):
+def payment_success(booking_id: str) -> BookingPaymentResponse:
     booking = airline.find_booking(booking_id)
 
     if booking == None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="NO_BOOKING_FOUND")
-    
-    return {
-        "payment_id": booking.payment.id,
-        "email": booking.contact.email
-    }
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="NO_BOOKING_FOUND"
+        )
+
+    # return {"payment_id": booking.payment.id, "email": booking.contact.email}
+    return BookingPaymentResponse(
+        payment_id=booking.payment.id, email=booking.contact.email
+    )

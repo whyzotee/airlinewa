@@ -1,6 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
-import { Fragment, lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 
 const loadDevtools = () =>
   Promise.all([
@@ -25,6 +25,8 @@ type Context = {
   } | null;
 };
 
+const Navbar = lazy(() => import("@/components/Navbar"));
+
 export const Route = createRootRouteWithContext<Context>()({
   component: RootComponent,
 });
@@ -35,12 +37,24 @@ function RootComponent() {
     : lazy(loadDevtools);
 
   return (
-    <Fragment>
-      <Outlet />
+    <main className="font-noto-thai">
+      <Navbar />
+      <div className="container mx-auto my-8">
+        {/* <div className="flex justify-between text-sm">
+            <Breadcrumbs aria-label="breadcrumb">
+              <Link to="/">หน้าแรก</Link>
+              <Typography>เลือกเที่ยวบิน</Typography>
+              <Typography>รายละเอียดผู้โดยสาร</Typography>
+              <Typography sx={{ color: "text.primary" }}>ชำระเงิน</Typography>
+            </Breadcrumbs>
+          </div> */}
 
-      <Suspense>
-        <TanStackDevtools />
-      </Suspense>
-    </Fragment>
+        <Outlet />
+
+        <Suspense>
+          <TanStackDevtools />
+        </Suspense>
+      </div>
+    </main>
   );
 }
