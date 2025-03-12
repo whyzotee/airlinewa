@@ -15,7 +15,13 @@ export const zBookingModel = z.object({
     departure: z.string().datetime(),
     origin: z.string(),
     destination: z.string(),
+    arrive: z.string().datetime(),
     status: z.string()
+});
+
+export const zCancelModel = z.object({
+    flight_route_id: z.string(),
+    booking_id: z.string()
 });
 
 export const zCheckoutModel = z.object({

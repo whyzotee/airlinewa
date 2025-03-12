@@ -8,7 +8,7 @@ class Account:
         self.__email = None
         self.__password = None
 
-    def login(self, email, password):
+    def login(self, email, password) -> bool:
         return self.__email == email and self.__password == password
     
     def register(self, email, password):

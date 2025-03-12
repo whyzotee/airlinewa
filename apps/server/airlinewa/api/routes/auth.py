@@ -8,17 +8,9 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/login")
 def login(model: LoginModel):
-    users = airline.users
+    result = airline.login(model.username, model.password)
 
-    for user in users:
-        response = user.get_accout.login(model.username, model.password)
+    if isinstance(result, str):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=result)
 
-        if response:
-            return {"id": user.id}
-
-        break
-
-    # return {"error": "Username or password wrong, please try again."}
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED, detail="CREDENTIAL_INVALID"
-    )
+    return result

@@ -3,11 +3,14 @@ import { Button, Card, Divider } from "@mui/material";
 const PaymentCard = ({
   price,
   onClick,
+  onCancelClick,
 }: {
   price: number[];
   onClick: () => void;
+  onCancelClick: () => void;
 }) => {
   const sum = price[0] + price[1];
+
   return (
     <div className="sticky w-full xl:w-[30%]">
       <Card variant="outlined">
@@ -46,6 +49,14 @@ const PaymentCard = ({
         color="warning"
       >
         ชำระเงิน
+      </Button>
+      <Button
+        onClick={onCancelClick}
+        className="w-full"
+        variant="outlined"
+        color="error"
+      >
+        ยกเลิก
       </Button>
     </div>
   );

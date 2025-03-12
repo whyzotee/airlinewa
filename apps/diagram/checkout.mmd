@@ -1,0 +1,45 @@
+---
+config:
+  theme: base
+---
+sequenceDiagram
+    actor customer as : Customer
+    participant ui as : Website
+    participant api as : API
+    participant airlinewa as : Airlinewa (Controller)
+    participant f_route as : FlightRoute
+    participant user as : User
+    participant service as : Service
+
+    customer ->>+ ui: click "เลือก" button
+    ui ->>+ api: post_checkout(flight_route_id, user_id)
+    api ->>+ airlinewa: get_flight_route(flight_route_id)
+    loop get_flight_route
+        airlinewa ->>+ f_route: id()
+        f_route -->>- airlinewa: return id
+    end
+    airlinewa -->>- api: return flight_route
+    api ->>+ airlinewa: find_user(user_id)
+    loop find_user
+        airlinewa ->>+ user: id()
+        user -->>- airlinewa: return id
+    end
+    airlinewa -->>- api: return user
+
+    alt user == None
+        api -->>+ ui: return HTTPException(404, USER_NOT_FOUND)
+        ui -->>- customer: display error
+    else flight_route == None
+       api -->>+ ui: return HTTPException(404, NO_FLIGHT_ROUTE_ID_FOUND)
+       ui -->>- customer: display error
+    end
+
+    api ->>+ airlinewa: get_service_list
+    airlinewa ->>+ service: get_services()
+    service -->>- airlinewa: return list_of_service
+    airlinewa -->>- api: return service
+
+
+    api -->>- ui: return flight_id, flight_info, price, services
+
+    ui -->>- customer: return display checkout form

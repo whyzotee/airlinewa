@@ -36,7 +36,7 @@ def search_flight(
     people_count = adult + child + kid
     result, schedule_list = airline.search_flight_route(origin, destination, date, seat_class, people_count)
 
-    list_format_flight = []
+    flight_route_list = []
 
     for index in range(len(result)):
         flight_route = result[index]
@@ -49,6 +49,6 @@ def search_flight(
             date=flight_route.date,
             price=flight_route.price
         )
-        list_format_flight.append(format_flight)
+        flight_route_list.append(format_flight)
 
-    return list_format_flight
+    return flight_route_list
