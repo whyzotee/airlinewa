@@ -1,6 +1,8 @@
 import CheckoutCard from "@/components/checkout/components/CheckoutCard";
 import CheckoutContact from "@/components/checkout/components/CheckoutContact";
 import FlightDetail from "@/components/checkout/components/CheckoutFlightDetails";
+import CheckoutInsurance from "@/components/checkout/components/CheckoutInsurance";
+import CheckoutPackets from "@/components/checkout/components/CheckoutPackets";
 import CheckoutServiceBag from "@/components/checkout/components/CheckoutServiceBag";
 import UserDetail from "@/components/checkout/components/CheckoutUser";
 import { useAuthStore } from "@/lib/zustand";
@@ -26,7 +28,7 @@ function RouteComponent() {
   const { data } = Route.useLoaderData();
   const authStore = useAuthStore((state) => state.auth);
   const queryData = Route.useSearch();
-
+    
   const totalPassengers =
     queryData.passenger.adult +
     queryData.passenger.kid +
@@ -47,6 +49,8 @@ function RouteComponent() {
       .fill(null)
       .map(() => `ทารก ${childCount++}`),
   ];
+
+  const filteredPassengerTypes = passengerTypes.filter(passenger => !passenger.includes('ทารก'));
 
   const [userDetails, setUserDetails] = useState(
     Array.from({ length: totalPassengers }).map(() => ({
@@ -69,6 +73,34 @@ function RouteComponent() {
       return newDetails;
     });
   };
+
+  //   Sevice 
+  const [serviceCosts, setServiceCosts] = useState<number[]>([0, 0, 0]);
+  const updateServiceCost = (index: number, cost: number) => {
+    setServiceCosts((prev) => {
+      if (prev[index] !== cost) {
+        const newCosts = [...prev];
+        newCosts[index] = cost;
+        return newCosts;
+      }
+      return prev; 
+    });
+  };
+  //    Baggage 
+  const handleBaggageChange = (cost: number) => {
+    updateServiceCost(0, cost);
+  };
+
+  //    Packets
+  const handlePacketsChange = (cost: number) => {
+    updateServiceCost(1, cost);
+  };
+
+  //    Insurance
+  const handleInsuranceChange = (cost: number) => {
+    updateServiceCost(2, cost);
+  };
+
   return (
     <div className="flex xl:flex-row flex-col gap-16">
       <div className="flex flex-col gap-4 w-full xl:w-[70%]">
@@ -86,13 +118,19 @@ function RouteComponent() {
 
         <CheckoutContact />
         <h1 className="text-xl">Service</h1>
-        <CheckoutServiceBag user={["Adult 1"]} />
+        <CheckoutServiceBag 
+            user={filteredPassengerTypes} 
+            onBaggageChange={handleBaggageChange} 
+          />      
+        <CheckoutPackets onPacketsChange={handlePacketsChange} />
+        <CheckoutInsurance passengerCount={totalPassengers} onInsuranceChange={handleInsuranceChange} />
       </div>
 
       <CheckoutCard
         user_id={authStore?.userId}
         flight_route_id={data.id}
         price={data.price}
+        servicePrice={serviceCosts}
         userDetails={userDetails}
       />
     </div>

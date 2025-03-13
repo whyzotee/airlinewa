@@ -13,6 +13,7 @@ interface GetPayment {
   user_id: string | undefined;
   flight_route_id: string;
   price: number[];
+  servicePrice: number;
   userDetails: any[];
 }
 
@@ -20,6 +21,7 @@ const CheckoutCard = ({
   user_id,
   flight_route_id,
   price,
+  servicePrice,
   userDetails,
 }: GetPayment) => {
   const navigate = useNavigate();
@@ -64,7 +66,6 @@ const CheckoutCard = ({
       return;
     }
 
-    console.log(userDetails);
     // await delay(1000);
 
     const payment = paymentMutation.mutateAsync({
@@ -112,7 +113,8 @@ const CheckoutCard = ({
     user_id,
   ]);
 
-  const sum = price[0] + price[1];
+  const sum = price[0] + price[1] + servicePrice[0] + servicePrice[1] + servicePrice[2];
+  const sumService = servicePrice[0] + servicePrice[1] + servicePrice[2];
 
   return (
     <div className="sticky w-full xl:w-[30%]">
@@ -134,7 +136,7 @@ const CheckoutCard = ({
             </div>
             <div className="flex justify-between">
               <p>บริการเสริม</p>
-              <p>THB {"0"}</p>
+              <p>THB {Number(sumService).toLocaleString()}</p>
             </div>
           </div>
           <Divider />
