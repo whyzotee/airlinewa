@@ -143,18 +143,15 @@ function RouteComponent() {
             <Typography sx={{ color: "text.primary" }}>ชำระเงิน</Typography>
           </Breadcrumbs>
         </div>
-
         <h1 className="text-2xl">ระบบการชำระเงินด้วยความปลอดภัย</h1>
         <FlightDetail id={data.id} info={data.info} />
         <PaymentTabs />
-
-        <PaymentCard
-          onClick={payBTNClick}
-          price={data.price}
-          onCancelClick={onCancelClick}
-        />
       </div>
-
+      <PaymentCard
+        onClick={payBTNClick}
+        price={data.price}
+        onCancelClick={onCancelClick}
+      />
       {/* <PaymentCard onClick={payBTNClick} price={data.price} /> */}
     </div>
   );

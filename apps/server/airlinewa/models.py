@@ -25,7 +25,7 @@ class FlightRoute(BaseModel):
     destination: list[str]
     schedule: FlightRoutSchedule
     date: datetime
-    price: int
+    price: float | None
 
 
 class CheckoutModel(BaseModel):

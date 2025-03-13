@@ -35,6 +35,10 @@ class FlightSchedule:
     @property
     def duration(self):
         return self.__duration
+    
+    @property
+    def day_of_week(self):
+        return self.__day_of_week
 
     # def gen_aircraft(self)-> Aircraft:
     #     model_aircrafts = ["FMS P-51D Mustang", "E-flite F-16 Thunderbirds", "HobbyZone Carbon Cub S2", "Freewing A-10 Thunderbolt II", "Dynam Spitfire Mk IX", "E-flite Extra 300 3D", "VolantexRC Trainstar Ascent", "Freewing F-22 Raptor", "Dancing Wings Piper J-3 Cub", "Skywalker X8"]

@@ -183,7 +183,7 @@ class MockUp:
     @staticmethod
     def gen_flight_route_go(id, airport_a, airport_b, schedule, date):
         status = FlightRoute.STATUS_AVALIABLE
-        price = random.randint(1000, 5000)
+        price = random.randint(1000, 3000)
         gen_flight = FlightRoute(f"AW {id:05d}", airport_a, airport_b, status, schedule, price, date)
         
         return gen_flight
@@ -191,7 +191,7 @@ class MockUp:
     @staticmethod
     def gen_flight_route_back(id, airport_a, airport_b, schedule, date):
         status = FlightRoute.STATUS_AVALIABLE
-        price = random.randint(1000, 5000)
+        price = random.randint(1000, 3000)
 
         gen_flight = FlightRoute(f"AW {id:05d}", airport_b, airport_a, status, schedule, price, date)
         

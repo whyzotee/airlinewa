@@ -12,7 +12,7 @@ const PaymentCard = ({
   const sum = price[0] + price[1];
 
   return (
-    <div className="sticky w-full xl:w-[30%]">
+    <div className="sticky mt-6 w-full xl:w-[30%]">
       <Card variant="outlined">
         <div className="w-full p-4">
           <div className="flex justify-between pb-4">

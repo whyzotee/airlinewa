@@ -1,0 +1,268 @@
+---
+config:
+  theme: base
+---
+classDiagram
+    note for Airlinewa "System Class"
+    class Airlinewa {
+        - fight_list: list[Flight]
+        - booking_list: list[Booking]
+        - user_list: list[User]
+        - airport_list: list[Airport]
+        - aircraft_list: list[Aircraft]
+        + set_flight(list_flight)
+        + find_flight(flight_route_id) Flight | None
+        + find_booking(booking_id) Booking | None
+        + find_user(user_id) User | None
+        + search_flight_route(origin, destination, date, seat_class, people_count) tuple[list[FlightRoute], list[str]]
+        + booking_flight_route(user_id, flight_route_id, passengers_raw, contact_raw, seat_class) str | tuple[Booking, Payment]
+        + call_gateway(payment_id, user_id, type, number, out_date, cvv, holder_name)
+        + booked_seat(flight_route_id, seats) bool
+        + create_passenger(passenger_data) list[Passenger]
+        + cancel_payment(flight_route_id, booking_id) str | list[Seat]
+        + create_contact(data) Contact
+        + login(username, password)
+        + services() list[Service]
+        + aircraft_list() list[Aircraft]
+        + airport_list() list[Airport]
+        + initialize() Airlinewa
+    }
+
+    class Airport {
+       - name
+       - address
+       - code
+       + info() list[str]
+       + name() str
+       + address() str
+       + code() str
+    }
+
+    class Aircraft {
+        - id
+        - model
+        - seats
+        + gen_seat()
+        + id()
+        + model()
+        + seats()
+        + seats_class(seat_class) list[Seat]
+        + get_avaliable_seat(seat_class) list[Seat]
+        + get_pending_payment_seat(seat_class) list[Seat]
+        + reserve_seat(passenger_count, seat_class) list[Seat]
+        + booked_seat(seats: list[Seat]) bool
+        + cancel_seat(seats: list[Seat])
+    }
+
+    class Seat {
+        - id
+        - status
+        - price
+        + id()
+        + price()
+        + class_str() str
+        + status
+        + status(status)
+    }
+
+    class EconomyClass {
+        + class_str() str
+    }
+
+    class PremuimEconomyClass {
+        + class_str() str
+    }
+
+    class BusinessClass {
+        + class_str() str
+    }
+
+    class FirstClass {
+        + class_str() str
+    }
+
+    class Ticket {
+        - ticket_id
+        - passenger
+        - seat
+        + id()
+        + passenger()
+        + seat()
+    }
+
+    class Booking {
+        - id: str
+        - user: User
+        - flight_route: FlightRoute
+        - ticket: list[Ticket]
+        - payment: Payment
+        - passengers: list[Passenger]
+        - services: list[Service] | None
+        - contact: Contact,
+        - seats: list[Seat]
+        + id()
+        + user()
+        + flight_route()
+        + payment()
+        + passengers()
+        + service()
+        + contact()
+        + seats()
+        + add_ticket(ticket: Ticket)
+        + booking_details()
+        + create_ticket() list[Ticket]
+    }
+
+    class Flight {
+        - flight_route
+        - aircraft
+        + route()
+        + aircraft()
+    }
+
+    class FlightRoute {
+        - id
+        - schedule
+        - origin
+        - destination
+        - status
+        - base_price
+        - date
+        + id()
+        + schedule()
+        + origin()
+        + destination()
+        + is_avaliable()
+        + price()
+        + tax()
+        + date()
+        + status()
+    }
+
+    class FlightSchedule {
+        - id 
+        - day_of_week
+        - departure_time
+        - arrive_time
+        - duration
+        + info()
+        + departure()
+        + arrival()
+        + duration()
+    }
+
+    class Passenger {
+        + gender
+        + first_name
+        + last_name
+        + birthday
+        + identity_type
+        + identity_number
+        + identity_out_date
+    }
+
+    class Payment {
+        - payment_id
+        - type
+        - payment_date
+        - status
+        - timeout
+        + method()
+        + update_type(type)
+        + update_status(status)
+        + update_pay_date(payment_date)
+        + id()
+        + type()
+        + pay_date()
+        + is_pending_payment()
+        + status()
+    }
+
+    class Service {
+        + get_services()
+    }
+
+    class Food {
+        + services()
+    }
+
+    class Package {
+        + services()
+    }
+
+    class Insurance {
+        + services()
+    }
+
+    class Assistance {
+        + services()
+    }
+
+    class Account {
+        - email
+        - password
+        + login(email, password)
+        + register(email, password)
+    }
+
+    class User {
+        - id
+        - name
+        - phone_num
+        - account
+        - bookings
+        + id()
+        + get_name()
+        + get_phone_number()
+        + get_accout()
+        + bookings()
+        + add_booking(booking)
+    }
+
+    class Contact {
+        - title
+        - name
+        - lastname
+        - email
+        - country_code
+        - phone_number
+        + title()
+        + name()
+        + lastname()
+        + email()
+        + country_code()
+        + phone_number()
+    }
+
+    Airlinewa o-- Airport
+    Airlinewa o-- Aircraft
+    Airlinewa o-- Flight
+    Airlinewa o-- User
+    Airlinewa o-- Booking
+
+    Aircraft o-- Seat
+    Booking o-- Ticket
+    Booking o-- Passenger
+
+    Payment <-- Booking
+    Contact <-- Booking
+
+    Airport <-- FlightRoute
+    FlightSchedule <-- FlightRoute
+
+    FlightRoute <-- Flight
+    Aircraft <-- Flight
+
+    Account <-- User
+    Passenger <-- Ticket
+    Service <-- Airlinewa
+
+    Service <|-- Food
+    Service <|-- Package
+    Service <|-- Insurance
+    Service <|-- Assistance
+
+    Seat <|-- EconomyClass
+    Seat <|-- PremuimEconomyClass
+    Seat <|-- BusinessClass
+    Seat <|-- FirstClass

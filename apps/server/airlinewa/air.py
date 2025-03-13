@@ -95,22 +95,22 @@ class Aircraft:
 
     def gen_seat(self) -> list[FirstClass | BusinessClass | PremuimEconomyClass | EconomyClass]:
         eco = [
-            EconomyClass(f"SEAT_ECONOMY_{index:03d}", SeatStatus.AVALIABLE, "$59.49")
+            EconomyClass(f"SEAT_ECONOMY_{index:03d}", SeatStatus.AVALIABLE, 1010.20)
             for index in range(random.randint(200, 350))  
         ]
 
         eco_premium = [
-            PremuimEconomyClass(f"SEAT_ECONOMY_PREMIUM_{index:03d}", SeatStatus.AVALIABLE, "$79.49")  
+            PremuimEconomyClass(f"SEAT_ECONOMY_PREMIUM_{index:03d}", SeatStatus.AVALIABLE, 1686.01)  
             for index in range(random.randint(50, 150))
         ]
 
         business = [
-            BusinessClass(f"SEAT_BUSINESSCLASS_{index:03d}", SeatStatus.AVALIABLE, "$199.49")
+            BusinessClass(f"SEAT_BUSINESSCLASS_{index:03d}", SeatStatus.AVALIABLE, 3740.87)
             for index in range(random.randint(30, 70))
         ]
 
         first = [
-            FirstClass(f"SEAT_FIRSTCLASS_{index:03d}", SeatStatus.AVALIABLE, "$499.49")
+            FirstClass(f"SEAT_FIRSTCLASS_{index:03d}", SeatStatus.AVALIABLE, 14877.52)
             for index in range(random.randint(10, 30))
         ]
 
@@ -157,6 +157,12 @@ class Aircraft:
         
         return eco_class
 
+    def get_seat_price(self, seat_class) -> float:
+        for seat in self.seats_class(seat_class):
+            return seat.price
+        
+        return 0
+
     def get_avaliable_seat(self, seat_class) -> list[Seat]:
         list_avaliable_seats: list[Seat] = []
 
@@ -176,17 +182,17 @@ class Aircraft:
         return list_pending_payment_seat
 
     def reserve_seat(self, passenger_count, seat_class) -> list[Seat]:
-        seat_id: list[Seat] = []
+        list_reserve_seat: list[Seat] = []
 
         for seat in self.seats_class(seat_class):
-            if len(seat_id) == passenger_count:
+            if len(list_reserve_seat) == passenger_count:
                 break
 
             if seat.status == SeatStatus.AVALIABLE:
                 seat.status = SeatStatus.PENDING_PAYMENT
-                seat_id.append(seat)
-
-        return seat_id
+                list_reserve_seat.append(seat)
+    
+        return list_reserve_seat
     
     def booked_seat(self, seats: list[Seat]):
         booked_count = 0

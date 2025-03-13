@@ -1,0 +1,80 @@
+---
+config:
+  theme: base
+---
+sequenceDiagram
+    actor customer as : Customer
+    participant ui as : Website
+    participant api as : API
+    participant airlinewa as : Airlinewa (Controller)
+    participant user as : User
+
+    participant flight as : Flight
+    participant route as : FlightRoute
+    participant air as : Aircraft
+    participant seat as : Seat
+
+    customer ->>+ ui: click ดำเนินการต่อ button
+    ui ->>+ api: POST payment(user_id, flight_route_id,<br>passengers, contact, seat_class)
+    api ->>+ airlinewa: booking_flight_route(user_id, flight_route_id,<br>passengers, contact, seat_class)
+    
+    airlinewa -->>+ airlinewa: self.find_user(user_id)
+    loop find_user
+        airlinewa ->>+ user: id()
+        user -->>- airlinewa: return id
+    end
+    alt not user or not passengers
+        airlinewa -->> api: return USER_NOT_FOUND
+    end
+
+    airlinewa -->> airlinewa: self.find_flight(flight_route_id)
+    loop find_flight
+        airlinewa ->>+ flight: route()
+        flight -->>- airlinewa: return flight_route 
+        airlinewa ->>+ route: id()
+        route -->>- airlinewa: return id
+    end
+
+    alt flight == None
+        airlinewa -->> api: return FLIGHT_NOT_FOUND
+    end
+
+    airlinewa ->>+ flight: aircraft()
+    flight -->>- airlinewa: return aircraft
+    airlinewa ->>+ air: get_avaliable_seat(seat_type)
+    loop get_avaliable_seat
+        air -->> air: seats_class(seat_class)
+        air ->>+ seat: status()
+        seat -->>- air: return status
+    end
+    air -->> airlinewa: return list_avaliable_seats
+
+    alt len(seats) <= 0 or len(seats) < len(passengers)
+        airlinewa -->> api: return SEAT_NOT_FOUND
+    end
+
+    airlinewa ->>+ flight: aircraft()
+    flight -->>- airlinewa: return aircraft
+    airlinewa ->>+ air: reserve_seat(len(passengers), seat_class)
+
+    loop reserve_seat
+        air -->> air: seats_class(seat_class)
+        air ->>+ seat: status()
+        seat -->>- air: return status
+    end
+
+    air -->>- airlinewa: return list_reserve_seat
+
+    airlinewa -->> airlinewa: create_passenger(passengers)
+    airlinewa -->> airlinewa: create_contact(contact)
+
+    airlinewa ->>+ user: add_booking(booking)
+    airlinewa -->>- api : return result
+    
+    alt isinstance(result, str)
+        api -->> ui: return HTTPException(400, detail=result)
+        ui -->> customer: show error
+    end
+
+    api -->> ui: return id, booking_id, flight_info, price, payment_id
+    ui -->> customer: navigate to payment

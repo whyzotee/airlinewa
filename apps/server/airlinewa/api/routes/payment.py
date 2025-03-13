@@ -14,24 +14,18 @@ class BookingPaymentResponse(BaseModel):
 
 @router.post("/")
 def payments(model: PaymentModel):
-    try:
-        booking, payment = airline.booking_flight_route(
+    result = airline.booking_flight_route(
             model.user_id,
             model.flight_route_id,
             model.passengers,
             model.contact,
             model.seat_class,
         )
+    
+    if isinstance(result, str):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result)
 
-    except Exception as err:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err)
-    except:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TRY_AGAIN")
-
-    # if not airline.is_flight_route(flight_route) or flight_route == None:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_404_NOT_FOUND, detail="NO_FLIGHT_FOUND"
-    #     )
+    booking, payment = result
 
     return {
         "id": booking.flight_route.id,

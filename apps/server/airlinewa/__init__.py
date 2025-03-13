@@ -43,19 +43,26 @@ class Airlinewa:
 
     def search_flight_route(
         self, origin, destination, date, seat_class, people_count
-    ) -> tuple[list[FlightRoute], list[str]]:
+    ) -> tuple[list[FlightRoute], list[str], list[float|None]]:
         flight_route_list = []
         schedule_list = []
+        price_list = []
 
         for flight in self.__fight_list:
             src = flight.route.origin[-1] == origin
             dest = flight.route.destination[-1] == destination
+            if not src or not dest:
+                continue
 
-            date_format = flight.route.date.timetuple().tm_yday
-            input_date_format = datetime.fromisoformat(date).timetuple().tm_yday
-            depart_date = date_format == input_date_format
+            data = flight.route.schedule.day_of_week
+            input_date = datetime.fromisoformat(date).timetuple().tm_wday
+            depart_date = input_date in data
+            if not depart_date:
+                continue
 
             avaliable = flight.route.is_avaliable
+            if not avaliable:
+                continue
 
             seats = len(flight.aircraft.get_avaliable_seat(seat_class)) >= people_count
 
@@ -63,11 +70,13 @@ class Airlinewa:
                 departure = flight.route.schedule.departure
                 arrival = flight.route.schedule.arrival
                 duration = flight.route.schedule.duration
-
+                seat_price = flight.aircraft.get_seat_price(seat_class)
+                
                 flight_route_list.append(flight.route)
                 schedule_list.append([departure, arrival, str(duration)])
+                price_list.append(flight.route.price + seat_price)
 
-        return flight_route_list, schedule_list
+        return flight_route_list, schedule_list, price_list
 
     def booking_flight_route(
         self, user_id, flight_route_id: str, passengers_raw, contact_raw, seat_type
@@ -230,7 +239,7 @@ class Airlinewa:
             response = user.get_accout.login(username, password)
 
             if response:
-                return {"id": user.id}
+                return user.id
 
         return "CREDENTIAL_INVALID"
 
