@@ -24,6 +24,16 @@ function RouteComponent() {
     queryData.passenger.kid +
     queryData.passenger.child;
 
+    let adultCount = 1;
+    let kidCount = 1;
+    let childCount = 1;
+    
+    const passengerTypes = [
+      ...Array(queryData.passenger?.adult || 0).fill(null).map(() => `ผู้ใหญ่ ${adultCount++}`),
+      ...Array(queryData.passenger?.kid || 0).fill(null).map(() => `เด็ก ${kidCount++}`),
+      ...Array(queryData.passenger?.child || 0).fill(null).map(() => `ทารก ${childCount++}`),
+    ];
+
   const [userDetails, setUserDetails] = useState(
     Array.from({ length: totalPassengers }).map(() => ({
       gender: "",
@@ -45,7 +55,6 @@ function RouteComponent() {
       return newDetails;
     });
   };
-
   return (
     <div className="flex xl:flex-row flex-col gap-16">
       <div className="flex flex-col gap-4 w-full xl:w-[70%]">
@@ -54,10 +63,10 @@ function RouteComponent() {
         {userDetails.map((user, i) => (
           <UserDetail
             key={i}
-            userType={"Test"}
+            userType={passengerTypes[i]}
             userNumber={i + 1}
             userData={user}
-            updateUserDetails={updateUserDetails} // ✅ ส่งฟังก์ชันให้ Component
+            updateUserDetails={updateUserDetails} // ส่งฟังก์ชันให้ Component
           />
         ))}
 

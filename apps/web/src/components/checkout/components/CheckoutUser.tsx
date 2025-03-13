@@ -59,7 +59,7 @@ const UserDetail: React.FC<Props> = ({ userNumber, userType, userData, updateUse
             <AccessibilityIcon />
             <h1>{userType}</h1>
           </div>
-          {/* ✅ แสดงสถานะว่ากรอกครบหรือยัง */}
+          {/* แสดงสถานะว่ากรอกครบหรือยัง */}
           <div
             className={`text-sm text-white rounded-lg px-2 mr-4 ${
               isFormValid() ? "bg-green-200" : "bg-red-200"
@@ -128,7 +128,7 @@ const UserDetail: React.FC<Props> = ({ userNumber, userType, userData, updateUse
             {/* เลือกประเภทเอกสาร */}
             <Select
               displayEmpty
-              value={userData.identity?.type || ""} // ✅ ป้องกัน undefined
+              value={userData.identity?.type || ""} // ป้องกัน undefined
               onChange={(e) =>
                 updateUserDetails(userNumber - 1, "identity", {
                   ...userData.identity,
@@ -146,7 +146,7 @@ const UserDetail: React.FC<Props> = ({ userNumber, userType, userData, updateUse
               variant="outlined"
               customInput={TextField}
               value={userData.identity?.number || ""}
-              className={userData.identity?.type === "passport" ? "" : "col-span-2"} // ✅ ให้ขยายเต็มเมื่อไม่ใช่ passport
+              className={userData.identity?.type === "passport" ? "" : "col-span-2"} // ให้ขยายเต็มเมื่อไม่ใช่ passport
               onChange={(e) =>
                 updateUserDetails(userNumber - 1, "identity", {
                   ...userData.identity,
