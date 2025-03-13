@@ -42,15 +42,28 @@ def bookings() -> list[BookingResponse]:
     ]
 
     return user_bookings
-    # return [
-    #     BookingResponse(
-    #         id="booking_1234",
-    #         user_id="user_123",
-    #         date=datetime.now(),
-    #         departure=datetime.now(),
-    #         origin="BKK",
-    #         destination="CNX",
-    #         arrive=datetime.now(),
-    #         status="CONFIRMED",
-    #     )
-    # ]
+
+
+@router.get("/{booking_number}")
+def booking(booking_number: str) -> BookingResponse:
+    if len(booking_number) <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="BOOKING_NUMBER_INVALID"
+        )
+
+    booking = airline.find_booking(booking_number)
+    if booking is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="BOOKING_NOT_FOUND"
+        )
+
+    return BookingResponse(
+        id=booking.id,
+        user_id=booking.user.id,
+        date=booking.flight_route.date,
+        departure=booking.flight_route.schedule.departure,
+        origin=booking.flight_route.origin,
+        arrive=booking.flight_route.schedule.arrival,
+        destination=booking.flight_route.destination,
+        status=booking.flight_route.status,
+    )
