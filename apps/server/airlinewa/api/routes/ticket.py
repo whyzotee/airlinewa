@@ -10,20 +10,23 @@ class TicketResponse(BaseModel):
     ticket_id: str
     passenger_name: str
     seat: str
+    isback: bool
 
 class FlightRoute(BaseModel):
+    id:str
     origin: str
     dest: str
+    gate: str
+    flight_date: str
+    boarding_time: str
 
 class BookingResponse(BaseModel):
-    flight_id: str
-    booking_id: str
     user: str
+    booking_id: str
     flight: FlightRoute
+    flight_back: FlightRoute | None
     tickets: List[TicketResponse]
-    gate: str
-    boarding_time: str
-    flight_date: str
+    
 
 @router.get("/")
 def ticket(booking_id: str) -> BookingResponse:
@@ -38,7 +41,8 @@ def ticket(booking_id: str) -> BookingResponse:
             TicketResponse(
                 ticket_id=ticket.id,
                 passenger_name=f"{ticket.passenger.first_name} {ticket.passenger.last_name}",
-                seat=ticket.seat.id
+                seat=ticket.seat.id,
+                isback=ticket.isback
                 ))
         
     origin = booking.flight_route.origin[0]
@@ -46,15 +50,36 @@ def ticket(booking_id: str) -> BookingResponse:
     dest = booking.flight_route.destination[0]
     dest_code = booking.flight_route.destination[-1]
 
-    flight = FlightRoute(origin=f"{origin} ({origin_code})", dest=f"{dest} ({dest_code})")
+    flight = FlightRoute(
+            id=booking.flight_route.id,
+            origin=f"{origin} ({origin_code})", 
+            dest=f"{dest} ({dest_code})",
+            gate=booking.flight_route.schedule.gate,
+            flight_date=booking.flight_route.date.isoformat(),
+            boarding_time=booking.flight_route.schedule.departure
+        )
+    
+    flight_back = None
+
+    if booking.flight_route_back != None:
+        origin = booking.flight_route_back.origin[0]
+        origin_code = booking.flight_route_back.origin[-1]
+        dest = booking.flight_route_back.destination[0]
+        dest_code = booking.flight_route_back.destination[-1]
+
+        flight_back = FlightRoute(
+            id=booking.flight_route_back.id,
+            origin=f"{origin} ({origin_code})", 
+            dest=f"{dest} ({dest_code})",
+            gate=booking.flight_route_back.schedule.gate,
+            flight_date=booking.flight_route_back.date.isoformat(),
+            boarding_time=booking.flight_route_back.schedule.departure
+        )
 
     return BookingResponse(
-        flight_id= booking.flight_route.id,
-        booking_id=booking.id,
         user=booking.user.name,
+        booking_id=booking.id,
         flight=flight,
-        gate=booking.flight_route.schedule.gate,
-        boarding_time=booking.flight_route.schedule.departure,
-        flight_date=booking.flight_route.date.isoformat(),
+        flight_back=flight_back,
         tickets=ticket_list
     )

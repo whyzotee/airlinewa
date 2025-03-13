@@ -12,6 +12,7 @@ import { RootState } from "../../../app/store";
 interface GetPayment {
   user_id: string | undefined;
   flight_route_id: string;
+  flight_route_back_id: string | undefined;
   price: number[];
   servicePrice: number;
   userDetails: any[];
@@ -20,6 +21,7 @@ interface GetPayment {
 const CheckoutCard = ({
   user_id,
   flight_route_id,
+  flight_route_back_id,
   price,
   servicePrice,
   userDetails,
@@ -73,6 +75,7 @@ const CheckoutCard = ({
         seat_class: queryData.seat_class,
         user_id: user_id,
         flight_route_id: flight_route_id,
+        flight_route_back_id: flight_route_back_id ?? null,
         // passengers: [dataUser.formData],
         passengers: userDetails,
         contact: dataContact.contactData,
@@ -111,9 +114,11 @@ const CheckoutCard = ({
     queryData.seat_class,
     userDetails,
     user_id,
+    flight_route_back_id,
   ]);
 
-  const sum = price[0] + price[1] + servicePrice[0] + servicePrice[1] + servicePrice[2];
+  const sum =
+    price[0] + price[1] + servicePrice[0] + servicePrice[1] + servicePrice[2];
   const sumService = servicePrice[0] + servicePrice[1] + servicePrice[2];
 
   return (

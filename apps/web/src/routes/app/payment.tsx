@@ -120,6 +120,8 @@ function RouteComponent() {
   const authStore = useAuthStore();
   const uid = authStore.auth?.userId;
 
+  console.log(data);
+
   useEffect(() => {
     if (authStore.auth) {
       setPayment({ ["type"]: "CREDIT_DEBIT" });

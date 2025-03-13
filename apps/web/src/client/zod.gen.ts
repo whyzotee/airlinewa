@@ -147,6 +147,10 @@ export const zPaymentModel = z.object({
     user_id: z.string(),
     seat_class: z.string(),
     flight_route_id: z.string(),
+    flight_route_back_id: z.union([
+        z.string(),
+        z.null()
+    ]),
     passengers: z.array(zPassengerModel),
     contact: zPaymentContact
 });

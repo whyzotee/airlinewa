@@ -13,7 +13,7 @@ export const Route = createFileRoute("/flight/checkout")({
   validateSearch: (search: Record<string, unknown>) => {
     // validate and parse the search params into a typed state
     return {
-      tripe_type: String(search.tripeType),
+      tripe_type: String(search.tripe_type),
       seat_class: String(search.seat_class),
       passenger: { ...Object(search.passenger) },
     };
@@ -28,7 +28,7 @@ function RouteComponent() {
   const { data } = Route.useLoaderData();
   const authStore = useAuthStore((state) => state.auth);
   const queryData = Route.useSearch();
-    
+
   const totalPassengers =
     queryData.passenger.adult +
     queryData.passenger.kid +
@@ -50,7 +50,9 @@ function RouteComponent() {
       .map(() => `ทารก ${childCount++}`),
   ];
 
-  const filteredPassengerTypes = passengerTypes.filter(passenger => !passenger.includes('ทารก'));
+  const filteredPassengerTypes = passengerTypes.filter(
+    (passenger) => !passenger.includes("ทารก")
+  );
 
   const [userDetails, setUserDetails] = useState(
     Array.from({ length: totalPassengers }).map(() => ({
@@ -74,7 +76,7 @@ function RouteComponent() {
     });
   };
 
-  //   Sevice 
+  //   Sevice
   const [serviceCosts, setServiceCosts] = useState<number[]>([0, 0, 0]);
   const updateServiceCost = (index: number, cost: number) => {
     setServiceCosts((prev) => {
@@ -83,10 +85,10 @@ function RouteComponent() {
         newCosts[index] = cost;
         return newCosts;
       }
-      return prev; 
+      return prev;
     });
   };
-  //    Baggage 
+  //    Baggage
   const handleBaggageChange = (cost: number) => {
     updateServiceCost(0, cost);
   };
@@ -104,7 +106,11 @@ function RouteComponent() {
   return (
     <div className="flex xl:flex-row flex-col gap-16">
       <div className="flex flex-col gap-4 w-full xl:w-[70%]">
-        <FlightDetail id={data.id} info={data.info} />
+        <FlightDetail
+          id={data.id}
+          info={data.info}
+          back_info={data.back_info}
+        />
 
         {userDetails.map((user, i) => (
           <UserDetail
@@ -118,12 +124,15 @@ function RouteComponent() {
 
         <CheckoutContact />
         <h1 className="text-xl">Service</h1>
-        <CheckoutServiceBag 
-            user={filteredPassengerTypes} 
-            onBaggageChange={handleBaggageChange} 
-          />      
+        <CheckoutServiceBag
+          user={filteredPassengerTypes}
+          onBaggageChange={handleBaggageChange}
+        />
         <CheckoutPackets onPacketsChange={handlePacketsChange} />
-        <CheckoutInsurance passengerCount={totalPassengers} onInsuranceChange={handleInsuranceChange} />
+        <CheckoutInsurance
+          passengerCount={totalPassengers}
+          onInsuranceChange={handleInsuranceChange}
+        />
       </div>
 
       <CheckoutCard
@@ -131,6 +140,7 @@ function RouteComponent() {
         flight_route_id={data.id}
         price={data.price}
         servicePrice={serviceCosts}
+        flight_route_back_id={data.back_info.id}
         userDetails={userDetails}
       />
     </div>

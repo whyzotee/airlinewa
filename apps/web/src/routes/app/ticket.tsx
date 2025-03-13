@@ -28,6 +28,8 @@ function RouteComponent() {
   );
 
   const data = tickettQuery.data;
+  const flight = data.flight;
+  const flight_back = data.flight_back;
 
   return (
     <main className="font-noto-thai flex flex-col items-center gap-8">

@@ -61,6 +61,7 @@ class PaymentModel(BaseModel):
     user_id: str
     seat_class: str
     flight_route_id: str
+    flight_route_back_id: str | None
     passengers: list[PassengerModel]
     contact: PaymentContact
 

@@ -26,47 +26,48 @@ export default function NavBar() {
       <Box sx={{ boxShadow: 3, px: "1.5rem" }}>
         <Stack
           direction="row"
-          spacing={2}
           sx={{
-            justifyContent: "space-between",
-            alignItems: "center",
             height: "4rem",
           }}
         >
-          <Link to="/">
-            <Stack
-              direction="row"
-              spacing={1.5}
-              sx={{
-                alignItems: "center",
-              }}
-            >
-              <img src={TITLE_PATH} alt="title" className="h-10" />
-            </Stack>
-          </Link>
+          <div className="container w-full flex justify-between items-center mx-auto">
+            <Link to="/">
+              <Stack
+                direction="row"
+                spacing={1.5}
+                sx={{
+                  alignItems: "center",
+                }}
+              >
+                <img src={TITLE_PATH} alt="title" className="h-10" />
+              </Stack>
+            </Link>
 
-          <Stack direction="row" sx={{ alignItems: "center" }}>
-            <Stack direction="row" spacing={2}>
-              <Link to="/app/booking">
-                <Typography>{"Purchases"}</Typography>
-              </Link>
-              <Link to="/app/check-in">
-                <Typography>{"Check-in"}</Typography>
-              </Link>
-              <Link to="/app/flight-status">
-                <Typography>{"Flight status"}</Typography>
-              </Link>
-            </Stack>
+            <Stack direction="row" sx={{ alignItems: "center" }}>
+              <Stack direction="row" spacing={2}>
+                <Link to="/app/booking">
+                  <Typography>{"Purchases"}</Typography>
+                </Link>
+                <Link to="/app/check-in">
+                  <Typography>{"Check-in"}</Typography>
+                </Link>
+                <Link to="/app/flight-status">
+                  <Typography>{"Flight status"}</Typography>
+                </Link>
+              </Stack>
 
-            <Divider orientation="vertical" />
-            {authStore.auth ? (
-              <Button onClick={handleClickUserMenu}>
-                {authStore.auth.name}
-              </Button>
-            ) : (
-              <Link to="/auth/login">{`Login/Register`}</Link>
-            )}
-          </Stack>
+              <Divider orientation="vertical" className="px-2 py-4" />
+              <div className="ml-2">
+                {authStore.auth ? (
+                  <Button onClick={handleClickUserMenu}>
+                    {authStore.auth.name}
+                  </Button>
+                ) : (
+                  <Link to="/auth/login">{`Login/Register`}</Link>
+                )}
+              </div>
+            </Stack>
+          </div>
         </Stack>
       </Box>
 

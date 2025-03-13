@@ -20,6 +20,7 @@ def payments(model: PaymentModel):
             model.passengers,
             model.contact,
             model.seat_class,
+            model.flight_route_back_id
         )
     
     if isinstance(result, str):
@@ -36,6 +37,15 @@ def payments(model: PaymentModel):
             "schedule": booking.flight_route.schedule.info,
             "date": booking.flight_route.date,
         },
+        "back_info": (
+            {
+                "id": booking.flight_route_back.id,
+                "origin": booking.flight_route_back.origin,
+                "destination": booking.flight_route_back.destination,
+                "schedule": booking.flight_route_back.schedule.info,
+                "date": booking.flight_route_back.date,
+            } if booking.flight_route_back else None
+        ),
         "price": booking.price,
         "payment_id": payment.id,
     }
@@ -58,6 +68,35 @@ async def checkout(model: CheckoutModel):
         )
 
     services = airline.services
+
+    return_id = model.return_flight_id
+    flight_back = airline.find_flight(return_id)
+
+    if (return_id != None):
+        if(flight_back == None):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="NO_FLIGHT_FOUND"
+            )
+
+        return {
+                "id": flight.route.id,
+                "info": {
+                    "origin": flight.route.origin,
+                    "destination": flight.route.destination,
+                    "schedule": flight.route.schedule.info,
+                    "date": flight.route.date,
+                },
+                "back_info": {
+                    "id": flight_back.route.id,
+                    "origin": flight_back.route.origin,
+                    "destination": flight_back.route.destination,
+                    "schedule": flight_back.route.schedule.info,
+                    "date": flight_back.route.date,
+                },
+                "price": [flight.route.price + flight_back.route.price, flight.route.tax + flight_back.route.tax],
+                "services": services,
+            }
+    
     return {
             "id": flight.route.id,
             "info": {
@@ -70,37 +109,9 @@ async def checkout(model: CheckoutModel):
             "services": services,
         }
    
-    return_id = model.return_flight_id
-    flight_back = airline.find_flight(return_id)
-    if (flight_back == None):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="NO_FLIGHT_FOUND"
-        )
     
-    return [
-        {
-            "id": flight.route.id,
-            "info": {
-                "origin": flight.route.origin,
-                "destination": flight.route.destination,
-                "schedule": flight.route.schedule.info,
-                "date": flight.route.date,
-            },
-            "price": [flight.route.price, flight.route.tax],
-            "services": services,
-        },
-        {
-            "id": flight_back.route.id,
-            "info": {
-                "origin": flight_back.route.origin,
-                "destination": flight_back.route.destination,
-                "schedule": flight_back.route.schedule.info,
-                "date": flight_back.route.date,
-            },
-            "price": [flight_back.route.price, flight_back.route.tax],
-            "services": services,
-        }
-    ]
+    
+ 
     
 
 @router.post("/cancel")

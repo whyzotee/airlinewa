@@ -27,6 +27,9 @@ class Airlinewa:
 
     # Function Section
     def find_flight(self, flight_route_id) -> Flight | None:
+        if flight_route_id == None:
+            return None
+
         for flight in self.__fight_list:
             if flight.route.id == flight_route_id:
                 return flight
@@ -84,7 +87,7 @@ class Airlinewa:
         return flight_route_list, schedule_list, price_list
 
     def booking_flight_route(
-        self, user_id, flight_route_id: str, passengers_raw, contact_raw, seat_type
+        self, user_id, flight_route_id: str, passengers_raw, contact_raw, seat_type, route_back_id
     ) -> tuple[Booking, Payment]:
         user = self.find_user(user_id)
 
@@ -92,17 +95,27 @@ class Airlinewa:
             raise Exception("USER_NOT_FOUND")
 
         flight = self.find_flight(flight_route_id)
+            
         if flight == None:
             raise Exception("FLIGHT_NOT_FOUND")
 
         seats = flight.aircraft.get_avaliable_seat(seat_type)
+        
         if len(seats) <= 0 or len(seats) < len(passengers_raw):
             raise Exception("NO_SEAT_LEFT")
 
         reserve_seat = flight.aircraft.reserve_seat(len(passengers_raw), seat_type)
-        # print(reserve_seat[0].id)
-        # print(reserve_seat[0].price)
-        # print(reserve_seat[0].status)
+
+        flight_back = None
+        reserve_seat_back = None
+        
+        if route_back_id != None:
+            flight_back = self.find_flight(route_back_id)
+
+            if flight_back == None:
+                raise Exception("FLIGHT_NOT_FOUND")
+            
+            reserve_seat_back = flight_back.aircraft.reserve_seat(len(passengers_raw), seat_type)
 
         all_seats = str(seat_type).upper() + "".join(
             [seat.id.split("_")[-1] for seat in reserve_seat]
@@ -130,6 +143,10 @@ class Airlinewa:
             contact,
             reserve_seat,
         )
+
+        if flight_back != None and reserve_seat_back != None:
+            booking.set_flight_back_route(flight_back.route)
+            booking.set_flight_back_seats(reserve_seat_back)
 
         booking.booking_details()
         # print(f"Available seat in flight {booking.flight_route.id}", [f"{seat.id} : {seat.status}" for seat in flight.aircraft.seats])
@@ -274,3 +291,4 @@ class Airlinewa:
 
 
 airline = Airlinewa.initialize()
+

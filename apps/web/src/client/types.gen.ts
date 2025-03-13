@@ -109,6 +109,7 @@ export type PaymentModel = {
     user_id: string;
     seat_class: string;
     flight_route_id: string;
+    flight_route_back_id: string | null;
     passengers: Array<PassengerModel>;
     contact: PaymentContact;
 };

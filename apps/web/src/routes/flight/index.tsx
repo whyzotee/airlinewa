@@ -29,6 +29,7 @@ type FlightSearch = {
   originCode: string;
   destinationCode: string;
   departureDate: string;
+  returnDate: string | null | undefined;
   passenger: {
     adult: number;
     kid: number;
@@ -45,6 +46,7 @@ export const Route = createFileRoute("/flight/")({
       originCode: String(search.originCode),
       destinationCode: String(search.destinationCode),
       departureDate: String(search.departureDate),
+      returnDate: String(search.returnDate),
       passenger: { ...Object(search.passenger) },
     };
   },
@@ -93,11 +95,13 @@ function RouteComponent() {
     async (flight_id: string, return_flight_id?: string) => {
       if (checkoutMutation.isPending) return;
 
-      console.log(return_flight_id);
-
       const uid = authStore.auth!.userId;
       const checkout = checkoutMutation.mutateAsync({
-        body: { flight_id, uid, return_flight_id: return_flight_id ?? null },
+        body: {
+          flight_id: flight_id,
+          uid: uid,
+          return_flight_id: return_flight_id ?? null,
+        },
       });
 
       toast.promise(checkout, {
@@ -106,6 +110,7 @@ function RouteComponent() {
         success: (data: any) => {
           dispatch(resetUserForm());
           dispatch(resetContactForm());
+          console.log(data);
 
           navigate({
             to: "/flight/checkout",
@@ -155,13 +160,14 @@ function RouteComponent() {
             ...prev,
             originCode: query.destinationCode,
             destinationCode: query.originCode,
+            departureDate: query.returnDate!,
           }),
         });
       }
 
       if (query.tripeType == "go-back") {
         if (selectedFlight == null) return;
-        handleClick(flight.id, selectedFlight);
+        handleClick(selectedFlight, flight.id);
         toast.success(`คุณเลือกเที่ยวบินกลับ ${flight.id}`);
       } else {
         toast.success(`คุณเลือกเที่ยวบิน ${flight.id}`);
@@ -176,6 +182,7 @@ function RouteComponent() {
       query.destinationCode,
       query.originCode,
       authStore.auth,
+      query.returnDate,
     ]
   );
 
