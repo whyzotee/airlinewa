@@ -215,6 +215,33 @@ export type BookingBookingsResponses = {
 
 export type BookingBookingsResponse = BookingBookingsResponses[keyof BookingBookingsResponses];
 
+export type BookingBookingData = {
+    body?: never;
+    path: {
+        booking_number: string;
+    };
+    query?: never;
+    url: '/api/booking/{booking_number}';
+};
+
+export type BookingBookingErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type BookingBookingError = BookingBookingErrors[keyof BookingBookingErrors];
+
+export type BookingBookingResponses = {
+    /**
+     * Successful Response
+     */
+    200: BookingResponse;
+};
+
+export type BookingBookingResponse = BookingBookingResponses[keyof BookingBookingResponses];
+
 export type PaymentPaymentsData = {
     body: PaymentModel;
     path?: never;

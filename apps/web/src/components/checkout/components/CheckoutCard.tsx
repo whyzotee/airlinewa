@@ -1,10 +1,11 @@
 import toast from "react-hot-toast";
 
-import { delay } from "@/app/function";
 import { paymentPaymentsMutation } from "@/client/@tanstack/react-query.gen";
 import { Button, Card, Divider } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { AxiosError } from "axios";
+import { useCallback } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
 
@@ -23,15 +24,21 @@ const CheckoutCard = ({
 }: GetPayment) => {
   const navigate = useNavigate();
 
-  const dataUser = useSelector((state: RootState) => state.checkoutUser);
+  // const dataUser = useSelector((state: RootState) => state.checkoutUser);
   const dataContact = useSelector((state: RootState) => state.checkoutContact);
   const queryData = useSearch({ from: "/flight/checkout" });
   const paymentMutation = useMutation(paymentPaymentsMutation());
 
-  const callAPI = async () => {
-    if (paymentMutation.isPending) return;
+  const handleClick = useCallback(() => {
+    if (paymentMutation.isPending) {
+      return;
+    }
 
-    if (!user_id) throw new Error("Please login first");
+    if (!user_id) {
+      toast.error("Please login first");
+      return;
+      // throw new Error("Please login first");
+    }
 
     const isValid = userDetails.every(
       (user) =>
@@ -45,15 +52,20 @@ const CheckoutCard = ({
         (user.identity.type !== "passport" || user.identity.out_date)
     );
 
-    if (!isValid) throw new Error("Please fill all the user form");
+    if (!isValid) {
+      toast.error("Please fill all the user form");
+      return;
+    }
 
     // if (!dataUser.isValid) throw new Error("Please fill all the user form");
 
-    if (!dataContact.isValid)
-      throw new Error("Please fill all the contact form");
+    if (!dataContact.isValid) {
+      toast.error("Please fill all the contact form");
+      return;
+    }
 
     console.log(userDetails);
-    await delay(1000);
+    // await delay(1000);
 
     const payment = paymentMutation.mutateAsync({
       body: {
@@ -65,35 +77,40 @@ const CheckoutCard = ({
         contact: dataContact.contactData,
       },
     });
-    // const response = await axios.post("http://127.0.0.1:8000/api/payment", {
-    //   user_id: user_id,
-    //   flight_route_id: flight_route_id,
-    //   passengers: [dataUser.formData],
-    //   contact: dataContact.contactData,
-    // });
 
-    // const data = payment.data;
-
-    // if (payment.status != 200 || data == null) {
-    //   throw new Error("Something error please try again");
-    // }
-
-    return payment;
-  };
-
-  const handleClick = () => {
-    toast.promise(callAPI(), {
+    toast.promise(payment, {
       loading: "Loading...",
       success: (data) => {
         navigate({ to: "/app/payment", state: data }); //replace: true });
         return null;
       },
       error: (err) => {
-        console.log(err);
+        const error = err as AxiosError;
+        const { response } = error;
+
+        if (!response) {
+          return err.message;
+        }
+        // @ts-ignore
+        const detail = response.data.detail;
+
+        if (detail === "TIMEOUT") {
+          return "Payment time out!";
+        }
+
         return err.message;
       },
     });
-  };
+  }, [
+    dataContact.contactData,
+    dataContact.isValid,
+    flight_route_id,
+    navigate,
+    paymentMutation,
+    queryData.seatClass,
+    userDetails,
+    user_id,
+  ]);
 
   const sum = price[0] + price[1];
 
