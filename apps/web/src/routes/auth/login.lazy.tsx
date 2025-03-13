@@ -1,5 +1,6 @@
 import { authLoginMutation } from "@/client/@tanstack/react-query.gen";
 import { useAuthStore } from "@/lib/zustand";
+import { isDev } from "@/utils";
 import { Button, TextField, Typography } from "@mui/material";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
@@ -19,8 +20,8 @@ function RouteComponent() {
 
   const form = useForm({
     defaultValues: {
-      email: "",
-      password: "",
+      email: isDev ? "t@1.dev" : "",
+      password: isDev ? "t" : "",
     },
     validators: {
       onChange: z.object({
@@ -47,10 +48,11 @@ function RouteComponent() {
           const userId = data.id;
 
           authStore.login({
-            name: "",
             userId,
+            name: data.name,
+            email: data.email,
           });
-          navigate({ to: "/flight" });
+          navigate({ to: "/" });
 
           return "Login success.";
         },

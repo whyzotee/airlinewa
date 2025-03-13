@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/lib/zustand";
 import { Divider, Menu, MenuItem } from "@mui/material";
 import { useNavigate } from "@tanstack/react-router";
 import { useCallback } from "react";
@@ -11,19 +12,18 @@ type Prop = {
 
 export default function UserMenu({ anchorEl, open, handleClose }: Prop) {
   const navigate = useNavigate();
+  const authStore = useAuthStore();
 
   const handleLogout = useCallback(() => {
-    handleClose();
-
-    if (!confirm("Do you want to logout?")) {
-      return;
-    }
-
     toast.success("Logout success!");
     navigate({
       to: "/",
     });
-  }, [handleClose, navigate]);
+
+    authStore.logout();
+
+    handleClose();
+  }, [authStore, handleClose, navigate]);
 
   return (
     <Menu

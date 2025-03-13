@@ -22,6 +22,7 @@ type Context = {
   auth: {
     userId: string;
     name: string;
+    email: string;
   } | null;
 };
 

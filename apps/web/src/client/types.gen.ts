@@ -58,6 +58,8 @@ export type LoginRequest = {
 
 export type LoginResponse = {
     id: string;
+    name: string;
+    email: string;
 };
 
 export type PassengerModel = {

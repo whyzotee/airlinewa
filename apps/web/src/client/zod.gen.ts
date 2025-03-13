@@ -63,7 +63,9 @@ export const zLoginRequest = z.object({
 });
 
 export const zLoginResponse = z.object({
-    id: z.string()
+    id: z.string(),
+    name: z.string(),
+    email: z.string()
 });
 
 export const zPassengerModel = z.object({

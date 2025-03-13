@@ -23,14 +23,14 @@ import { Route as AppTicketImport } from './routes/app/ticket'
 import { Route as AppSuccessImport } from './routes/app/success'
 import { Route as AppPaymentImport } from './routes/app/payment'
 import { Route as AppCheckoutImport } from './routes/app/checkout'
-import { Route as AppFlightStatusIndexImport } from './routes/app/flight-status/index'
-import { Route as AppCheckInIndexImport } from './routes/app/check-in/index'
 import { Route as AppBookingIndexImport } from './routes/app/booking/index'
 
 // Create Virtual Routes
 
 const AuthRegisterLazyImport = createFileRoute('/auth/register')()
 const AuthLoginLazyImport = createFileRoute('/auth/login')()
+const AppFlightStatusIndexLazyImport = createFileRoute('/app/flight-status/')()
+const AppCheckInIndexLazyImport = createFileRoute('/app/check-in/')()
 
 // Create/Update Routes
 
@@ -106,17 +106,21 @@ const AppCheckoutRoute = AppCheckoutImport.update({
   getParentRoute: () => AppRouteRoute,
 } as any)
 
-const AppFlightStatusIndexRoute = AppFlightStatusIndexImport.update({
+const AppFlightStatusIndexLazyRoute = AppFlightStatusIndexLazyImport.update({
   id: '/flight-status/',
   path: '/flight-status/',
   getParentRoute: () => AppRouteRoute,
-} as any)
+} as any).lazy(() =>
+  import('./routes/app/flight-status/index.lazy').then((d) => d.Route),
+)
 
-const AppCheckInIndexRoute = AppCheckInIndexImport.update({
+const AppCheckInIndexLazyRoute = AppCheckInIndexLazyImport.update({
   id: '/check-in/',
   path: '/check-in/',
   getParentRoute: () => AppRouteRoute,
-} as any)
+} as any).lazy(() =>
+  import('./routes/app/check-in/index.lazy').then((d) => d.Route),
+)
 
 const AppBookingIndexRoute = AppBookingIndexImport.update({
   id: '/booking/',
@@ -223,14 +227,14 @@ declare module '@tanstack/react-router' {
       id: '/app/check-in/'
       path: '/check-in'
       fullPath: '/app/check-in'
-      preLoaderRoute: typeof AppCheckInIndexImport
+      preLoaderRoute: typeof AppCheckInIndexLazyImport
       parentRoute: typeof AppRouteImport
     }
     '/app/flight-status/': {
       id: '/app/flight-status/'
       path: '/flight-status'
       fullPath: '/app/flight-status'
-      preLoaderRoute: typeof AppFlightStatusIndexImport
+      preLoaderRoute: typeof AppFlightStatusIndexLazyImport
       parentRoute: typeof AppRouteImport
     }
   }
@@ -244,8 +248,8 @@ interface AppRouteRouteChildren {
   AppSuccessRoute: typeof AppSuccessRoute
   AppTicketRoute: typeof AppTicketRoute
   AppBookingIndexRoute: typeof AppBookingIndexRoute
-  AppCheckInIndexRoute: typeof AppCheckInIndexRoute
-  AppFlightStatusIndexRoute: typeof AppFlightStatusIndexRoute
+  AppCheckInIndexLazyRoute: typeof AppCheckInIndexLazyRoute
+  AppFlightStatusIndexLazyRoute: typeof AppFlightStatusIndexLazyRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
@@ -254,8 +258,8 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppSuccessRoute: AppSuccessRoute,
   AppTicketRoute: AppTicketRoute,
   AppBookingIndexRoute: AppBookingIndexRoute,
-  AppCheckInIndexRoute: AppCheckInIndexRoute,
-  AppFlightStatusIndexRoute: AppFlightStatusIndexRoute,
+  AppCheckInIndexLazyRoute: AppCheckInIndexLazyRoute,
+  AppFlightStatusIndexLazyRoute: AppFlightStatusIndexLazyRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
@@ -304,8 +308,8 @@ export interface FileRoutesByFullPath {
   '/auth/register': typeof AuthRegisterLazyRoute
   '/flight/': typeof FlightIndexRoute
   '/app/booking': typeof AppBookingIndexRoute
-  '/app/check-in': typeof AppCheckInIndexRoute
-  '/app/flight-status': typeof AppFlightStatusIndexRoute
+  '/app/check-in': typeof AppCheckInIndexLazyRoute
+  '/app/flight-status': typeof AppFlightStatusIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -321,8 +325,8 @@ export interface FileRoutesByTo {
   '/auth/register': typeof AuthRegisterLazyRoute
   '/flight': typeof FlightIndexRoute
   '/app/booking': typeof AppBookingIndexRoute
-  '/app/check-in': typeof AppCheckInIndexRoute
-  '/app/flight-status': typeof AppFlightStatusIndexRoute
+  '/app/check-in': typeof AppCheckInIndexLazyRoute
+  '/app/flight-status': typeof AppFlightStatusIndexLazyRoute
 }
 
 export interface FileRoutesById {
@@ -340,8 +344,8 @@ export interface FileRoutesById {
   '/auth/register': typeof AuthRegisterLazyRoute
   '/flight/': typeof FlightIndexRoute
   '/app/booking/': typeof AppBookingIndexRoute
-  '/app/check-in/': typeof AppCheckInIndexRoute
-  '/app/flight-status/': typeof AppFlightStatusIndexRoute
+  '/app/check-in/': typeof AppCheckInIndexLazyRoute
+  '/app/flight-status/': typeof AppFlightStatusIndexLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -494,11 +498,11 @@ export const routeTree = rootRoute
       "parent": "/app"
     },
     "/app/check-in/": {
-      "filePath": "app/check-in/index.tsx",
+      "filePath": "app/check-in/index.lazy.tsx",
       "parent": "/app"
     },
     "/app/flight-status/": {
-      "filePath": "app/flight-status/index.tsx",
+      "filePath": "app/flight-status/index.lazy.tsx",
       "parent": "/app"
     }
   }

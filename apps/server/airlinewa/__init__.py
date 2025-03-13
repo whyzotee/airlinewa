@@ -225,14 +225,14 @@ class Airlinewa:
             data.phone_number,
         )
 
-    def login(self, username, password):
+    def login(self, email: str, password: str) -> User | None:
         for user in self.__user_list:
-            response = user.get_accout.login(username, password)
+            response = user.accout.login(email, password)
 
             if response:
-                return {"id": user.id}
+                return user
 
-        return "CREDENTIAL_INVALID"
+        return None
 
     # Property Section
     @property
