@@ -6,20 +6,20 @@ export type Airport = {
     code: string;
 };
 
-export type BookingModel = {
+export type BookingPaymentResponse = {
+    payment_id: string;
+    email: string;
+};
+
+export type BookingResponse = {
     id: string;
     user_id: string;
     date: string;
     departure: string;
-    origin: string;
-    destination: string;
+    origin: Array<string>;
+    destination: Array<string>;
     arrive: string;
     status: string;
-};
-
-export type BookingPaymentResponse = {
-    payment_id: string;
-    email: string;
 };
 
 export type CancelModel = {
@@ -208,7 +208,7 @@ export type BookingBookingsResponses = {
     /**
      * Successful Response
      */
-    200: Array<BookingModel>;
+    200: Array<BookingResponse>;
 };
 
 export type BookingBookingsResponse = BookingBookingsResponses[keyof BookingBookingsResponses];

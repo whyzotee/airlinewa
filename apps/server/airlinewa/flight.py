@@ -56,7 +56,7 @@ class FlightRoute:
         self,
         id: str,
         origin: "Airport",
-        destination: "Airport",
+        destination: "Airport", 
         status: str,
         flight_schedule: "FlightSchedule",
         base_price: int,

@@ -8,20 +8,20 @@ export const zAirport = z.object({
     code: z.string()
 });
 
-export const zBookingModel = z.object({
-    id: z.string(),
-    user_id: z.string(),
-    date: z.string().datetime(),
-    departure: z.string().datetime(),
-    origin: z.string(),
-    destination: z.string(),
-    arrive: z.string().datetime(),
-    status: z.string()
-});
-
 export const zBookingPaymentResponse = z.object({
     payment_id: z.string(),
     email: z.string()
+});
+
+export const zBookingResponse = z.object({
+    id: z.string(),
+    user_id: z.string(),
+    date: z.string().datetime(),
+    departure: z.string(),
+    origin: z.array(z.string()),
+    destination: z.array(z.string()),
+    arrive: z.string(),
+    status: z.string()
 });
 
 export const zCancelModel = z.object({
@@ -130,7 +130,7 @@ export const zAuthLoginResponse = zLoginResponse;
 
 export const zFlightSearchFlightResponse = z.array(zFlightRoute);
 
-export const zBookingBookingsResponse = z.array(zBookingModel);
+export const zBookingBookingsResponse = z.array(zBookingResponse);
 
 export const zPaymentPaymentSuccessResponse = zBookingPaymentResponse;
 
