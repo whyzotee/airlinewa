@@ -27,6 +27,9 @@ function RouteComponent() {
         path: {
           flight_number: value.flightNumber,
         },
+        query: {
+          date: value.date,
+        },
       });
 
       toast.promise(findFlight, {
