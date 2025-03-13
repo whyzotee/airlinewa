@@ -29,7 +29,9 @@ export const zCheckoutModel = z.object({
     return_flight_id: z.union([
         z.string(),
         z.null()
-    ])
+    ]),
+    seat_class: z.string(),
+    people_count: z.number().int()
 });
 
 export const zFlightResponse = z.object({
@@ -158,7 +160,8 @@ export const zPaymentModel = z.object({
 export const zTicketResponse = z.object({
     ticket_id: z.string(),
     passenger_name: z.string(),
-    seat: z.string()
+    seat: z.string(),
+    isback: z.boolean()
 });
 
 export const zValidationError = z.object({
@@ -179,22 +182,37 @@ export const zAirlinewaApiRoutesBookingBookingResponse = z.object({
 });
 
 export const zAirlinewaApiRoutesTicketBookingResponse = z.object({
-    flight_id: z.string(),
-    booking_id: z.string(),
     user: z.string(),
+    booking_id: z.string(),
     flight: z.object({
+        id: z.string(),
         origin: z.string(),
-        dest: z.string()
+        dest: z.string(),
+        gate: z.string(),
+        flight_date: z.string(),
+        boarding_time: z.string()
     }),
-    tickets: z.array(zTicketResponse),
-    gate: z.string(),
-    boarding_time: z.string(),
-    flight_date: z.string()
+    flight_back: z.union([
+        z.object({
+            id: z.string(),
+            origin: z.string(),
+            dest: z.string(),
+            gate: z.string(),
+            flight_date: z.string(),
+            boarding_time: z.string()
+        }),
+        z.null()
+    ]),
+    tickets: z.array(zTicketResponse)
 });
 
 export const zAirlinewaApiRoutesTicketFlightRoute = z.object({
+    id: z.string(),
     origin: z.string(),
-    dest: z.string()
+    dest: z.string(),
+    gate: z.string(),
+    flight_date: z.string(),
+    boarding_time: z.string()
 });
 
 export const zAirlinewaModelsFlightRoute = z.object({

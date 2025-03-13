@@ -120,8 +120,6 @@ function RouteComponent() {
   const authStore = useAuthStore();
   const uid = authStore.auth?.userId;
 
-  console.log(data);
-
   useEffect(() => {
     if (authStore.auth) {
       setPayment({ ["type"]: "CREDIT_DEBIT" });
@@ -146,7 +144,11 @@ function RouteComponent() {
           </Breadcrumbs>
         </div>
         <h1 className="text-2xl">ระบบการชำระเงินด้วยความปลอดภัย</h1>
-        <FlightDetail id={data.id} info={data.info} />
+        <FlightDetail
+          id={data.id}
+          info={data.info}
+          back_info={data.back_info}
+        />
         <PaymentTabs />
       </div>
       <PaymentCard

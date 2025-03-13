@@ -140,7 +140,7 @@ function RouteComponent() {
         flight_route_id={data.id}
         price={data.price}
         servicePrice={serviceCosts}
-        flight_route_back_id={data.back_info.id}
+        flight_route_back_id={data.back_info?.id}
         userDetails={userDetails}
       />
     </div>

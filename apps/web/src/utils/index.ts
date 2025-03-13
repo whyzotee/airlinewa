@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 
 const URL = import.meta.env.BASE_URL;
 
-export const isDev = import.meta.env.DEV;
+export const isDev = false; // import.meta.env.DEV;
 export const isProd = import.meta.env.PROD;
 
 export const LOGO_PATH = URL + "logo.png";

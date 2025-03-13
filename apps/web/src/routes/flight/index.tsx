@@ -101,6 +101,9 @@ function RouteComponent() {
           flight_id: flight_id,
           uid: uid,
           return_flight_id: return_flight_id ?? null,
+          seat_class: query.seatClass,
+          people_count:
+            query.passenger.adult + query.passenger.child + query.passenger.kid,
         },
       });
 

@@ -32,6 +32,9 @@ class CheckoutModel(BaseModel):
     flight_id: str
     uid: str
     return_flight_id: str | None
+    seat_class: str
+    people_count: int
+
 
 class PaymentIdentity(BaseModel):
     type: str

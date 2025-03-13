@@ -25,6 +25,8 @@ export type CheckoutModel = {
     flight_id: string;
     uid: string;
     return_flight_id: string | null;
+    seat_class: string;
+    people_count: number;
 };
 
 export type FlightResponse = {
@@ -118,6 +120,7 @@ export type TicketResponse = {
     ticket_id: string;
     passenger_name: string;
     seat: string;
+    isback: boolean;
 };
 
 export type ValidationError = {
@@ -138,19 +141,20 @@ export type AirlinewaApiRoutesBookingBookingResponse = {
 };
 
 export type AirlinewaApiRoutesTicketBookingResponse = {
-    flight_id: string;
-    booking_id: string;
     user: string;
+    booking_id: string;
     flight: AirlinewaApiRoutesTicketFlightRoute;
+    flight_back: AirlinewaApiRoutesTicketFlightRoute | null;
     tickets: Array<TicketResponse>;
-    gate: string;
-    boarding_time: string;
-    flight_date: string;
 };
 
 export type AirlinewaApiRoutesTicketFlightRoute = {
+    id: string;
     origin: string;
     dest: string;
+    gate: string;
+    flight_date: string;
+    boarding_time: string;
 };
 
 export type AirlinewaModelsFlightRoute = {

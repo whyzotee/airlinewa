@@ -68,6 +68,7 @@ async def checkout(model: CheckoutModel):
         )
 
     services = airline.services
+    seat_price = flight.aircraft.get_seat_price(model.seat_class)
 
     return_id = model.return_flight_id
     flight_back = airline.find_flight(return_id)
@@ -77,6 +78,11 @@ async def checkout(model: CheckoutModel):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="NO_FLIGHT_FOUND"
             )
+        
+        back_seat_price = flight_back.aircraft.get_seat_price(model.seat_class)
+        flight_price = flight.route.price + flight_back.route.price
+        sum_price = flight_price + seat_price + back_seat_price
+        tax = flight.route.tax + flight_back.route.tax
 
         return {
                 "id": flight.route.id,
@@ -93,10 +99,10 @@ async def checkout(model: CheckoutModel):
                     "schedule": flight_back.route.schedule.info,
                     "date": flight_back.route.date,
                 },
-                "price": [flight.route.price + flight_back.route.price, flight.route.tax + flight_back.route.tax],
+                "price": [sum_price, tax],
                 "services": services,
             }
-    
+
     return {
             "id": flight.route.id,
             "info": {
@@ -105,7 +111,7 @@ async def checkout(model: CheckoutModel):
                 "schedule": flight.route.schedule.info,
                 "date": flight.route.date,
             },
-            "price": [flight.route.price, flight.route.tax],
+            "price": [flight.route.price+seat_price, flight.route.tax],
             "services": services,
         }
    

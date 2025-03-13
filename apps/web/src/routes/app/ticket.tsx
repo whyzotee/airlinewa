@@ -37,8 +37,8 @@ function RouteComponent() {
       <div className="flex flex-col gap-4 justify-center items-center">
         {data.tickets.map((ticket) => {
           return (
-            <div className="text-xs sm:text-sm lg:text-base max-h-96 flex gap-2 bg-white shadow-2xl">
-              <div className="flex flex-col">
+            <div className="max-h-96 w-full text-xs sm:text-sm lg:text-base  flex gap-2 bg-white shadow-2xl">
+              <div className="w-full flex flex-col">
                 <div className="flex items-center justify-between px-4 py-2 bg-orange-400 gap-4 rounded-tl-2xl">
                   <AirplaneTicketIcon className="text-white" />
                   <img
@@ -49,7 +49,7 @@ function RouteComponent() {
                   <h1 className="text-white font-bold">BOADING PASS</h1>
                 </div>
 
-                <div className=" flex h-full items-center">
+                <div className=" flex h-full  items-center">
                   <div className="relative h-full w-24">
                     <div className="-left-20 top-12 absolute scale-80 h-32 min-w-[200px] rotate-270 overflow-hidden flex justify-center items-center">
                       <Barcode
@@ -72,7 +72,7 @@ function RouteComponent() {
 
                     <h1>
                       Flight No. : <br />
-                      {data.flight_id}
+                      {ticket.isback ? flight_back!.id : flight.id}
                     </h1>
 
                     <h1>
@@ -80,12 +80,23 @@ function RouteComponent() {
                     </h1>
 
                     <span className="col-span-2">
-                      From: {data.flight.origin} <br /> To: {data.flight.dest}
+                      From:{" "}
+                      {ticket.isback
+                        ? data.flight_back?.origin
+                        : data.flight.origin}{" "}
+                      <br /> To:{" "}
+                      {ticket.isback
+                        ? data.flight_back?.dest
+                        : data.flight.dest}
                     </span>
 
                     <h1>
                       Date: <br />{" "}
-                      {dayjs(data.flight_date).format("DD/MM/YYYY")}
+                      {dayjs(
+                        ticket.isback
+                          ? flight_back!.flight_date
+                          : flight.flight_date
+                      ).format("DD/MM/YYYY")}
                     </h1>
 
                     <h1>
@@ -99,12 +110,14 @@ function RouteComponent() {
 
                     <span className="text-center lg:text-xl font-bold text-red-500">
                       Gate: <br />
-                      {data.gate}
+                      {ticket.isback ? flight_back!.gate : flight.gate}
                     </span>
 
                     <span className="col-span-2 text-center lg:text-xl font-bold text-red-500">
                       BOADING TIME: <br />
-                      {data.boarding_time}
+                      {ticket.isback
+                        ? flight_back!.boarding_time
+                        : flight.boarding_time}
                     </span>
 
                     <span className="col-span-2 text-center">
@@ -116,7 +129,7 @@ function RouteComponent() {
                 <div className="h-4 bg-orange-400 rounded-bl-2xl"></div>
               </div>
 
-              <div className="h-full flex flex-col gap-4">
+              <div className="h-full w-80 flex flex-col gap-4">
                 <div className="flex px-4 py-2 justify-center bg-orange-400 gap-4 rounded-tr-2xl">
                   <h1 className="text-white font-bold">BOADING PASS</h1>
                 </div>
@@ -128,8 +141,13 @@ function RouteComponent() {
                   </div>
 
                   <div>
-                    <h1>From: {data.flight.origin}</h1>
-                    <h1>To: {data.flight.dest}</h1>
+                    <h1>
+                      From:{" "}
+                      {ticket.isback ? flight_back!.origin : flight.origin}
+                    </h1>
+                    <h1>
+                      To: {ticket.isback ? flight_back!.dest : flight.dest}
+                    </h1>
                   </div>
 
                   <div className="h-full flex justify-between">
@@ -138,18 +156,26 @@ function RouteComponent() {
                     </h1>
                     <h1>
                       Seat: <br />{" "}
-                      {dayjs(data.flight_date).format("DD/MM/YYYY")}
+                      {dayjs(
+                        ticket.isback
+                          ? flight_back!.flight_date
+                          : flight.flight_date
+                      ).format("DD/MM/YYYY")}
                     </h1>
                   </div>
 
-                  <div className=" flex gap-4 justify-between lg:text-xl font-bold">
+                  <div className=" flex gap-4 justify-between font-bold">
                     <div>
                       <h1>GATE:</h1>
-                      <h1>{data.gate}</h1>
+                      <h1>{ticket.isback ? flight_back!.gate : flight.gate}</h1>
                     </div>
                     <div className="flex flex-col">
                       <h1>BOARDING TIME</h1>
-                      <h1 className="self-center">{data.boarding_time}</h1>
+                      <h1 className="self-center">
+                        {ticket.isback
+                          ? flight_back!.boarding_time
+                          : flight.boarding_time}
+                      </h1>
                     </div>
                   </div>
                 </div>
