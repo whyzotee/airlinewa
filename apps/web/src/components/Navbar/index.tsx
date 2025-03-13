@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/lib/zustand";
 import { LOGO_PATH } from "@/utils";
 import { Avatar, Box, Button, Divider, Stack, Typography } from "@mui/material";
 import { Link } from "@tanstack/react-router";
@@ -6,6 +7,8 @@ import { lazy, MouseEvent, Suspense, useState } from "react";
 const UserMenu = lazy(() => import("./UserMenu"));
 
 export default function NavBar() {
+  const authStore = useAuthStore();
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const userMenuOpen = Boolean(anchorEl);
@@ -64,8 +67,13 @@ export default function NavBar() {
             </Stack>
 
             <Divider orientation="vertical" />
-
-            <Button onClick={handleClickUserMenu}>user</Button>
+            {authStore.auth ? (
+              <Button onClick={handleClickUserMenu}>
+                {authStore.auth.name}
+              </Button>
+            ) : (
+              <Link to="/auth/login">{`Login/Register`}</Link>
+            )}
           </Stack>
         </Stack>
       </Box>

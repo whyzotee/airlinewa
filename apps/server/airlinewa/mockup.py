@@ -1,10 +1,13 @@
 import random
 from datetime import datetime, time, timedelta
+
 from .air import *
-from .user import User, Account
-from .flight import Flight,FlightRoute, FlightSchedule
+from .flight import Flight, FlightRoute, FlightSchedule
+from .user import Account, User
+
 # from .mock import *
 today = datetime.today()
+
 
 class MockUp:
 
@@ -53,7 +56,7 @@ class MockUp:
         ]
 
         gen_emails = [
-            "t",
+            "t@1.dev",
             "alex.johnson@example.com",
             "sophia.miller@example.com",
             "david.lee@example.com",
@@ -65,7 +68,7 @@ class MockUp:
             "james.garcia@example.com",
             "mia.martinez@example.com",
         ]
-        
+
         gen_passwords = [
             "t",
             "Xy9@pLq3!",
@@ -83,10 +86,12 @@ class MockUp:
         gen_user = []
 
         for index in range(10):
-            gen_account = Account().register(gen_emails[index], gen_passwords[index])
+            # gen_account = Account().register(gen_emails[index], gen_passwords[index])
+            gen_account = Account(gen_emails[index], gen_passwords[index])
             user = User(
                 gen_id[index], gen_name[index], gen_phone_numbers[index], gen_account
             )
+
             gen_user.append(user)
 
         return gen_user
@@ -94,14 +99,23 @@ class MockUp:
     @staticmethod
     def gen_aircraft():
         aircraft_models = [
-            "Boeing 737", "Boeing 747", "Boeing 787", "Airbus A320", "Airbus A380",
-            "Embraer E190", "Bombardier CRJ900", "McDonnell Douglas MD-80"
+            "Boeing 737",
+            "Boeing 747",
+            "Boeing 787",
+            "Airbus A320",
+            "Airbus A380",
+            "Embraer E190",
+            "Bombardier CRJ900",
+            "McDonnell Douglas MD-80",
         ]
 
-        aircraft_list = [Aircraft(f"AIRCRAFT_{i:03d}", aircraft_models[i]) for i in range(len(aircraft_models))]
+        aircraft_list = [
+            Aircraft(f"AIRCRAFT_{i:03d}", aircraft_models[i])
+            for i in range(len(aircraft_models))
+        ]
 
         return aircraft_list
-    
+
     @staticmethod
     def gen_airport() -> list[Airport]:
         list_airport_name = [
@@ -177,15 +191,17 @@ class MockUp:
             Airport(list_airport_name[i], list_airport_addr[i], list_airport_code[i])
             for i in range(20)
         ]
-        
+
         return gen_list
 
     @staticmethod
     def gen_flight_route_go(id, airport_a, airport_b, schedule, date):
         status = FlightRoute.STATUS_AVALIABLE
         price = random.randint(1000, 3000)
-        gen_flight = FlightRoute(f"AW {id:05d}", airport_a, airport_b, status, schedule, price, date)
-        
+        gen_flight = FlightRoute(
+            f"AW {id:05d}", airport_a, airport_b, status, schedule, price, date
+        )
+
         return gen_flight
 
     @staticmethod
@@ -193,8 +209,10 @@ class MockUp:
         status = FlightRoute.STATUS_AVALIABLE
         price = random.randint(1000, 3000)
 
-        gen_flight = FlightRoute(f"AW {id:05d}", airport_b, airport_a, status, schedule, price, date)
-        
+        gen_flight = FlightRoute(
+            f"AW {id:05d}", airport_b, airport_a, status, schedule, price, date
+        )
+
         return gen_flight
 
     @staticmethod
@@ -213,29 +231,45 @@ class MockUp:
 
         departure = f"{departure_hour:02d}:{departure_minute:02d}"
         arrive = f"{arrive_hour:02d}:{arrive_minute:02d}"
- 
+
         return FlightSchedule(schedule_id, day_of_week, departure, arrive, duration)
 
     @staticmethod
-    def gen_flight(airport_list:list[Airport], aircraft_list:list[Aircraft]):
+    def gen_flight(airport_list: list[Airport], aircraft_list: list[Aircraft]):
         gen_flights: list[Flight] = []
 
         id = 1
 
         for l in range(-1, 30):
-            for i in range(len(airport_list)):  
+            for i in range(len(airport_list)):
                 for j in range(i + 1, len(airport_list)):
                     random_date = today + timedelta(days=l)
 
                     for _ in range(5):
-                        schedule_go =  MockUp.gen_flight_schedule()
-                        flight_go = MockUp.gen_flight_route_go(id, airport_list[i], airport_list[j], schedule_go, random_date)
-                        gen_flights.append(Flight(flight_go, random.choice(aircraft_list)))
+                        schedule_go = MockUp.gen_flight_schedule()
+                        flight_go = MockUp.gen_flight_route_go(
+                            id,
+                            airport_list[i],
+                            airport_list[j],
+                            schedule_go,
+                            random_date,
+                        )
+                        gen_flights.append(
+                            Flight(flight_go, random.choice(aircraft_list))
+                        )
                         id += 1
-                        
-                        schedule_back =  MockUp.gen_flight_schedule()
-                        flight_back = MockUp.gen_flight_route_back(id, airport_list[i], airport_list[j], schedule_back, random_date)
-                        gen_flights.append(Flight(flight_back, random.choice(aircraft_list)))
+
+                        schedule_back = MockUp.gen_flight_schedule()
+                        flight_back = MockUp.gen_flight_route_back(
+                            id,
+                            airport_list[i],
+                            airport_list[j],
+                            schedule_back,
+                            random_date,
+                        )
+                        gen_flights.append(
+                            Flight(flight_back, random.choice(aircraft_list))
+                        )
                         id += 1
 
         return gen_flights

@@ -43,7 +43,7 @@ class Airlinewa:
 
     def search_flight_route(
         self, origin, destination, date, seat_class, people_count
-    ) -> tuple[list[FlightRoute], list[str], list[float|None]]:
+    ) -> tuple[list[FlightRoute], list[str], list[float | None]]:
         flight_route_list = []
         schedule_list = []
         price_list = []
@@ -71,7 +71,7 @@ class Airlinewa:
                 arrival = flight.route.schedule.arrival
                 duration = flight.route.schedule.duration
                 seat_price = flight.aircraft.get_seat_price(seat_class)
-                
+
                 flight_route_list.append(flight.route)
                 schedule_list.append([departure, arrival, str(duration)])
                 price_list.append(flight.route.price + seat_price)
@@ -234,14 +234,14 @@ class Airlinewa:
             data.phone_number,
         )
 
-    def login(self, username, password):
+    def login(self, email: str, password: str) -> User | None:
         for user in self.__user_list:
-            response = user.get_accout.login(username, password)
+            response = user.accout.login(email, password)
 
             if response:
-                return user.id
+                return user
 
-        return "CREDENTIAL_INVALID"
+        return None
 
     # Property Section
     @property

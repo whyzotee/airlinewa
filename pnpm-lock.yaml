@@ -101,6 +101,9 @@ importers:
       '@eslint/js':
         specifier: ^9.21.0
         version: 9.21.0
+      '@faker-js/faker':
+        specifier: ^9.6.0
+        version: 9.6.0
       '@hey-api/openapi-ts':
         specifier: ^0.64.10
         version: 0.64.10(typescript@5.8.2)
@@ -477,6 +480,10 @@ packages:
   '@eslint/plugin-kit@0.2.7':
     resolution: {integrity: sha512-JubJ5B2pJ4k4yGxaNLdbjrnk9d/iDz6/q8wOilpIowd6PJPgaxCuHBnBszq7Ce2TyMrywm5r4PnKm6V3iiZF+g==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@faker-js/faker@9.6.0':
+    resolution: {integrity: sha512-3vm4by+B5lvsFPSyep3ELWmZfE3kicDtmemVpuwl1yH7tqtnHdsA6hG8fbXedMVdkzgtvzWoRgjSB4Q+FHnZiw==}
+    engines: {node: '>=18.0.0', npm: '>=9.0.0'}
 
   '@hey-api/client-axios@0.6.2':
     resolution: {integrity: sha512-DwaOJ+LROSMJgYWXpqBeLquf2/aJXPpXkVfrnOj3gBaaxSZ71x1uwVGuujVkRhJpImbP4Gt58Fl9ECNPdDLTSw==}
@@ -2795,6 +2802,8 @@ snapshots:
     dependencies:
       '@eslint/core': 0.12.0
       levn: 0.4.1
+
+  '@faker-js/faker@9.6.0': {}
 
   '@hey-api/client-axios@0.6.2(axios@1.8.1)':
     dependencies:

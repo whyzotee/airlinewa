@@ -4,10 +4,12 @@ import { devtools, persist } from "zustand/middleware";
 interface AuthStateLogin {
   userId: string;
   name: string;
+  email: string;
 }
 
 interface AuthState {
   login: (data: AuthStateLogin) => void;
+  logout: () => void;
   // userId: string | null;
   auth: {
     userId: string;
@@ -22,6 +24,9 @@ export const useAuthStore = create<AuthState>()(
         auth: null,
         login: (data) => {
           set({ auth: data });
+        },
+        logout: () => {
+          set({ auth: null });
         },
       }),
       { name: "aitlinewa-auth" }

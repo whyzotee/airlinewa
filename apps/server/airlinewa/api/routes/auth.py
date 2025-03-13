@@ -13,16 +13,16 @@ class LoginRequest(BaseModel):
 
 class LoginResponse(BaseModel):
     id: str
+    name: str
+    email: str
 
 
 @router.post("/login")
 def login(body: LoginRequest) -> LoginResponse:
-    result = airline.login(body.email, body.password)
-
-    if result == "CREDENTIAL_INVALID":
+    user = airline.login(body.email, body.password)
+    if user is None:
         raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED, detail="CREDENTIAL_INVALID"
-    )
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="CREDENTIAL_INVALID"
+        )
 
-    return LoginResponse(id=result)
-    # return {"error": "Username or password wrong, please try again."}
+    return LoginResponse(id=user.id, name=user.name, email=user.accout.email)
