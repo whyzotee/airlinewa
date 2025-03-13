@@ -18,17 +18,6 @@ export const zBookingPaymentResponse = z.object({
     email: z.string()
 });
 
-export const zBookingResponse = z.object({
-    id: z.string(),
-    user_id: z.string(),
-    date: z.string().datetime(),
-    departure: z.string(),
-    origin: z.array(z.string()),
-    destination: z.array(z.string()),
-    arrive: z.string(),
-    status: z.string()
-});
-
 export const zCancelModel = z.object({
     flight_route_id: z.string(),
     booking_id: z.string()
@@ -66,18 +55,6 @@ export const zFlightRoutSchedule = z.object({
     departure: z.string(),
     arrival: z.string(),
     duration: z.number().int()
-});
-
-export const zFlightRoute = z.object({
-    id: z.string(),
-    origin: z.array(z.string()),
-    destination: z.array(z.string()),
-    schedule: zFlightRoutSchedule,
-    date: z.string().datetime(),
-    price: z.union([
-        z.number(),
-        z.null()
-    ])
 });
 
 export const zFlightRouteResponse = z.object({
@@ -174,24 +151,74 @@ export const zPaymentModel = z.object({
     contact: zPaymentContact
 });
 
+export const zTicketResponse = z.object({
+    ticket_id: z.string(),
+    passenger_name: z.string(),
+    seat: z.string()
+});
+
 export const zValidationError = z.object({
     loc: z.array(z.unknown()),
     msg: z.string(),
     type: z.string()
 });
 
+export const zAirlinewaApiRoutesBookingBookingResponse = z.object({
+    id: z.string(),
+    user_id: z.string(),
+    date: z.string().datetime(),
+    departure: z.string(),
+    origin: z.array(z.string()),
+    destination: z.array(z.string()),
+    arrive: z.string(),
+    status: z.string()
+});
+
+export const zAirlinewaApiRoutesTicketBookingResponse = z.object({
+    flight_id: z.string(),
+    booking_id: z.string(),
+    user: z.string(),
+    flight: z.object({
+        origin: z.string(),
+        dest: z.string()
+    }),
+    tickets: z.array(zTicketResponse),
+    gate: z.string(),
+    boarding_time: z.string(),
+    flight_date: z.string()
+});
+
+export const zAirlinewaApiRoutesTicketFlightRoute = z.object({
+    origin: z.string(),
+    dest: z.string()
+});
+
+export const zAirlinewaModelsFlightRoute = z.object({
+    id: z.string(),
+    origin: z.array(z.string()),
+    destination: z.array(z.string()),
+    schedule: zFlightRoutSchedule,
+    date: z.string().datetime(),
+    price: z.union([
+        z.number(),
+        z.null()
+    ])
+});
+
 export const zAirportGetAirportsResponse = z.array(zAirport);
 
 export const zAuthLoginResponse = zLoginResponse;
 
-export const zFlightSearchFlightResponse = z.array(zFlightRoute);
+export const zFlightSearchFlightResponse = z.array(zAirlinewaModelsFlightRoute);
 
 export const zFlightFindFlightResponse = zFlightResponse;
 
-export const zBookingBookingsResponse = z.array(zBookingResponse);
+export const zBookingBookingsResponse = z.array(zAirlinewaApiRoutesBookingBookingResponse);
 
-export const zBookingBookingResponse = zBookingResponse;
+export const zBookingBookingResponse = zAirlinewaApiRoutesBookingBookingResponse;
 
 export const zPaymentPaymentSuccessResponse = zBookingPaymentResponse;
 
 export const zUtilsHealthCheckResponse = z.boolean();
+
+export const zTicketTicketResponse = zAirlinewaApiRoutesTicketBookingResponse;

@@ -232,7 +232,11 @@ class MockUp:
         departure = f"{departure_hour:02d}:{departure_minute:02d}"
         arrive = f"{arrive_hour:02d}:{arrive_minute:02d}"
 
-        return FlightSchedule(schedule_id, day_of_week, departure, arrive, duration)
+        gate_letter = random.choice(['A', 'B', 'C'])
+        gate_number = random.randint(1, 50)
+        gate = f"{gate_letter}{gate_number}"
+
+        return FlightSchedule(schedule_id, day_of_week, departure, arrive, duration, gate)
 
     @staticmethod
     def gen_flight(airport_list: list[Airport], aircraft_list: list[Aircraft]):

@@ -4,7 +4,6 @@ import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 
 import { usePaymentStore } from "@/lib/zustand";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import { useState } from "react";
 import { PatternFormat } from "react-number-format";
@@ -69,12 +68,12 @@ const PaymentTabs = () => {
           label="บัตรเครดิต/บัตรเดบิต"
           {...a11yProps(0)}
         />
-        <Tab
+        {/* <Tab
           icon={<AccountBalanceWalletIcon />}
           iconPosition="start"
           label="Wallet"
           {...a11yProps(1)}
-        />
+        /> */}
         {/* <Tab
           icon={<LocalAtmIcon />}
           iconPosition="start"
@@ -129,9 +128,9 @@ const PaymentTabs = () => {
           />
         </div>
       </TabPanel>
-      <TabPanel value={value} index={1}>
+      {/* <TabPanel value={value} index={1}>
         Item Two
-      </TabPanel>
+      </TabPanel> */}
       {/* <TabPanel value={value} index={2}>
         
         Item Three

@@ -5,7 +5,8 @@ const URL = import.meta.env.BASE_URL;
 export const isDev = import.meta.env.DEV;
 export const isProd = import.meta.env.PROD;
 
-export const LOGO_PATH = URL + "logo.jpg";
+export const LOGO_PATH = URL + "logo.png";
+export const TITLE_PATH = URL + "title.webp";
 export const LOTTIE_SUCCESS_PATH = URL + "public/success.json";
 
 export function formatDate(date?: dayjs.ConfigType) {

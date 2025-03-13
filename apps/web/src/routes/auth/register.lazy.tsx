@@ -53,7 +53,7 @@ function RouteComponent() {
           form.handleSubmit();
         }}
       >
-        <Stack>
+        <Stack className="gap-4">
           <form.Field
             name="username"
             children={(field) => {

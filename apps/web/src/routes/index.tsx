@@ -12,10 +12,10 @@ function RouteComponent() {
 
   return (
     <div>
-      <div className="flex gap-4">
+      <div className="flex gap-4 mb-4">
         <div>
           <h1 className="text-2xl">Fly with Airlinewa</h1>
-          <p>you never die alone</p>
+          <p>you never alone</p>
         </div>
       </div>
 
@@ -27,7 +27,11 @@ function RouteComponent() {
       >
         Fly Now, Book Here
       </Button>
-
+      <img
+        className="h-96 w-full mt-4 object-cover"
+        src="/public/bg.webp"
+        alt="bg"
+      />
       {localStorage.getItem("token") != null ? (
         <>
           <p className="text-white">{localStorage.getItem("token")}</p>

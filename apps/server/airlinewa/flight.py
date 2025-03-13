@@ -13,12 +13,14 @@ class FlightSchedule:
         departure_time: str,
         arrive_time: str,
         duration: int,
+        gate: str,
     ):
         self.__id = id
         self.__day_of_week = day_of_week
         self.__departure_time = departure_time
         self.__arrive_time = arrive_time
         self.__duration = duration
+        self.__gate = gate
 
     @property
     def info(self):
@@ -45,6 +47,10 @@ class FlightSchedule:
     @property
     def day_of_week(self):
         return self.__day_of_week
+
+    @property
+    def gate(self):
+        return self.__gate
 
     # def gen_aircraft(self)-> Aircraft:
     #     model_aircrafts = ["FMS P-51D Mustang", "E-flite F-16 Thunderbirds", "HobbyZone Carbon Cub S2", "Freewing A-10 Thunderbolt II", "Dynam Spitfire Mk IX", "E-flite Extra 300 3D", "VolantexRC Trainstar Ascent", "Freewing F-22 Raptor", "Dancing Wings Piper J-3 Cub", "Skywalker X8"]

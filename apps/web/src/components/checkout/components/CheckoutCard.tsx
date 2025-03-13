@@ -69,7 +69,7 @@ const CheckoutCard = ({
 
     const payment = paymentMutation.mutateAsync({
       body: {
-        seat_class: queryData.seatClass,
+        seat_class: queryData.seat_class,
         user_id: user_id,
         flight_route_id: flight_route_id,
         // passengers: [dataUser.formData],
@@ -107,7 +107,7 @@ const CheckoutCard = ({
     flight_route_id,
     navigate,
     paymentMutation,
-    queryData.seatClass,
+    queryData.seat_class,
     userDetails,
     user_id,
   ]);

@@ -9,7 +9,7 @@ import {
   Avatar,
   Divider,
 } from "@mui/material";
-import logo from "/logo.jpg";
+import logo from "/logo.png";
 
 interface Schedule {
   id: string;

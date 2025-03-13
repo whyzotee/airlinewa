@@ -9,7 +9,7 @@ import {
   Avatar,
   Divider,
 } from "@mui/material";
-import logo from "/logo.jpg";
+import logo from "/logo.png";
 
 const FlightDetailGoBack = ({ data }: { data: any }) => {
   console.log(data);

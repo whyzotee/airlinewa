@@ -51,8 +51,6 @@ async def checkout(model: CheckoutModel):
         )
 
     flight = airline.find_flight(model.flight_id)
-    # for booking in user.booking:
-    #     if booking.payment.is_pending_payment:
 
     if flight == None :
         raise HTTPException(
@@ -60,10 +58,7 @@ async def checkout(model: CheckoutModel):
         )
 
     services = airline.services
-
-    return_id = model.return_flight_id
-    if (return_id == None):
-        return {
+    return {
             "id": flight.route.id,
             "info": {
                 "origin": flight.route.origin,
@@ -74,8 +69,8 @@ async def checkout(model: CheckoutModel):
             "price": [flight.route.price, flight.route.tax],
             "services": services,
         }
-
-    
+   
+    return_id = model.return_flight_id
     flight_back = airline.find_flight(return_id)
     if (flight_back == None):
         raise HTTPException(

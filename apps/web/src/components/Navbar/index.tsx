@@ -1,6 +1,6 @@
 import { useAuthStore } from "@/lib/zustand";
-import { LOGO_PATH } from "@/utils";
-import { Avatar, Box, Button, Divider, Stack, Typography } from "@mui/material";
+import { TITLE_PATH } from "@/utils";
+import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import { Link } from "@tanstack/react-router";
 import { lazy, MouseEvent, Suspense, useState } from "react";
 
@@ -41,15 +41,7 @@ export default function NavBar() {
                 alignItems: "center",
               }}
             >
-              <Avatar
-                alt="logo"
-                src={LOGO_PATH}
-                sx={{ width: 48, height: 48 }}
-              />
-
-              <Typography variant="h4" fontWeight="700">
-                AirlineWa
-              </Typography>
+              <img src={TITLE_PATH} alt="title" className="h-10" />
             </Stack>
           </Link>
 

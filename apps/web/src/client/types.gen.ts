@@ -16,17 +16,6 @@ export type BookingPaymentResponse = {
     email: string;
 };
 
-export type BookingResponse = {
-    id: string;
-    user_id: string;
-    date: string;
-    departure: string;
-    origin: Array<string>;
-    destination: Array<string>;
-    arrive: string;
-    status: string;
-};
-
 export type CancelModel = {
     flight_route_id: string;
     booking_id: string;
@@ -47,15 +36,6 @@ export type FlightRoutSchedule = {
     departure: string;
     arrival: string;
     duration: number;
-};
-
-export type FlightRoute = {
-    id: string;
-    origin: Array<string>;
-    destination: Array<string>;
-    schedule: FlightRoutSchedule;
-    date: string;
-    price: number | null;
 };
 
 export type FlightRouteResponse = {
@@ -133,10 +113,52 @@ export type PaymentModel = {
     contact: PaymentContact;
 };
 
+export type TicketResponse = {
+    ticket_id: string;
+    passenger_name: string;
+    seat: string;
+};
+
 export type ValidationError = {
     loc: Array<string | number>;
     msg: string;
     type: string;
+};
+
+export type AirlinewaApiRoutesBookingBookingResponse = {
+    id: string;
+    user_id: string;
+    date: string;
+    departure: string;
+    origin: Array<string>;
+    destination: Array<string>;
+    arrive: string;
+    status: string;
+};
+
+export type AirlinewaApiRoutesTicketBookingResponse = {
+    flight_id: string;
+    booking_id: string;
+    user: string;
+    flight: AirlinewaApiRoutesTicketFlightRoute;
+    tickets: Array<TicketResponse>;
+    gate: string;
+    boarding_time: string;
+    flight_date: string;
+};
+
+export type AirlinewaApiRoutesTicketFlightRoute = {
+    origin: string;
+    dest: string;
+};
+
+export type AirlinewaModelsFlightRoute = {
+    id: string;
+    origin: Array<string>;
+    destination: Array<string>;
+    schedule: FlightRoutSchedule;
+    date: string;
+    price: number | null;
 };
 
 export type AirportGetAirportsData = {
@@ -223,7 +245,7 @@ export type FlightSearchFlightResponses = {
     /**
      * Successful Response
      */
-    200: Array<FlightRoute>;
+    200: Array<AirlinewaModelsFlightRoute>;
 };
 
 export type FlightSearchFlightResponse = FlightSearchFlightResponses[keyof FlightSearchFlightResponses];
@@ -233,7 +255,9 @@ export type FlightFindFlightData = {
     path: {
         flight_number: string;
     };
-    query?: never;
+    query: {
+        date: string;
+    };
     url: '/api/flight/{flight_number}';
 };
 
@@ -266,7 +290,7 @@ export type BookingBookingsResponses = {
     /**
      * Successful Response
      */
-    200: Array<BookingResponse>;
+    200: Array<AirlinewaApiRoutesBookingBookingResponse>;
 };
 
 export type BookingBookingsResponse = BookingBookingsResponses[keyof BookingBookingsResponses];
@@ -293,7 +317,7 @@ export type BookingBookingResponses = {
     /**
      * Successful Response
      */
-    200: BookingResponse;
+    200: AirlinewaApiRoutesBookingBookingResponse;
 };
 
 export type BookingBookingResponse = BookingBookingResponses[keyof BookingBookingResponses];
@@ -457,6 +481,33 @@ export type UtilsHealthCheckResponses = {
 };
 
 export type UtilsHealthCheckResponse = UtilsHealthCheckResponses[keyof UtilsHealthCheckResponses];
+
+export type TicketTicketData = {
+    body?: never;
+    path?: never;
+    query: {
+        booking_id: string;
+    };
+    url: '/api/ticket/';
+};
+
+export type TicketTicketErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TicketTicketError = TicketTicketErrors[keyof TicketTicketErrors];
+
+export type TicketTicketResponses = {
+    /**
+     * Successful Response
+     */
+    200: AirlinewaApiRoutesTicketBookingResponse;
+};
+
+export type TicketTicketResponse = TicketTicketResponses[keyof TicketTicketResponses];
 
 export type ClientOptions = {
     baseURL: 'http://127.0.0.1:8000' | (string & {});

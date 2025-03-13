@@ -8,6 +8,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
 export const Route = createFileRoute("/flight/checkout")({
+  validateSearch: (search: Record<string, unknown>) => {
+    // validate and parse the search params into a typed state
+    return {
+      tripe_type: String(search.tripeType),
+      seat_class: String(search.seat_class),
+      passenger: { ...Object(search.passenger) },
+    };
+  },
   loader: ({ location }) => {
     return { data: location.state };
   },
@@ -24,15 +32,21 @@ function RouteComponent() {
     queryData.passenger.kid +
     queryData.passenger.child;
 
-    let adultCount = 1;
-    let kidCount = 1;
-    let childCount = 1;
-    
-    const passengerTypes = [
-      ...Array(queryData.passenger?.adult || 0).fill(null).map(() => `ผู้ใหญ่ ${adultCount++}`),
-      ...Array(queryData.passenger?.kid || 0).fill(null).map(() => `เด็ก ${kidCount++}`),
-      ...Array(queryData.passenger?.child || 0).fill(null).map(() => `ทารก ${childCount++}`),
-    ];
+  let adultCount = 1;
+  let kidCount = 1;
+  let childCount = 1;
+
+  const passengerTypes = [
+    ...Array(queryData.passenger?.adult || 0)
+      .fill(null)
+      .map(() => `ผู้ใหญ่ ${adultCount++}`),
+    ...Array(queryData.passenger?.kid || 0)
+      .fill(null)
+      .map(() => `เด็ก ${kidCount++}`),
+    ...Array(queryData.passenger?.child || 0)
+      .fill(null)
+      .map(() => `ทารก ${childCount++}`),
+  ];
 
   const [userDetails, setUserDetails] = useState(
     Array.from({ length: totalPassengers }).map(() => ({

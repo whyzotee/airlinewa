@@ -45,7 +45,7 @@ function RouteComponent() {
 
   return (
     <main className="font-noto-thai">
-      <div className="h-screen flex flex-col justify-center items-center gap-4">
+      <div className="flex flex-col justify-center items-center gap-4">
         <div className="h-96 w-96">
           <Lottie animationData={SuccesAnimation} loop={true} />
         </div>
@@ -59,7 +59,7 @@ function RouteComponent() {
         <p>ขอบคุณที่ไว้ใจ และใช้บริการของ Airlinewa</p>
 
         <div className="flex gap-4">
-          <Link to="/app/ticket">
+          <Link to="/app/ticket" search={{ booking_id: booking_id }}>
             <Button variant="outlined" color="error">
               ดูตั๋วส่งผ่าน E-mail
             </Button>

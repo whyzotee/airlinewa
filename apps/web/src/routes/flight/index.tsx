@@ -17,6 +17,7 @@ import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 
+import { AirlinewaModelsFlightRoute } from "@/client";
 import { resetContactForm } from "@/components/checkout/slices/checkoutContact";
 import { resetUserForm } from "@/components/checkout/slices/checkoutUser";
 import toast from "react-hot-toast";
@@ -70,7 +71,7 @@ function RouteComponent() {
     })
   );
 
-  const flights = flightsQuery.data.sort((a, b) => a.price - b.price);
+  const flights = flightsQuery.data.sort((a, b) => a.price! - b.price!);
 
   const seatClassMap: Record<string, string> = {
     economy: "ชั้นประหยัด",
@@ -90,37 +91,28 @@ function RouteComponent() {
 
   const handleClick = useCallback(
     async (flight_id: string, return_flight_id?: string) => {
-      if (!authStore.auth) {
-        toast.error("Please login!");
-
-        navigate({
-          to: "/auth/login",
-        });
-
-        return;
-      }
-
       if (checkoutMutation.isPending) return;
 
       console.log(return_flight_id);
 
-      const uid = authStore.auth.userId;
+      const uid = authStore.auth!.userId;
       const checkout = checkoutMutation.mutateAsync({
         body: { flight_id, uid, return_flight_id: return_flight_id ?? null },
       });
 
       toast.promise(checkout, {
         loading: "Loading...",
-        success: (data) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        success: (data: any) => {
           dispatch(resetUserForm());
           dispatch(resetContactForm());
 
           navigate({
             to: "/flight/checkout",
-            state: query.tripeType == "onetrip" ? data : data[0],
+            state: data,
             search: {
               tripe_type: query.tripeType,
-              seatClass: query.seatClass,
+              seat_class: query.seatClass,
               passenger: query.passenger,
             },
           });
@@ -144,7 +136,17 @@ function RouteComponent() {
   );
 
   const handleSelectFlight = useCallback(
-    (flight) => {
+    (flight: AirlinewaModelsFlightRoute) => {
+      if (!authStore.auth) {
+        toast.error("Please login!");
+
+        navigate({
+          to: "/auth/login",
+        });
+
+        return;
+      }
+
       if (selectedFlight == null && query.tripeType == "go-back") {
         setSelectedFlight(flight.id);
         toast.success(`คุณเลือกเที่ยวบินขาไป ${flight.id}`);
@@ -173,6 +175,7 @@ function RouteComponent() {
       navigate,
       query.destinationCode,
       query.originCode,
+      authStore.auth,
     ]
   );
 
@@ -265,7 +268,7 @@ function RouteComponent() {
 
                 <div className="flex justify-between items-center mt-4">
                   <Typography variant="h5" className="font-bold text-gray-800">
-                    THB {flight.price.toFixed(2)}{" "}
+                    THB {flight.price!.toFixed(2)}{" "}
                     <span className="text-gray-500 text-sm">/ 1 ท่าน*</span>
                   </Typography>
 

@@ -10,8 +10,8 @@ if TYPE_CHECKING:
 
 class Ticket:
     def __init__(self, id: str, passenger: "Passenger", seat: "Seat"):
-        self.__ticket_id = id,
-        self.__passenger = passenger,
+        self.__ticket_id = id
+        self.__passenger = passenger
         self.__seat = seat
 
     @property
@@ -88,8 +88,17 @@ class Booking:
 
         return [sum_price, self.__flight_route.tax]
     
+    @property
+    def ticket(self) -> list["Ticket"]:
+        return self.__ticket
+    
     def add_ticket(self, ticket: "Ticket"):
         self.__ticket.append(ticket)
+
+    def create_ticket(self):
+        for index in range(len(self.__passengers)):
+            ticket = Ticket(f"TICKET_{self.__seats[index].id}", self.__passengers[index], self.__seats[index])
+            self.__ticket.append(ticket)
 
     def booking_details(self):
         print("========== Booking detail ==============")
@@ -99,12 +108,3 @@ class Booking:
         print("Passenger: ", self.__passengers)
         print("Service: ", self.__services)
         print("Contact: ", self.__contact)
-
-    def create_ticket(self) -> list[Ticket]:
-        list_ticket: list[Ticket] = []
-        
-        for index in range(len(self.__passengers)):
-            ticket = Ticket(f"TICKET_{self.__flight_route.id}_{self.__seats[index].id}", self.__passengers[index], self.__seats[index])
-            list_ticket.append(ticket)
-
-        return list_ticket
