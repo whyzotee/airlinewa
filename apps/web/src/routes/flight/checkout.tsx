@@ -17,7 +17,6 @@ export const Route = createFileRoute("/flight/checkout")({
 function RouteComponent() {
   const { data } = Route.useLoaderData();
   const authStore = useAuthStore((state) => state.auth);
-  const people_cnt = 2;
   const queryData = Route.useSearch();
 
   const totalPassengers =
@@ -55,6 +54,7 @@ function RouteComponent() {
         {userDetails.map((user, i) => (
           <UserDetail
             key={i}
+            userType={"Test"}
             userNumber={i + 1}
             userData={user}
             updateUserDetails={updateUserDetails} // ✅ ส่งฟังก์ชันให้ Component

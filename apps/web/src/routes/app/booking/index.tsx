@@ -42,6 +42,7 @@ function RouteComponent() {
       {
         field: "origin",
         headerName: "Origin",
+        width: 120,
         valueGetter: (value) => value[0],
       },
       {
@@ -51,6 +52,7 @@ function RouteComponent() {
       {
         field: "destination",
         headerName: "Destination",
+        width: 120,
         valueGetter: (value) => value[0],
       },
       {
