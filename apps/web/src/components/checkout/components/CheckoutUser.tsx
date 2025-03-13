@@ -64,7 +64,7 @@ const UserDetail: React.FC<Props> = ({
             <AccessibilityIcon />
             <h1>{userType}</h1>
           </div>
-          {/* ✅ แสดงสถานะว่ากรอกครบหรือยัง */}
+          {/* แสดงสถานะว่ากรอกครบหรือยัง */}
           <div
             className={`text-sm text-white rounded-lg px-2 mr-4 ${
               isFormValid() ? "bg-green-200" : "bg-red-200"
@@ -150,7 +150,7 @@ const UserDetail: React.FC<Props> = ({
             {/* เลือกประเภทเอกสาร */}
             <Select
               displayEmpty
-              value={userData.identity?.type || ""} // ✅ ป้องกัน undefined
+              value={userData.identity?.type || ""} // ป้องกัน undefined
               onChange={(e) =>
                 updateUserDetails(userNumber - 1, "identity", {
                   ...userData.identity,
