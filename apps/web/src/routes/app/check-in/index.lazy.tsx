@@ -31,6 +31,9 @@ function RouteComponent() {
         params: {
           bookingNumber: value.bookingNumber,
         },
+        search: {
+          name: value.name,
+        },
       });
     },
   });

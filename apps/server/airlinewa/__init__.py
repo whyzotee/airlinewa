@@ -43,7 +43,7 @@ class Airlinewa:
 
     def search_flight_route(
         self, origin, destination, date, seat_class, people_count
-    ) -> tuple[list[FlightRoute], list[str], list[float|None]]:
+    ) -> tuple[list[FlightRoute], list[str], list[float | None]]:
         flight_route_list = []
         schedule_list = []
         price_list = []
@@ -60,7 +60,7 @@ class Airlinewa:
 
             day_of_week = flight.route.schedule.day_of_week
             input_day_of_week = datetime.fromisoformat(date).timetuple().tm_wday
-            depart_day_of_week  = input_day_of_week in day_of_week
+            depart_day_of_week = input_day_of_week in day_of_week
 
             if not depart_date or not depart_day_of_week:
                 continue

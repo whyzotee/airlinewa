@@ -4,9 +4,15 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .air import Aircraft, Airport
 
+
 class FlightSchedule:
     def __init__(
-        self, id: str, day_of_week: list[int], departure_time: str, arrive_time: str, duration: int
+        self,
+        id: str,
+        day_of_week: list[int],
+        departure_time: str,
+        arrive_time: str,
+        duration: int,
     ):
         self.__id = id
         self.__day_of_week = day_of_week
@@ -31,11 +37,11 @@ class FlightSchedule:
     @property
     def arrival(self):
         return self.__arrive_time
-    
+
     @property
     def duration(self):
         return self.__duration
-    
+
     @property
     def day_of_week(self):
         return self.__day_of_week
@@ -60,7 +66,7 @@ class FlightRoute:
         self,
         id: str,
         origin: "Airport",
-        destination: "Airport", 
+        destination: "Airport",
         status: str,
         flight_schedule: "FlightSchedule",
         base_price: int,
@@ -98,7 +104,7 @@ class FlightRoute:
 
     @property
     def is_avaliable(self):
-        return self.__status == FlightRoute.STATUS_AVALIABLE
+        return bool(self.__status == FlightRoute.STATUS_AVALIABLE)
 
     @property
     def price(self):

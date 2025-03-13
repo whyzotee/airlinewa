@@ -2,6 +2,11 @@
 
 import { z } from 'zod';
 
+export const zAircraftResponse = z.object({
+    id: z.string(),
+    model: z.string()
+});
+
 export const zAirport = z.object({
     name: z.string(),
     address: z.string(),
@@ -38,6 +43,25 @@ export const zCheckoutModel = z.object({
     ])
 });
 
+export const zFlightResponse = z.object({
+    aircraft: zAircraftResponse,
+    route: z.object({
+        id: z.string(),
+        date: z.string().datetime(),
+        destination: z.array(z.string()),
+        origin: z.array(z.string()),
+        status: z.string(),
+        is_avaliable: z.boolean(),
+        price: z.number().int(),
+        schedule: z.object({
+            arrival: z.string(),
+            day_of_week: z.array(z.number().int()),
+            departure: z.string(),
+            duration: z.number().int()
+        })
+    })
+});
+
 export const zFlightRoutSchedule = z.object({
     departure: z.string(),
     arrival: z.string(),
@@ -54,6 +78,29 @@ export const zFlightRoute = z.object({
         z.number(),
         z.null()
     ])
+});
+
+export const zFlightRouteResponse = z.object({
+    id: z.string(),
+    date: z.string().datetime(),
+    destination: z.array(z.string()),
+    origin: z.array(z.string()),
+    status: z.string(),
+    is_avaliable: z.boolean(),
+    price: z.number().int(),
+    schedule: z.object({
+        arrival: z.string(),
+        day_of_week: z.array(z.number().int()),
+        departure: z.string(),
+        duration: z.number().int()
+    })
+});
+
+export const zFlightScheduleResponse = z.object({
+    arrival: z.string(),
+    day_of_week: z.array(z.number().int()),
+    departure: z.string(),
+    duration: z.number().int()
 });
 
 export const zHttpValidationError = z.object({
@@ -138,6 +185,8 @@ export const zAirportGetAirportsResponse = z.array(zAirport);
 export const zAuthLoginResponse = zLoginResponse;
 
 export const zFlightSearchFlightResponse = z.array(zFlightRoute);
+
+export const zFlightFindFlightResponse = zFlightResponse;
 
 export const zBookingBookingsResponse = z.array(zBookingResponse);
 
