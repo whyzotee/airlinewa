@@ -134,6 +134,8 @@ export const zFlightSearchFlightResponse = z.array(zFlightRoute);
 
 export const zBookingBookingsResponse = z.array(zBookingResponse);
 
+export const zBookingBookingResponse = zBookingResponse;
+
 export const zPaymentPaymentSuccessResponse = zBookingPaymentResponse;
 
 export const zUtilsHealthCheckResponse = z.boolean();

@@ -50,30 +50,40 @@ interface PaymentStore {
   resetPayment: () => void;
 }
 
-export const usePaymentStore = create<PaymentStore>((set) => ({
-  payment: {
-    payment_id: "",
-    user_id: "",
-    type: "",
-    number: "",
-    out_date: "",
-    cvv: "",
-    holder_name: "",
-  },
-  setPayment: (newPayment) =>
-    set((state) => ({
-      payment: { ...state.payment, ...newPayment },
-    })),
-  resetPayment: () =>
-    set((state) => ({
-      payment: {
-        payment_id: state.payment.payment_id,
-        user_id: state.payment.user_id,
-        type: "",
-        number: "",
-        out_date: "",
-        cvv: "",
-        holder_name: "",
-      },
-    })),
-}));
+export const usePaymentStore = create<PaymentStore>()(
+  devtools(
+    persist(
+      (set) => ({
+        payment: {
+          payment_id: "",
+          user_id: "",
+          type: "",
+          number: "",
+          out_date: "",
+          cvv: "",
+          holder_name: "",
+        },
+        setPayment: (newPayment) =>
+          set((state) => ({
+            payment: { ...state.payment, ...newPayment },
+          })),
+        resetPayment: () =>
+          set((state) => ({
+            // payment: {
+            //   payment_id: state.payment.payment_id,
+            //   user_id: state.payment.user_id,
+            //   type: "",
+            //   number: "",
+            //   out_date: "",
+            //   cvv: "",
+            //   holder_name: "",
+            // },
+            payment: { ...state.payment },
+          })),
+      }),
+      {
+        name: "airlinewa-payment",
+      }
+    )
+  )
+);

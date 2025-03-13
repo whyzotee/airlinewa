@@ -40,7 +40,7 @@ function a11yProps(index: number) {
 }
 
 const PaymentTabs = () => {
-  const { setPayment, resetPayment } = usePaymentStore();
+  const { setPayment, resetPayment, payment } = usePaymentStore();
   const [value, setValue] = useState(0);
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
@@ -87,6 +87,7 @@ const PaymentTabs = () => {
           <PatternFormat
             id="number"
             onChange={handleInputChange}
+            defaultValue={payment.number}
             label="หมายเลขบัตร"
             valueIsNumericString
             customInput={TextField}
@@ -98,6 +99,7 @@ const PaymentTabs = () => {
             <PatternFormat
               id="out_date"
               label="วันที่หมดอายุ"
+              defaultValue={payment.out_date}
               valueIsNumericString
               placeholder="MM/YY"
               customInput={TextField}
@@ -108,6 +110,7 @@ const PaymentTabs = () => {
             <PatternFormat
               id="cvv"
               label="CVC/CVV"
+              defaultValue={payment.cvv}
               valueIsNumericString
               placeholder="CVC/CVV"
               customInput={TextField}
@@ -118,6 +121,7 @@ const PaymentTabs = () => {
           </div>
           <TextField
             id="holder_name"
+            defaultValue={payment.holder_name}
             label="ชื่อผู้ถือบัตร"
             variant="outlined"
             fullWidth

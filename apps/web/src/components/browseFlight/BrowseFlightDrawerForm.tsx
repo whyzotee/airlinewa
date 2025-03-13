@@ -500,6 +500,7 @@ const BrowseFlightForm = ({
             variant="outlined"
             className="w-full lg:w-full"
             type="submit"
+            disabled={form.state.isSubmitting}
           >
             <p className="py-1 px-16">ค้นหา</p>
           </Button>
