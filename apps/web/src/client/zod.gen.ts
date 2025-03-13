@@ -30,8 +30,12 @@ export const zCancelModel = z.object({
 });
 
 export const zCheckoutModel = z.object({
-    id: z.string(),
-    uid: z.string()
+    flight_id: z.string(),
+    uid: z.string(),
+    return_flight_id: z.union([
+        z.string(),
+        z.null()
+    ])
 });
 
 export const zFlightRoutSchedule = z.object({
@@ -46,7 +50,10 @@ export const zFlightRoute = z.object({
     destination: z.array(z.string()),
     schedule: zFlightRoutSchedule,
     date: z.string().datetime(),
-    price: z.number().int()
+    price: z.union([
+        z.number(),
+        z.null()
+    ])
 });
 
 export const zHttpValidationError = z.object({

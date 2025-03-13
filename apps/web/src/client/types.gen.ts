@@ -28,8 +28,9 @@ export type CancelModel = {
 };
 
 export type CheckoutModel = {
-    id: string;
+    flight_id: string;
     uid: string;
+    return_flight_id: string | null;
 };
 
 export type FlightRoutSchedule = {
@@ -44,7 +45,7 @@ export type FlightRoute = {
     destination: Array<string>;
     schedule: FlightRoutSchedule;
     date: string;
-    price: number;
+    price: number | null;
 };
 
 export type HttpValidationError = {

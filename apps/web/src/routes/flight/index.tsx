@@ -83,13 +83,13 @@ function RouteComponent() {
 
   const authStore = useAuthStore();
 
-  const [selectedFlight, setSelectedFlight] = useState(null);
+  const [selectedFlight, setSelectedFlight] = useState<string | null>(null);
   const [expandedFlight, setExpandedFlight] = useState<string | null>(null); //  Make
 
   const checkoutMutation = useMutation(paymentCheckoutMutation());
 
   const handleClick = useCallback(
-    async (id: string) => {
+    async (flight_id: string, return_flight_id?: string) => {
       if (!authStore.auth) {
         toast.error("Please login!");
 
@@ -102,8 +102,12 @@ function RouteComponent() {
 
       if (checkoutMutation.isPending) return;
 
+      console.log(return_flight_id);
+
       const uid = authStore.auth.userId;
-      const checkout = checkoutMutation.mutateAsync({ body: { id, uid } });
+      const checkout = checkoutMutation.mutateAsync({
+        body: { flight_id, uid, return_flight_id: return_flight_id ?? null },
+      });
 
       toast.promise(checkout, {
         loading: "Loading...",
@@ -113,8 +117,9 @@ function RouteComponent() {
 
           navigate({
             to: "/flight/checkout",
-            state: data,
+            state: query.tripeType == "onetrip" ? data : data[0],
             search: {
+              tripe_type: query.tripeType,
               seatClass: query.seatClass,
               passenger: query.passenger,
             },
@@ -134,21 +139,58 @@ function RouteComponent() {
       dispatch,
       query.seatClass,
       query.passenger,
+      query.tripeType,
     ]
   );
 
   const handleSelectFlight = useCallback(
     (flight) => {
-      setSelectedFlight(flight);
-      toast.success(`คุณเลือกเที่ยวบิน ${flight.id}`);
-      handleClick(flight.id); // ✅ เรียก `handleClick()` เมื่อเลือกเที่ยวบิน
+      if (selectedFlight == null && query.tripeType == "go-back") {
+        setSelectedFlight(flight.id);
+        toast.success(`คุณเลือกเที่ยวบินขาไป ${flight.id}`);
+        navigate({
+          search: (prev) => ({
+            ...prev,
+            originCode: query.destinationCode,
+            destinationCode: query.originCode,
+          }),
+        });
+      }
+
+      if (query.tripeType == "go-back") {
+        if (selectedFlight == null) return;
+        handleClick(flight.id, selectedFlight);
+        toast.success(`คุณเลือกเที่ยวบินกลับ ${flight.id}`);
+      } else {
+        toast.success(`คุณเลือกเที่ยวบิน ${flight.id}`);
+        handleClick(flight.id);
+      }
     },
-    [handleClick]
+    [
+      handleClick,
+      query.tripeType,
+      selectedFlight,
+      navigate,
+      query.destinationCode,
+      query.originCode,
+    ]
   );
 
   const handleToggleDetails = (flightId: string) => {
     //  Make Detaill Flight Expandable
     setExpandedFlight((prev) => (prev === flightId ? null : flightId));
+  };
+
+  const flight_type_go_back = () => {
+    if (selectedFlight == null && query.tripeType == "go-back") {
+      return "ขาไป";
+    }
+
+    if (query.tripeType == "go-back") {
+      return "ขากลับ";
+    }
+
+    return null;
   };
 
   return (
@@ -168,13 +210,13 @@ function RouteComponent() {
             <Card key={index} className="mb-4 p-4 shadow-lg rounded-lg border">
               <CardContent>
                 {/* ชั้นโดยสาร */}
-                <div className="bg-blue-200 text-blue-800 px-3 py-1 rounded-md w-fit text-sm font-bold">
+                <div className="bg-blue-200 text-blue-800 px-3 py-1 rounded-md w-fit text-sm font-bold mb-4">
                   {seatClassThai}
                 </div>
 
                 {/* สายการบิน */}
                 <Typography variant="body1" className="mt-2 font-semibold">
-                  ขาไป: Airlinewa
+                  {flight_type_go_back()}: Airlinewa
                 </Typography>
 
                 {/* แสดงเส้นทางบิน */}
@@ -223,7 +265,7 @@ function RouteComponent() {
 
                 <div className="flex justify-between items-center mt-4">
                   <Typography variant="h5" className="font-bold text-gray-800">
-                    THB {flight.price}{" "}
+                    THB {flight.price.toFixed(2)}{" "}
                     <span className="text-gray-500 text-sm">/ 1 ท่าน*</span>
                   </Typography>
 

@@ -29,9 +29,9 @@ class FlightRoute(BaseModel):
 
 
 class CheckoutModel(BaseModel):
-    id: str
+    flight_id: str
     uid: str
-
+    return_flight_id: str | None
 
 class PaymentIdentity(BaseModel):
     type: str

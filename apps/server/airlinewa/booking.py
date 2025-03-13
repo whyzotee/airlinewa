@@ -81,6 +81,13 @@ class Booking:
     def seats(self) -> list["Seat"]:
         return self.__seats
     
+    @property
+    def price(self):
+        seat_sum = sum([seat.price for seat in self.__seats])
+        sum_price = self.__flight_route.price + seat_sum
+
+        return [sum_price, self.__flight_route.tax]
+    
     def add_ticket(self, ticket: "Ticket"):
         self.__ticket.append(ticket)
 

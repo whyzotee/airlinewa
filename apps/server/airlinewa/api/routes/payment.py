@@ -26,7 +26,7 @@ def payments(model: PaymentModel):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result)
 
     booking, payment = result
-
+    
     return {
         "id": booking.flight_route.id,
         "booking_id": booking.id,
@@ -36,14 +36,13 @@ def payments(model: PaymentModel):
             "schedule": booking.flight_route.schedule.info,
             "date": booking.flight_route.date,
         },
-        "price": [booking.flight_route.price, booking.flight_route.tax],
+        "price": booking.price,
         "payment_id": payment.id,
     }
 
 
 @router.post("/checkout")
 async def checkout(model: CheckoutModel):
-    flight = airline.find_flight(model.id)
     user = airline.find_user(model.uid)
 
     if user == None:
@@ -51,27 +50,63 @@ async def checkout(model: CheckoutModel):
             status_code=status.HTTP_404_NOT_FOUND, detail="USER_NOT_FOUND"
         )
 
+    flight = airline.find_flight(model.flight_id)
     # for booking in user.booking:
     #     if booking.payment.is_pending_payment:
 
-    if flight == None:
+    if flight == None :
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="NO_FLIGHT_FOUND"
         )
 
     services = airline.services
 
-    return {
-        "id": flight.route.id,
-        "info": {
-            "origin": flight.route.origin,
-            "destination": flight.route.destination,
-            "schedule": flight.route.schedule.info,
-            "date": flight.route.date,
+    return_id = model.return_flight_id
+    if (return_id == None):
+        return {
+            "id": flight.route.id,
+            "info": {
+                "origin": flight.route.origin,
+                "destination": flight.route.destination,
+                "schedule": flight.route.schedule.info,
+                "date": flight.route.date,
+            },
+            "price": [flight.route.price, flight.route.tax],
+            "services": services,
+        }
+
+    
+    flight_back = airline.find_flight(return_id)
+    if (flight_back == None):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="NO_FLIGHT_FOUND"
+        )
+    
+    return [
+        {
+            "id": flight.route.id,
+            "info": {
+                "origin": flight.route.origin,
+                "destination": flight.route.destination,
+                "schedule": flight.route.schedule.info,
+                "date": flight.route.date,
+            },
+            "price": [flight.route.price, flight.route.tax],
+            "services": services,
         },
-        "price": [flight.route.price, flight.route.tax],
-        "services": services,
-    }
+        {
+            "id": flight_back.route.id,
+            "info": {
+                "origin": flight_back.route.origin,
+                "destination": flight_back.route.destination,
+                "schedule": flight_back.route.schedule.info,
+                "date": flight_back.route.date,
+            },
+            "price": [flight_back.route.price, flight_back.route.tax],
+            "services": services,
+        }
+    ]
+    
 
 @router.post("/cancel")
 def payment_cancel(model: CancelModel):

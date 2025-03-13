@@ -9,7 +9,6 @@ import { Breadcrumbs, Typography } from "@mui/material";
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 
-
 export const Route = createFileRoute("/app/checkout")({
   loader: ({ location }) => {
     return { data: location.state };
@@ -43,7 +42,6 @@ function RouteComponent() {
   const authStore = useAuthStore((state) => state.auth);
   const queryData = useSearch({ from: "/app/checkout" });
 
-
   const totalPassengers =
     (queryData.passenger?.adult || 0) +
     (queryData.passenger?.kid || 0) +
@@ -54,9 +52,15 @@ function RouteComponent() {
   let childCount = 1;
 
   const passengerTypes = [
-    ...Array(queryData.passenger?.adult || 0).fill(null).map(() => `ผู้ใหญ่ ${adultCount++}`),
-    ...Array(queryData.passenger?.kid || 0).fill(null).map(() => `เด็ก ${kidCount++}`),
-    ...Array(queryData.passenger?.child || 0).fill(null).map(() => `ทารก ${childCount++}`),
+    ...Array(queryData.passenger?.adult || 0)
+      .fill(null)
+      .map(() => `ผู้ใหญ่ ${adultCount++}`),
+    ...Array(queryData.passenger?.kid || 0)
+      .fill(null)
+      .map(() => `เด็ก ${kidCount++}`),
+    ...Array(queryData.passenger?.child || 0)
+      .fill(null)
+      .map(() => `ทารก ${childCount++}`),
   ];
 
   const [userDetails, setUserDetails] = useState(
@@ -97,8 +101,8 @@ function RouteComponent() {
               userData={user}
               updateUserDetails={updateUserDetails} // ✅ ส่งฟังก์ชันให้ Component
             />
-          ))}         
-          
+          ))}
+
           <CheckoutContact />
           <h1 className="text-xl">Service</h1>
           <CheckoutServiceBag user={["Adult 1"]} />

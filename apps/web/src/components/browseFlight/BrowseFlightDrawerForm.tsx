@@ -124,7 +124,11 @@ const BrowseFlightForm = ({
         formData.departureDate != null &&
         dayjs.isDayjs(formData.departureDate)
       ) {
-        formData.departureDate = formData.departureDate.toISOString();
+        formData.departureDate = formData.departureDate.format("YYYY-MM-DD");
+      }
+
+      if (formData.returnDate != null && dayjs.isDayjs(formData.returnDate)) {
+        formData.returnDate = formData.returnDate.format("YYYY-MM-DD");
       }
 
       toast.promise(delay(1000), {

@@ -26,7 +26,12 @@ interface Props {
   updateUserDetails: (index: number, field: string, value: any) => void;
 }
 
-const UserDetail: React.FC<Props> = ({ userNumber, userType, userData, updateUserDetails }) => {
+const UserDetail: React.FC<Props> = ({
+  userNumber,
+  userType,
+  userData,
+  updateUserDetails,
+}) => {
   const isFormValid = () => {
     return (
       userData.gender &&
@@ -93,22 +98,33 @@ const UserDetail: React.FC<Props> = ({ userNumber, userType, userData, updateUse
               label="Name"
               variant="outlined"
               value={userData.name}
-              onChange={(e) => updateUserDetails(userNumber - 1, "name", e.target.value)}
+              onChange={(e) =>
+                updateUserDetails(userNumber - 1, "name", e.target.value)
+              }
             />
             <TextField
               label="Lastname"
               variant="outlined"
               value={userData.lastname}
-              onChange={(e) => updateUserDetails(userNumber - 1, "lastname", e.target.value)}
+              onChange={(e) =>
+                updateUserDetails(userNumber - 1, "lastname", e.target.value)
+              }
             />
 
             <Autocomplete
               disablePortal
               options={options}
               getOptionLabel={(option) => option.label}
-              value={options.find((option) => option.label === userData.country) || null}
-              onChange={(_, v) => updateUserDetails(userNumber - 1, "country", v ? v.label : "")}
-              renderInput={(params) => <TextField {...params} label="Country" />}
+              value={
+                options.find((option) => option.label === userData.country) ||
+                null
+              }
+              onChange={(_, v) =>
+                updateUserDetails(userNumber - 1, "country", v ? v.label : "")
+              }
+              renderInput={(params) => (
+                <TextField {...params} label="Country" />
+              )}
             />
 
             <DemoContainer components={["DatePicker"]}>
@@ -117,7 +133,13 @@ const UserDetail: React.FC<Props> = ({ userNumber, userType, userData, updateUse
                 format="DD/MM/YYYY"
                 views={["day", "month", "year"]}
                 value={userData.birthday ? dayjs(userData.birthday) : null}
-                onChange={(value) => updateUserDetails(userNumber - 1, "birthday", value?.toISOString() || "")}
+                onChange={(value) =>
+                  updateUserDetails(
+                    userNumber - 1,
+                    "birthday",
+                    value?.toISOString() || ""
+                  )
+                }
               />
             </DemoContainer>
           </div>
@@ -146,7 +168,9 @@ const UserDetail: React.FC<Props> = ({ userNumber, userType, userData, updateUse
               variant="outlined"
               customInput={TextField}
               value={userData.identity?.number || ""}
-              className={userData.identity?.type === "passport" ? "" : "col-span-2"} // ✅ ให้ขยายเต็มเมื่อไม่ใช่ passport
+              className={
+                userData.identity?.type === "passport" ? "" : "col-span-2"
+              } // ✅ ให้ขยายเต็มเมื่อไม่ใช่ passport
               onChange={(e) =>
                 updateUserDetails(userNumber - 1, "identity", {
                   ...userData.identity,
