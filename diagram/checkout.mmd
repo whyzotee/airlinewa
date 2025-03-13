@@ -10,11 +10,13 @@ sequenceDiagram
     participant f_route as : FlightRoute
     participant user as : User
     participant service as : Service
+    participant air as : Aricraft
+    participant seat as : Seat
 
     customer ->>+ ui: click "เลือก" button
     ui ->>+ api: post_checkout(flight_route_id, user_id)
-    api ->>+ airlinewa: get_flight_route(flight_route_id)
-    loop get_flight_route
+    api ->>+ airlinewa: find_flight(flight_route_id)
+    loop find_flight
         airlinewa ->>+ f_route: id()
         f_route -->>- airlinewa: return id
     end
@@ -39,6 +41,40 @@ sequenceDiagram
     service -->>- airlinewa: return list_of_service
     airlinewa -->>- api: return service
 
+    api ->>+ f_route: aircraft()
+    f_route -->- api: return aircraft
+    api ->>+ air: get_seat_price(seat_class)
+    air ->>+ seat: seats_class(seat_class)
+    seat -->>- air: return seat price
+    air -->>- api: return price
+
+    api ->>+ airlinewa: find_flight(return_id)
+    loop find_flight
+        airlinewa ->>+ f_route: id()
+        f_route -->>- airlinewa: return id
+    end
+    airlinewa -->>- api: return flight_route (back)
+
+    alt return_id != null
+        alt flight_back == None
+            api -->>+ ui: return HTTPException(404, NO_FLIGHT_FOUND)
+            ui -->>- customer: return display error
+        end
+
+        api ->>+ f_route: aircraft()
+        f_route -->- api: return aircraft
+        api ->>+ air: get_seat_price(seat_class)
+        air ->>+ seat: seats_class(seat_class)
+        seat -->>- air: return seat price
+        air -->>- api: return price
+        api ->>+ f_route: price()
+        f_route -->- api: return price
+        api ->>+ f_route: tax()
+        f_route -->- api: return tax
+
+        api -->> ui: flight_id, flight_info, back_info, price, services
+        ui -->> customer: return display checkout form
+    end
 
     api -->>- ui: return flight_id, flight_info, price, services
 

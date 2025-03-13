@@ -358,7 +358,7 @@ const BrowseFlightForm = ({
               />
             </div>
           </Menu>
-          <form.Field
+          {/* <form.Field
             name="promotionCode"
             children={(field) => {
               return (
@@ -373,7 +373,7 @@ const BrowseFlightForm = ({
                 />
               );
             }}
-          />
+          /> */}
         </div>
 
         <div className="flex lg:flex-row flex-col items-center gap-4">

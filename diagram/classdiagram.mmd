@@ -47,6 +47,7 @@ classDiagram
         + model()
         + seats()
         + seats_class(seat_class) list[Seat]
+        + get_seat_price(seat_class) float
         + get_avaliable_seat(seat_class) list[Seat]
         + get_pending_payment_seat(seat_class) list[Seat]
         + reserve_seat(passenger_count, seat_class) list[Seat]
@@ -85,15 +86,18 @@ classDiagram
         - ticket_id
         - passenger
         - seat
+        - isback
         + id()
         + passenger()
         + seat()
+        + isback()
     }
 
     class Booking {
         - id: str
         - user: User
         - flight_route: FlightRoute
+        - flight_route_back: list[FlightRoute] | None
         - ticket: list[Ticket]
         - payment: Payment
         - passengers: list[Passenger]
@@ -108,9 +112,12 @@ classDiagram
         + service()
         + contact()
         + seats()
-        + add_ticket(ticket: Ticket)
-        + booking_details()
+        + price()
+        + ticket()
         + create_ticket() list[Ticket]
+        + set_flight_back_route(flight_route)
+        + set_flight_back_seats(seats)
+        + booking_details()
     }
 
     class Flight {

@@ -14,7 +14,7 @@ sequenceDiagram
     participant f_sche as : FlightSchedule
 
     customer ->>+ ui: go_choose_flight_page
-    ui ->>+ api: get_flight(tripe_type, seat_class, origin, <br/>destination, date, adult, child, kid)
+    ui ->>+ api: GET search_flight(tripe_type, seat_class, origin, <br/>destination, date, adult, child, kid)
     activate api
     alt origin is None
         api -->> ui: HTTPException(404, ORIGIN_INVALID) 
@@ -46,6 +46,10 @@ sequenceDiagram
     f_route -->>- airlinewa: return destination
     airlinewa ->>+ f_route: date()
     f_route -->>- airlinewa: return date
+    airlinewa ->>+ f_route: schedule()
+    f_route -->>- airlinewa: return schedule
+    airlinewa ->>+ f_sche: day_of_week()
+    f_sche -->>- airlinewa: return day_of_week
     airlinewa ->>+ f_route: is_avaliable()
     f_route -->>- airlinewa: return is_avaliable
     airlinewa ->>+ flight: get_avaliable_seat
@@ -62,8 +66,24 @@ sequenceDiagram
     f_route ->>+ f_sche: departure()
     f_sche -->>- f_route: return departure
     f_route -->>- airlinewa: return departure
+
+    airlinewa ->>+ f_route: schedule()
+    f_route ->>+ f_sche: arrival()
+    f_sche -->>- f_route: return arrival
+    f_route -->>- airlinewa: return arrival
+
+    airlinewa ->>+ f_route: schedule()
+    f_route ->>+ f_sche: duration()
+    f_sche -->>- f_route: return duration
+    f_route -->>- airlinewa: return duration
+    airlinewa ->>+ flight: aircraft()
+    flight -->>- airlinewa: return aircraft
+    airlinewa ->>+ air: get_seat_price(seat_class)
+    air ->>+ seat: seats_class(seat_class)
+    seat -->>- air: return seat price
+    air -->>- airlinewa: return price
     end
 
-    airlinewa -->>- api: return flight_route_list, schedule_list
+    airlinewa -->>- api: return flight_route_list, schedule_list, price_list
     api -->>- ui: return flight_route_list
     ui -->>- customer: display flight route list
