@@ -37,7 +37,6 @@ def bookings() -> list[BookingResponse]:
     if user is None:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-    [booking.flight_route.destination for booking in user.bookings]
     user_bookings = [
         BookingResponse(
             id=booking.id,
