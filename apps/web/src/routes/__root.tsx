@@ -1,3 +1,4 @@
+import { Typography } from "@mui/material";
 import { QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
@@ -30,6 +31,7 @@ const Navbar = lazy(() => import("@/components/Navbar"));
 
 export const Route = createRootRouteWithContext<Context>()({
   component: RootComponent,
+  notFoundComponent: RootNotFoundComponent,
 });
 
 function RootComponent() {
@@ -41,19 +43,14 @@ function RootComponent() {
     <main className="font-noto-thai">
       <Navbar />
       <div className="container mx-auto my-8">
-        {/* <div className="flex justify-between text-sm">
-            <Breadcrumbs aria-label="breadcrumb">
-              <Link to="/">หน้าแรก</Link>
-              <Typography>เลือกเที่ยวบิน</Typography>
-              <Typography>รายละเอียดผู้โดยสาร</Typography>
-              <Typography sx={{ color: "text.primary" }}>ชำระเงิน</Typography>
-            </Breadcrumbs>
-          </div> */}
-
         <Outlet />
 
         <Suspense>{/* <TanStackDevtools /> */}</Suspense>
       </div>
     </main>
   );
+}
+
+function RootNotFoundComponent() {
+  return <Typography variant="h2">Not Found</Typography>;
 }

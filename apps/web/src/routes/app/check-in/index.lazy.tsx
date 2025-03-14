@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/lib/zustand";
 import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
 import { useForm } from "@tanstack/react-form";
 import { createLazyFileRoute } from "@tanstack/react-router";
@@ -9,20 +10,27 @@ export const Route = createLazyFileRoute("/app/check-in/")({
 
 function RouteComponent() {
   const navigate = Route.useNavigate();
+  const authStore = useAuthStore();
+  const search = Route.useSearch() as { bookingNumber?: string };
 
   const form = useForm({
     defaultValues: {
-      bookingNumber: "",
-      name: "",
+      bookingNumber: search.bookingNumber ? search.bookingNumber : "",
+      name: authStore.auth?.name,
     },
     onSubmit: ({ value }) => {
       if (!value.bookingNumber) {
+        toast.error("Please fill Booking number!");
+        return;
+      }
+
+      if (value.bookingNumber.length !== 6) {
         toast.error("Booking number invalid!");
         return;
       }
 
       if (!value.name) {
-        toast.error("Name or Surname invalid!");
+        toast.error("Please fill Name or Surname!");
         return;
       }
 
@@ -58,7 +66,7 @@ function RouteComponent() {
             </Typography>
 
             <Typography variant="body2" color="textSecondary" gutterBottom>
-              Enter your flight details to start. For AirlinwWa flights, check
+              Enter your flight details to start. For AirlineWa flights, check
               in at the respective airline’s website.
             </Typography>
           </Box>
@@ -83,8 +91,8 @@ function RouteComponent() {
                     onChange={(evt) =>
                       field.handleChange(evt.currentTarget.value)
                     }
+                    value={field.state.value}
                     fullWidth
-                    // helperText="Enter your 6-digit alphanumeric AirAsia booking number"
                   />
                 );
               }}
@@ -103,6 +111,7 @@ function RouteComponent() {
                     onChange={(evt) =>
                       field.handleChange(evt.currentTarget.value)
                     }
+                    value={field.state.value}
                     fullWidth
                   />
                 );

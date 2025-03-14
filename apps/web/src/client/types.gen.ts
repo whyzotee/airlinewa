@@ -3,6 +3,7 @@
 export type AircraftResponse = {
     id: string;
     model: string;
+    seats: Array<SeatResponse>;
 };
 
 export type Airport = {
@@ -82,6 +83,16 @@ export type PassengerModel = {
     identity: PaymentIdentity;
 };
 
+export type PassengerResponse = {
+    gender: string;
+    name: string;
+    lastname: string;
+    birthday: string;
+    identity_type: string;
+    identity_number: string;
+    identity_out_date: string | null;
+};
+
 export type PaymentContact = {
     prefix: string;
     name: string;
@@ -116,6 +127,13 @@ export type PaymentModel = {
     contact: PaymentContact;
 };
 
+export type SeatResponse = {
+    id: string;
+    price: number;
+    class_str: string;
+    status: string;
+};
+
 export type TicketResponse = {
     ticket_id: string;
     passenger_name: string;
@@ -138,6 +156,7 @@ export type AirlinewaApiRoutesBookingBookingResponse = {
     destination: Array<string>;
     arrive: string;
     status: string;
+    passengers: Array<PassengerResponse>;
 };
 
 export type AirlinewaApiRoutesTicketBookingResponse = {
@@ -255,6 +274,35 @@ export type FlightSearchFlightResponses = {
 
 export type FlightSearchFlightResponse = FlightSearchFlightResponses[keyof FlightSearchFlightResponses];
 
+export type FlightFlightData = {
+    body?: never;
+    path: {
+        flight_number: string;
+    };
+    query?: {
+        from_date?: string;
+    };
+    url: '/api/flight/{flight_number}';
+};
+
+export type FlightFlightErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type FlightFlightError = FlightFlightErrors[keyof FlightFlightErrors];
+
+export type FlightFlightResponses = {
+    /**
+     * Successful Response
+     */
+    200: FlightResponse;
+};
+
+export type FlightFlightResponse = FlightFlightResponses[keyof FlightFlightResponses];
+
 export type FlightFindFlightData = {
     body?: never;
     path: {
@@ -263,7 +311,7 @@ export type FlightFindFlightData = {
     query: {
         date: string;
     };
-    url: '/api/flight/{flight_number}';
+    url: '/api/flight/find/{flight_number}';
 };
 
 export type FlightFindFlightErrors = {
@@ -326,6 +374,56 @@ export type BookingBookingResponses = {
 };
 
 export type BookingBookingResponse = BookingBookingResponses[keyof BookingBookingResponses];
+
+export type BookingCheckInData = {
+    body?: never;
+    path: {
+        booking_number: string;
+    };
+    query?: never;
+    url: '/api/booking/check-in/{booking_number}';
+};
+
+export type BookingCheckInErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type BookingCheckInError = BookingCheckInErrors[keyof BookingCheckInErrors];
+
+export type BookingCheckInResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type BookingCancelData = {
+    body?: never;
+    path: {
+        booking_number: string;
+    };
+    query?: never;
+    url: '/api/booking/cancel/{booking_number}';
+};
+
+export type BookingCancelErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type BookingCancelError = BookingCancelErrors[keyof BookingCancelErrors];
+
+export type BookingCancelResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
 
 export type PaymentPaymentsData = {
     body: PaymentModel;

@@ -3,7 +3,7 @@ import { TITLE_PATH } from "@/utils";
 import AirplaneTicketIcon from "@mui/icons-material/AirplaneTicket";
 import { Button } from "@mui/material";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import Barcode from "react-barcode";
 
@@ -13,7 +13,23 @@ export const Route = createFileRoute("/app/ticket")({
       booking_id: search.booking_id,
     };
   },
+  loader: async ({ context, location }) => {
+    const { booking_id } = location.search as { booking_id: string };
+    try {
+      await context.queryClient.ensureQueryData(
+        ticketTicketOptions({
+          query: {
+            booking_id,
+          },
+        })
+      );
+    } catch (err) {
+      console.error(err);
+      throw notFound();
+    }
+  },
   component: RouteComponent,
+  notFoundComponent: () => <p>Ticket not found</p>,
 });
 
 function RouteComponent() {

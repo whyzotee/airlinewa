@@ -1,5 +1,6 @@
 import random
 
+
 class SeatStatus:
     AVALIABLE = "AVALIABLE"
     PENDING_PAYMENT = "PENDING_PAYMENT"
@@ -7,8 +8,9 @@ class SeatStatus:
     # CANCEL = "CANCEL"
     # SOLD = "SOLD"
 
+
 class Seat:
-    def __init__(self, id: str, status, price):
+    def __init__(self, id: str, status: str, price: float):
         self.__id = id
         self.__status = status
         self.__price = price
@@ -24,7 +26,7 @@ class Seat:
     @property
     def class_str(self) -> str:
         return "seat"
-    
+
     def __get_status(self):
         return self.__status
 
@@ -32,6 +34,7 @@ class Seat:
         self.__status = status
 
     status = property(__get_status, __set_status)
+
 
 class EconomyClass(Seat):
     def __init__(self, id, status, price):
@@ -41,29 +44,33 @@ class EconomyClass(Seat):
     def class_str(self):
         return "economy"
 
+
 class PremuimEconomyClass(Seat):
     def __init__(self, id, status, price):
         super().__init__(id, status, price)
-    
+
     @property
     def class_str(self):
         return "eco-premium"
 
+
 class BusinessClass(Seat):
     def __init__(self, id, status, price):
         super().__init__(id, status, price)
-    
+
     @property
     def class_str(self):
         return "business"
 
+
 class FirstClass(Seat):
     def __init__(self, id, status, price):
         super().__init__(id, status, price)
-    
+
     @property
     def class_str(self):
         return "first"
+
 
 class Airport:
     def __init__(self, name, address, code):
@@ -87,20 +94,23 @@ class Airport:
     def code(self):
         return self.__code
 
+
 class Aircraft:
     def __init__(self, id, model):
         self.__id = id
         self.__model = model
         self.__seats = self.gen_seat()
 
-    def gen_seat(self) -> list[FirstClass | BusinessClass | PremuimEconomyClass | EconomyClass]:
+    def gen_seat(
+        self,
+    ) -> list[FirstClass | BusinessClass | PremuimEconomyClass | EconomyClass]:
         eco = [
             EconomyClass(f"E_{index:03d}", SeatStatus.AVALIABLE, 505.10)
-            for index in range(random.randint(200, 350))  
+            for index in range(random.randint(200, 350))
         ]
 
         eco_premium = [
-            PremuimEconomyClass(f"EP_{index:03d}", SeatStatus.AVALIABLE, 843.05)  
+            PremuimEconomyClass(f"EP_{index:03d}", SeatStatus.AVALIABLE, 843.05)
             for index in range(random.randint(50, 150))
         ]
 
@@ -127,7 +137,7 @@ class Aircraft:
     @property
     def seats(self):
         return self.__seats
-    
+
     def seats_class(self, seat_class) -> list[Seat]:
         eco_class = []
         eco_premium_class = []
@@ -143,24 +153,24 @@ class Aircraft:
                 first_class.append(seat)
             else:
                 eco_class.append(seat)
-                
+
         # "economy" | "business" | "eco-premium" | "first-class";
 
         if seat_class == "business":
             return eco_premium_class
-        
+
         if seat_class == "eco-premium":
             return business_class
-        
+
         if seat_class == "first-class":
             return first_class
-        
+
         return eco_class
 
     def get_seat_price(self, seat_class) -> float:
         for seat in self.seats_class(seat_class):
             return seat.price
-        
+
         return 0
 
     def get_avaliable_seat(self, seat_class) -> list[Seat]:
@@ -191,41 +201,40 @@ class Aircraft:
             if seat.status == SeatStatus.AVALIABLE:
                 seat.status = SeatStatus.PENDING_PAYMENT
                 list_reserve_seat.append(seat)
-    
+
         return list_reserve_seat
-    
+
     def booked_seat(self, seats: list[Seat]):
         booked_count = 0
 
         for seat in self.__seats:
             for book_seat in seats:
-               if seat.id ==  book_seat.id:
+                if seat.id == book_seat.id:
                     seat.status = SeatStatus.BOOKED
                     booked_count += 1
-        
+
         return booked_count == len(seats)
-    
+
     def cancel_seat(self, seats: list[Seat]):
         cancel_count = 0
 
         for seat in self.__seats:
             for book_seat in seats:
-               if seat.id ==  book_seat.id:
+                if seat.id == book_seat.id:
                     seat.status = SeatStatus.AVALIABLE
                     cancel_count += 1
-                    
+
         return cancel_count == len(seats)
 
     # def check_type_seat_class(self, seat_class):
     #     if seat_class == "economy":
     #         return EconomyClass
-        
+
     #     if seat_class == "eco-premium":
     #         return PremuimEconomyClass
-        
+
     #     if seat_class == "business":
     #         return BusinessClass
-        
+
     #     if seat_class == "first-class":
     #         return FirstClass
-        

@@ -26,18 +26,34 @@ class Airlinewa:
     # ============================ Medthod ============================ #
 
     # Function Section
-    def find_flight(self, flight_route_id) -> Flight | None:
+    def find_flight(
+        self, flight_route_id: str | None, from_date: str | None = None
+    ) -> Flight | None:
         if flight_route_id == None:
             return None
 
         for flight in self.__fight_list:
-            if flight.route.id == flight_route_id:
-                return flight
+            if flight.route.id != flight_route_id:
+                continue
+
+            if from_date and flight.route.date.isoformat()[:10] != from_date:
+                continue
+
+            return flight
+
+        return None
 
     def find_booking(self, booking_id: str) -> Booking | None:
         for booking in self.__booking_list:
             if booking.id == booking_id:
                 return booking
+
+    def cancel_booking(self, booking_id: str):
+        bookings = [
+            booking for booking in self.__booking_list if booking.id != booking_id
+        ]
+
+        self.__booking_list = bookings
 
     def find_user(self, user_id) -> User | None:
         for user in self.__user_list:
@@ -87,7 +103,13 @@ class Airlinewa:
         return flight_route_list, schedule_list, price_list
 
     def booking_flight_route(
-        self, user_id, flight_route_id: str, passengers_raw, contact_raw, seat_type, route_back_id
+        self,
+        user_id,
+        flight_route_id: str,
+        passengers_raw,
+        contact_raw,
+        seat_type,
+        route_back_id,
     ) -> tuple[Booking, Payment]:
         user = self.find_user(user_id)
 
@@ -95,12 +117,12 @@ class Airlinewa:
             raise Exception("USER_NOT_FOUND")
 
         flight = self.find_flight(flight_route_id)
-            
+
         if flight == None:
             raise Exception("FLIGHT_NOT_FOUND")
 
         seats = flight.aircraft.get_avaliable_seat(seat_type)
-        
+
         if len(seats) <= 0 or len(seats) < len(passengers_raw):
             raise Exception("NO_SEAT_LEFT")
 
@@ -108,14 +130,16 @@ class Airlinewa:
 
         flight_back = None
         reserve_seat_back = None
-        
+
         if route_back_id != None:
             flight_back = self.find_flight(route_back_id)
 
             if flight_back == None:
                 raise Exception("FLIGHT_NOT_FOUND")
-            
-            reserve_seat_back = flight_back.aircraft.reserve_seat(len(passengers_raw), seat_type)
+
+            reserve_seat_back = flight_back.aircraft.reserve_seat(
+                len(passengers_raw), seat_type
+            )
 
         all_seats = str(seat_type).upper() + "".join(
             [seat.id.split("_")[-1] for seat in reserve_seat]
@@ -291,4 +315,3 @@ class Airlinewa:
 
 
 airline = Airlinewa.initialize()
-

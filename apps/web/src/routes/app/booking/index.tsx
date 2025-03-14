@@ -1,11 +1,15 @@
-import { BookingResponse } from "@/client";
-import { bookingBookingsOptions } from "@/client/@tanstack/react-query.gen";
+import { BookingBookingResponse } from "@/client";
+import {
+  bookingBookingsOptions,
+  bookingCancelMutation,
+} from "@/client/@tanstack/react-query.gen";
 import { Box, Button, Stack } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import toast from "react-hot-toast";
 
 export const Route = createFileRoute("/app/booking/")({
   component: RouteComponent,
@@ -17,12 +21,37 @@ function RouteComponent() {
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
 
+  const cancelBookingMutation = useMutation(bookingCancelMutation());
+
   // @ts-ignore
   const q = String(search.q) ? String(search.q ?? "upcoming") : "upcoming";
 
   // const rows = [{ id: 1, date: "Snow", departure: "Jon", origin: 14 }];
 
-  const columns = useMemo<GridColDef<BookingResponse>[]>(
+  const handleCancelBooking = useCallback(
+    async (bookingNumber: string) => {
+      const cancelBooking = cancelBookingMutation.mutateAsync({
+        path: {
+          booking_number: bookingNumber,
+        },
+      });
+      toast.promise(cancelBooking, {
+        loading: "Cancelling booking...",
+        success: () => {
+          bookingsQuery.refetch();
+          return "Cancel booking success.";
+        },
+        error: (err) => {
+          console.error(err);
+          bookingsQuery.refetch();
+          return "Cancel booking error!";
+        },
+      });
+    },
+    [bookingsQuery, cancelBookingMutation]
+  );
+
+  const columns = useMemo<GridColDef<BookingBookingResponse>[]>(
     () => [
       // {
       //   field: "id",
@@ -42,7 +71,7 @@ function RouteComponent() {
       {
         field: "origin",
         headerName: "Origin",
-        width: 120,
+        width: 140,
         valueGetter: (value) => value[0],
       },
       {
@@ -52,7 +81,7 @@ function RouteComponent() {
       {
         field: "destination",
         headerName: "Destination",
-        width: 120,
+        width: 140,
         valueGetter: (value) => value[0],
       },
       {
@@ -78,13 +107,48 @@ function RouteComponent() {
             case "AVALIABLE":
               return "Avaliable";
 
+            case "ALREADY_PAY":
+              return "Already Pay";
+
             default:
               return value;
           }
         },
       },
+      {
+        field: "actions",
+        type: "actions",
+        getActions: (params) => [
+          <GridActionsCellItem
+            label="Check in"
+            showInMenu
+            onClick={() => {
+              navigate({
+                to: "/app/check-in",
+                search: {
+                  bookingNumber: params.row.id,
+                },
+              });
+            }}
+          />,
+          <GridActionsCellItem
+            label="Cancel"
+            showInMenu
+            onClick={() => {
+              // navigate({
+              //   to: "/app/check-in",
+              //   search: {
+              //     bookingNumber: params.row.id,
+              //   },
+              // });
+              const bookingNumber = params.row.id;
+              handleCancelBooking(bookingNumber);
+            }}
+          />,
+        ],
+      },
     ],
-    []
+    [handleCancelBooking, navigate]
   );
 
   return (
