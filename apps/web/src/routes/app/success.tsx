@@ -47,7 +47,7 @@ function RouteComponent() {
     <main className="font-noto-thai">
       <div className="flex flex-col justify-center items-center gap-4">
         <div className="h-96 w-96">
-          <Lottie animationData={SuccesAnimation} loop={true} />
+          <Lottie animationData={SuccesAnimation} loop={true} autoPlay />
         </div>
         <h1 className="text-gray-800 text-3xl">
           คำสั่งซื้อสำเร็จ #{bookingPayment.payment_id}

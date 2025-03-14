@@ -60,6 +60,11 @@ class User:
     def add_booking(self, booking: "Booking"):
         self.__bookings.append(booking)
 
+    def cancel_booking(self, booking_id: str):
+        bookings = [booking for booking in self.__bookings if booking.id != booking_id]
+
+        self.__bookings = bookings
+
 
 class Contact:
     def __init__(self, title, name, lastname, email, country_code, phone_number):

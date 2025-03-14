@@ -1,6 +1,7 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from airlinewa.models import FlightRoute, FlightRoutSchedule
+from airlinewa.utils import is_valid_date
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
 
@@ -29,7 +30,7 @@ class FlightRouteResponse(BaseModel):
 
 class SeatResponse(BaseModel):
     id: str
-    price: str
+    price: float
     class_str: str
     status: str
 
@@ -37,7 +38,7 @@ class SeatResponse(BaseModel):
 class AircraftResponse(BaseModel):
     id: str
     model: str
-    # seats: list[SeatResponse]
+    seats: list[SeatResponse]
 
 
 class FlightResponse(BaseModel):
@@ -100,7 +101,56 @@ def search_flight(
     return flight_route_list
 
 
-@router.post("/{flight_number}")
+@router.get("/{flight_number}")
+def flight(
+    flight_number: str, from_date: str = date.today().isoformat()
+) -> FlightResponse:
+    from_date_date = date.fromisoformat(from_date)
+    if not is_valid_date(from_date_date.isoformat()):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="DATE_INVALID"
+        )
+
+    flight = airline.find_flight(flight_number, from_date)
+    if flight is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="FLIGHT_NOT_FOUND"
+        )
+
+    flight_route = flight.route
+    flight_schedule = flight_route.schedule
+    aircraft = flight.aircraft
+    seats = [
+        # SeatResponse(
+        #     id=seat.id, price=seat.price, class_str=seat.class_str, status="asd"
+        # )
+        SeatResponse(
+            id=seat.id, price=seat.price, class_str=seat.class_str, status=seat.status
+        )
+        for seat in aircraft.seats
+    ]
+
+    return FlightResponse(
+        aircraft=AircraftResponse(id=aircraft.id, model=aircraft.model, seats=seats),
+        route=FlightRouteResponse(
+            id=flight_route.id,
+            date=flight_route.date,
+            destination=flight_route.destination,
+            is_avaliable=flight_route.is_avaliable,
+            status=flight_route.status,
+            origin=flight_route.origin,
+            price=flight_route.price,
+            schedule=FlightScheduleResponse(
+                arrival=flight_schedule.arrival,
+                day_of_week=flight_schedule.day_of_week,
+                departure=flight_schedule.departure,
+                duration=flight_schedule.duration,
+            ),
+        ),
+    )
+
+
+@router.post("/find/{flight_number}")
 def find_flight(flight_number: str, date: str) -> FlightResponse:
     flight = airline.find_flight(flight_number)
     if flight is None:
@@ -119,7 +169,7 @@ def find_flight(flight_number: str, date: str) -> FlightResponse:
     # ]
 
     return FlightResponse(
-        aircraft=AircraftResponse(id=aircraft.id, model=aircraft.model),
+        aircraft=AircraftResponse(id=aircraft.id, model=aircraft.model, seats=[]),
         route=FlightRouteResponse(
             id=flight_route.id,
             date=flight_route.date,

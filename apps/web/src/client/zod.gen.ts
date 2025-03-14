@@ -4,7 +4,13 @@ import { z } from 'zod';
 
 export const zAircraftResponse = z.object({
     id: z.string(),
-    model: z.string()
+    model: z.string(),
+    seats: z.array(z.object({
+        id: z.string(),
+        price: z.number(),
+        class_str: z.string(),
+        status: z.string()
+    }))
 });
 
 export const zAirport = z.object({
@@ -117,6 +123,19 @@ export const zPassengerModel = z.object({
     })
 });
 
+export const zPassengerResponse = z.object({
+    gender: z.string(),
+    name: z.string(),
+    lastname: z.string(),
+    birthday: z.string().datetime(),
+    identity_type: z.string(),
+    identity_number: z.string(),
+    identity_out_date: z.union([
+        z.string().datetime(),
+        z.null()
+    ])
+});
+
 export const zPaymentContact = z.object({
     prefix: z.string(),
     name: z.string(),
@@ -157,6 +176,13 @@ export const zPaymentModel = z.object({
     contact: zPaymentContact
 });
 
+export const zSeatResponse = z.object({
+    id: z.string(),
+    price: z.number(),
+    class_str: z.string(),
+    status: z.string()
+});
+
 export const zTicketResponse = z.object({
     ticket_id: z.string(),
     passenger_name: z.string(),
@@ -178,7 +204,8 @@ export const zAirlinewaApiRoutesBookingBookingResponse = z.object({
     origin: z.array(z.string()),
     destination: z.array(z.string()),
     arrive: z.string(),
-    status: z.string()
+    status: z.string(),
+    passengers: z.array(zPassengerResponse)
 });
 
 export const zAirlinewaApiRoutesTicketBookingResponse = z.object({
@@ -232,6 +259,8 @@ export const zAirportGetAirportsResponse = z.array(zAirport);
 export const zAuthLoginResponse = zLoginResponse;
 
 export const zFlightSearchFlightResponse = z.array(zAirlinewaModelsFlightRoute);
+
+export const zFlightFlightResponse = zFlightResponse;
 
 export const zFlightFindFlightResponse = zFlightResponse;
 
