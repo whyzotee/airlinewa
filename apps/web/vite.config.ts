@@ -14,4 +14,7 @@ export default defineConfig({
     tailwindcss(),
     tsconfigPaths(),
   ],
+  optimizeDeps: {
+    exclude: ['node_modules/.cache']
+  }
 });

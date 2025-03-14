@@ -16,76 +16,15 @@ class MockUp:
         gen_id = [
             "ca47592b-9bff-4336-8adf-ed8411d4a2a0",
             "02a93808-d0ce-4a70-8fe2-552472401547",
-            "3b2d75e3-028f-4480-80ee-af0132d8b884",
-            "ba786bd4-20ac-4446-9a8d-8df1ad1e74f1",
-            "2c6e36ba-14b5-4f43-b33e-c21842810fbe",
-            "dff42e64-c16e-4607-b91b-77d5e4d5e121",
-            "a7c51caf-bdce-4602-b819-3d9c88d43f56",
-            "38377cc5-c96f-448a-94ee-37cbc18a8f1a",
-            "79c69bca-2a9f-4a0f-a373-0f301a12a4d0",
-            "92711594-2719-4947-8417-54f996b4dd3c",
-            "be46fe6f-a105-420f-aabe-c30bcf2644cd",
         ]
 
-        gen_name = [
-            "whyzotee",
-            "Teerapat",
-            "Kawin",
-            "Araya",
-            "Phumipat",
-            "Nannaphat",
-            "Wit",
-            "Supitcha",
-            "Rawiphat",
-            "Chayanan",
-            "Peeraphat",
-        ]
-
-        gen_phone_numbers = [
-            "000-000-0000",
-            "089-123-4567",
-            "082-987-6543",
-            "095-555-7890",
-            "081-246-1357",
-            "090-333-1122",
-            "087-654-3210",
-            "098-777-8888",
-            "084-111-2223",
-            "091-369-2587",
-            "086-543-2109",
-        ]
-
-        gen_emails = [
-            "t@1.dev",
-            "alex.johnson@example.com",
-            "sophia.miller@example.com",
-            "david.lee@example.com",
-            "emma.wilson@example.com",
-            "michael.brown@example.com",
-            "olivia.smith@example.com",
-            "william.taylor@example.com",
-            "ava.jones@example.com",
-            "james.garcia@example.com",
-            "mia.martinez@example.com",
-        ]
-
-        gen_passwords = [
-            "t",
-            "Xy9@pLq3!",
-            "aB#12$4xYz",
-            "P@ssW0rd789",
-            "Qz8!Mn@56",
-            "5tG#lPqX!",
-            "Rf2@Yx7LpQ",
-            "Za1!QxYtP3",
-            "KpX#98@LmT",
-            "Tq7@ZxLpX2",
-            "WmX!PqL@Y5",
-        ]
-
+        gen_name = ["whyzotee","Tester"]
+        gen_phone_numbers = ["000-000-0000","089-123-4567"]
+        gen_emails = ["t@1.dev","test@example.com"]
+        gen_passwords = ["t","12345",]
         gen_user = []
 
-        for index in range(10):
+        for index in range(len(gen_name)):
             # gen_account = Account().register(gen_emails[index], gen_passwords[index])
             gen_account = Account(gen_emails[index], gen_passwords[index])
             user = User(
