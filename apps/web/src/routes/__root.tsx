@@ -52,9 +52,7 @@ function RootComponent() {
 
         <Outlet />
 
-        <Suspense>
-          <TanStackDevtools />
-        </Suspense>
+        <Suspense>{/* <TanStackDevtools /> */}</Suspense>
       </div>
     </main>
   );

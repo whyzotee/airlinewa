@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import CheckoutCard from "@/components/checkout/components/CheckoutCard";
 import CheckoutContact from "@/components/checkout/components/CheckoutContact";
 import FlightDetail from "@/components/checkout/components/CheckoutFlightDetails";

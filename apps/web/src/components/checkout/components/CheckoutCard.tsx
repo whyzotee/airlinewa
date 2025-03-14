@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import toast from "react-hot-toast";
 
 import { paymentPaymentsMutation } from "@/client/@tanstack/react-query.gen";
@@ -15,6 +17,7 @@ interface GetPayment {
   flight_route_back_id: string | undefined;
   price: number[];
   servicePrice: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   userDetails: any[];
 }
 

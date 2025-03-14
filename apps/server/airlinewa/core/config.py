@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     def all_cors_origins(self) -> list[str]:
         return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [
             self.FRONTEND_HOST,
-            "http://127.0.0.1:5173",
+            "*"
         ]
 
     PROJECT_NAME: str = "AirlineWa"

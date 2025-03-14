@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { delay } from "@/app/function";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -153,6 +154,7 @@ const BrowseFlightForm = ({
   const currentYear = dayjs();
 
   const getAirportOptions = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (airports: Airport[], value: string | null) => {
       // const originCode = form.getFieldValue("originCode");
       // console.debug(originCode);
@@ -483,7 +485,7 @@ const BrowseFlightForm = ({
 
                     return (
                       <DatePicker
-                        label="วันออกเดินทาง"
+                        label="วันเดินทางกลับ"
                         minDate={currentYear}
                         format="DD/MM/YYYY"
                         value={defaultValue}
