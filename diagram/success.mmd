@@ -1,0 +1,43 @@
+---
+config:
+  theme: base
+---
+sequenceDiagram
+    actor customer as : Customer
+    participant ui as : User Interface
+    participant api as :API
+    participant airlinewa as : Airlinewa (Controller)
+    participant booking as : Booking
+    participant pay as : Payment
+    participant contact as : Contact
+
+
+    customer ->>+ ui: go success page
+    ui ->>+ api:  GET success(booking_id)
+    api ->>+ airlinewa: find_booking(booking_id)
+
+    loop find_booking
+        airlinewa ->>+ booking: id()
+        booking ->>- airlinewa: return id
+    end
+
+    airlinewa -->>- api: return booking
+
+    alt booking == None
+        api ->>+ ui: return HTTPException(404,<br>NO_BOOKING_FOUND)
+        ui -->> customer: display error
+    end
+
+    api ->>+ booking: payment()
+    booking ->>+ pay: id()
+    pay -->>- booking: return id
+    booking -->>- api: return payment id
+    
+    api ->>+ booking: contact()
+    booking ->>+ contact: email()
+    contact -->>- booking: return email
+    booking -->>- api: return contact email
+
+    api -->>- ui: return BookingPaymentResponse<br>(payment_id, email)
+
+    ui -->>- customer: display success page

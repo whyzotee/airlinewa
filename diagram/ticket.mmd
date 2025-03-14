@@ -1,0 +1,82 @@
+---
+config:
+  theme: base
+---
+sequenceDiagram
+    actor customer as : Customer
+    participant ui as : User Interface
+    participant api as :API
+    participant airlinewa as : Airlinewa (Controller)
+    participant booking as : Booking
+    participant ticket as : Ticket
+    participant route as : Route
+    participant passenger as : Passenger
+    participant seat as : Seat
+    participant schedule as : Schedule
+
+    customer ->>+ ui: go ticket page
+    ui ->>+ api:  GET ticket(booking_id)
+    api ->>+ airlinewa: find_booking(booking_id)
+
+    loop find_booking
+        airlinewa ->>+ booking: id()
+        booking ->>- airlinewa: return id
+    end
+
+    airlinewa -->>- api: return booking
+
+    alt booking == None
+        api ->>+ ui: return HTTPException(400,<br>NO_BOOKING_FOUND)
+        ui -->> customer: display error
+    end
+
+    api ->>+ booking: ticket()
+    loop ticket
+        booking ->>+ ticket: id()
+        ticket -->>- booking: return id
+        booking ->>+ ticket: passenger()
+        ticket ->>+ passenger: first_name()
+        passenger -->>- ticket: return first_name
+        ticket ->>+ passenger: last_name()
+        passenger -->>- ticket: return last_name
+        ticket -->>- booking: return passenger_name
+
+        booking  ->>+ ticket: seat()
+        ticket ->>+ seat: id()
+        seat -->>- ticket: return seat id
+        ticket -->>- booking: return seat id
+
+        booking ->>+ ticket: isback()
+        ticket -->>- booking: return isback
+    end
+    booking -->>- api: return ticket
+    
+    api ->>+ booking: flight_route()
+    booking ->>+ route: schedule()
+    route ->>+ schedule: gate()
+    schedule -->>- route: return gate
+    route ->>+ schedule: departure()
+    schedule -->>- route: return departure
+    route -->>- booking: return schedule
+    booking -->>- api: return flight_route
+
+    api ->>+ booking: flight_route_back()
+    booking -->>- api: return flight_route_back
+
+    alt booking.flight_route_back != None
+        api ->>+ booking: flight_route()
+        booking ->>+ route: schedule()
+        route ->>+ schedule: gate()
+        schedule -->>- route: return gate
+        route ->>+ schedule: departure()
+        schedule -->>- route: return departure
+        route -->>- booking: return schedule
+        booking -->>- api: return flight_route
+    end
+    api ->>+ booking: user()
+    booking ->>+ user: name()
+    user -->>- booking: return name
+    booking -->>- api: return user name
+
+    api -->>- ui: return BookingResponse(user, booking_id,<br>flight,flight_back, tickets)
+    ui -->>- customer: display ticket
