@@ -1,0 +1,32 @@
+---
+config:
+  theme: base
+---
+sequenceDiagram
+  actor Customer as :Customer
+  participant Website as :Website
+  participant API as :API
+  participant Airlinewa as :Airlinewa
+  participant Flight as :Flight
+  participant FlightRoute as :FlightRoute
+  participant Aircraft as :Aircraft
+
+  Customer ->>+ Website: click "เลือก" button
+  Website ->>+ API: GET /flight/?origin=...&destination=...&date=...&seat_class=...&adult=...&child=...&kid=...
+  API ->>+ Airlinewa: search_flight_route(origin, destination, date, seat_class, people_count)
+  Airlinewa ->>+ Flight: find_flight(flight_route_id)
+  Flight ->>+ FlightRoute: get_route_details()
+  FlightRoute -->>- Flight: return route details
+  Flight ->>+ Aircraft: get_avaliable_seat(seat_class)
+  Aircraft -->>- Flight: return available seats
+  alt flight found and seats available
+    Flight -->> Airlinewa: flight details and available seats
+    Airlinewa -->> API: list of available flights with prices
+    API -->> Website: return flight_route_list
+    Website -->> Customer: display available flights
+  else flight not found or no seats available
+    Flight -->>- Airlinewa: no flight found
+    Airlinewa -->>- API: return error (FLIGHT_NOT_FOUND)
+    API -->>- Website: raise HTTPException(404, FLIGHT_NOT_FOUND)
+    Website -->>- Customer: display error message (FLIGHT_NOT_FOUND)
+  end

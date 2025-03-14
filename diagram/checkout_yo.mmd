@@ -1,0 +1,46 @@
+---
+config:
+  theme: base
+---
+sequenceDiagram
+  actor Customer as :Customer
+  participant Website as :Website
+  participant API as :API
+  participant Airlinewa as :Airlinewa
+  participant Flight as :Flight
+  participant Aircraft as :Aircraft
+
+  Customer ->>+ Website: click "ดำเนินการต่อ" button
+  Website ->>+ API: POST /payment/checkout (CheckoutModel)
+  API ->>+ Airlinewa: find_user(model.uid)
+  alt user not found
+    Airlinewa -->>- API: return None
+    API -->> Website: raise HTTPException(404, USER_NOT_FOUND)
+    Website -->> Customer: display error message (USER_NOT_FOUND)
+  else user found
+    API ->>+ Airlinewa: find_flight(model.flight_id)
+    alt flight not found
+      Airlinewa -->>- API: return None
+      API -->> Website: raise HTTPException(404, NO_FLIGHT_FOUND)
+      Website -->> Customer: display error message (NO_FLIGHT_FOUND)
+    else flight found
+      API ->>+ Aircraft: get_seat_price(model.seat_class)
+      Aircraft -->>- API: return seat_price
+      alt return_flight_id provided
+        API ->>+ Airlinewa: find_flight(model.return_flight_id)
+        alt return flight not found
+          Airlinewa -->>- API: return None
+          API -->> Website: raise HTTPException(404, NO_FLIGHT_FOUND)
+          Website -->> Customer: display error message (NO_FLIGHT_FOUND)
+        else return flight found
+          API ->>+ Aircraft: get_seat_price(model.seat_class)
+          Aircraft -->>- API: return back_seat_price
+          API ->> Website: return flight details, back flight details, price, and services
+          Website -->> Customer: display checkout details
+        end
+      else no return flight
+        API ->>- Website: return flight details, price, and services
+        Website -->>- Customer: display checkout details
+      end
+    end
+  end
