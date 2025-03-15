@@ -156,7 +156,6 @@ def payment_success(booking_id: str) -> BookingPaymentResponse:
             status_code=status.HTTP_404_NOT_FOUND, detail="NO_BOOKING_FOUND"
         )
 
-    # return {"payment_id": booking.payment.id, "email": booking.contact.email}
     return BookingPaymentResponse(
         payment_id=booking.payment.id, email=booking.contact.email
     )

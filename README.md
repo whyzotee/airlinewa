@@ -4,17 +4,27 @@ This project make for oop in practice 2/2567
 
 To run webite:
 
+Install package first
+
+## requirement
+
+python >= 3.13.1
+node >= 22.12.0
+pnpm >= 10.6.1
+
 ```bash
-pnpm start
+pnpm install
+pip install -r requirements.txt
 ```
 
-## dev
+## to start
 
 ```bash
 pnpm dev
 ```
 
 # Preview
+
 ![Screenshot 2025-03-14 024502](https://github.com/user-attachments/assets/ba65adcf-25a8-474d-8e44-2f28d5fb2c43)
 ![Screenshot 2025-03-14 024514](https://github.com/user-attachments/assets/a1ed592f-4016-4955-80d5-d6e046b19c08)
 ![Screenshot 2025-03-14 024518](https://github.com/user-attachments/assets/cea8445b-48f6-4dd0-87b6-f05dce6f6111)

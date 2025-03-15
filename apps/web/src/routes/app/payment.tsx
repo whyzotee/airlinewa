@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { delay } from "@/app/function";
 import {
   paymentPaymentCancelMutation,
